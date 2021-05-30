@@ -1,0 +1,24 @@
+opam-version: "2.0"
+version: "0.1.0"
+synopsis: "ProScript to OCaml translator"
+description: """
+Dirsp is a short form for Diskuv Implementations of Research Security Protocols.
+The [dirsp-ps2ocaml] executable translates ProScript, which is a subset of
+JavaScript that can be verified with formal security proofs, into OCaml.
+"""
+maintainer: "opensource+dirsp-ps2ocaml@support.diskuv.com"
+authors: "[Diskuv, Inc. <opensource+dirsp-ps2ocaml@support.diskuv.com>]"
+license: "Apache-2.0"
+homepage: "https://github.com/diskuv/dirsp-exchange"
+bug-reports: "https://github.com/diskuv/dirsp-exchange/issues"
+dev-repo: "git+https://github.com/diskuv/dirsp-exchange.git"
+tags: ["org:diskuv"]
+build: [
+  ["dune" "subst"] {pinned}
+  ["dune" "build" "-p" name "-j" jobs]
+  ["dune" "runtest" "-p" name "-j" jobs] {with-test}
+]
+depends: [
+  "ocaml"     {>= "4.08.0"}
+  "dune"      {>= "2.0.0"}
+]

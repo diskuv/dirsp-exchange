@@ -1,0 +1,8 @@
+(* https://dune.readthedocs.io/en/stable/toplevel-integration.html *)
+#use_output "dune top";;
+#require "menhirLib";;
+#require "pcre";;
+#require "ulex";;
+#require "str";;
+#directory "_build/default/src";;
+#load "_build/default/src/ps2ocaml.cma";;
