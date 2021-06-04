@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Dirsp_exchange_kbb2017 (dirsp-exchange-kbb2017.Dirsp_exchange_kbb2017)</title><link rel="stylesheet" href="../../odoc.css"/><meta charset="utf-8"/><meta name="generator" content="odoc 1.5.2"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><script src="../../highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="content"><header><nav><a href="../index.html">Up</a> – <a href="../index.html">dirsp-exchange-kbb2017</a> &#x00BB; Dirsp_exchange_kbb2017</nav><h1>Module <code>Dirsp_exchange_kbb2017</code></h1><p>For securing a conversation between two parties.</p><h2 id="summary"><a href="#summary" class="anchor"></a>Summary</h2><p>Dirsp is a short form for Diskuv Implementations of Research Security Protocols. The <code>dirsp-exchange-kbb2017</code> library implements the Kobeissi, Bhargavan and Blanchet 2017 protocol that is a variant of the Signal Protocol v3 and has been verified using two complementary formal methodologies. It uses a <code>dirsp-proscript</code> library like <code>dirsp-proscript-mirage</code> to provide a runtime library of cryptographic primitives.</p><p>Here is the simplest example for an exchange of messages (based on the <a href="https://github.com/Inria-Prosecco/proscript-messaging/blob/ddb66e4934fefbbf10bbd393cabc4ecda5b75546/tl/secrecy-1-ab-twoway.pv">formal ProVerif secrecy-1-ab-twoway.pv proof test of secrecy</a>):</p><pre><code class="ml">(*  FIRST: Make some module shortcuts *)
+module P       = Dirsp_proscript_mirage.Make()
+module C       = P.Crypto
+module ED25519 = P.Crypto.ED25519
+module E       = P.Encoding
+module K       = Dirsp_exchange_kbb2017.Make_kbb2017(P)
+module U       = K.UTIL
+module T       = K.TOPLEVEL
+module KEY     = K.Type_key
+module MSG     = K.Type_msg
+;;
+
+(*  SECOND: Let Alice and Bob create their own long-term key pairs.
+
+    Alice keeps her private keys hidden, and Bob keeps his private
+    keys hidden. As an implementor of this algorithm, you need to
+    make sure there is a secure storage area for each person and place
+    the private keys in that storage area.
+
+    Note: The strings (ex. &quot;alice-identity&quot;) are documentation hints, and are
+    only meaningful during unit testing or proof testing.
+*)
+let aliceIdentityKey  = U.newIdentityKey (P.of_string &quot;alice-identity&quot;)
+let aliceSignedPreKey = U.newKeyPair     (P.of_string &quot;alice-signed-prekey&quot;)
+let bobIdentityKey    = U.newIdentityKey (P.of_string &quot;bob-identity&quot;)
+let bobSignedPreKey   = U.newKeyPair     (P.of_string &quot;bob-signed-prekey&quot;)
+;;
+
+(* At any point you can see the contents of a key, message, etc. with `P.hexdump` *)
+P.hexdump aliceIdentityKey.pub
+;;
+
+(*  THIRD: Alice and Bob exchange a set of long-term public keys.
+
+    As an implementor, the exchange can be simply publishing the long-term keys
+    once to a common location (ex. a server) and having each person download
+    the other person's public keys.
+ *)
+let aliceIdentityKeyPub        = aliceIdentityKey.pub
+let aliceIdentityDHKeyPub      = U.getDHPublicKey aliceIdentityKey.priv
+let aliceSignedPreKeyPub       = aliceSignedPreKey.pub
+let aliceSignedPreKeySignature = ED25519.signature (KEY.toBitstring aliceSignedPreKeyPub) aliceIdentityKey.priv aliceIdentityKeyPub
+let bobIdentityKeyPub          = bobIdentityKey.pub
+let bobIdentityDHKeyPub        = U.getDHPublicKey bobIdentityKey.priv
+let bobSignedPreKeyPub         = bobSignedPreKey.pub
+let bobSignedPreKeySignature   = ED25519.signature (KEY.toBitstring bobSignedPreKeyPub  ) bobIdentityKey.priv   bobIdentityKeyPub
+;;
+
+(*  FOURTH: Alice and Bob create their own prekeys.
+
+    Each prekey has an identifier [Id]. As an implementor of this algorithm, you need
+    to make sure there is a secure storage area for each person's prekeys. This storage
+    area needs to have lookup by an integer [Id].
+
+    In this example, we create one prekey each person. As an implementator, you should create many.
+ *)
+let alicePreKey   = U.newKeyPair     (P.of_string &quot;alice-prekey&quot;)
+let bobPreKey     = U.newKeyPair     (P.of_string &quot;bob-prekey&quot;)
+;;
+
+(*  FIFTH: Alice consumes one of Bob's one-time prekeys. Bob consumes one of Alice's one-time prekeys.
+
+    By &quot;consume&quot; we mean that once taken, the prekey can no longer be used. As an implementor, you
+    need to have a common location (ex. a server) that lets:
+
+    a) each person periodically post a large number of random prekeys
+    b) each person consume prekeys that belongs to any other person
+
+    {b CAUTION:} Be aware that &quot;b&quot; is an easy path to denial of service. Use standard anti-DOS
+    techniques (ex. authentication, rate limiting on the consumer and the consumee) but inevitably
+    that will not be enough. The solution from https://signal.org/docs/specifications/x3dh/#sending-the-initial-message
+    is to fallback to an algorithm that uses only the signed prekey; KBB2017 however expects an infinite supply of
+    prekeys. We suggest either letting each person post a &quot;last resort&quot; prekey that is used when all prekeys are
+    exhausted -or- re-using the last prekey if all but the last prekey are exhausted.
+*)
+let alicePreKeyPub = alicePreKey.pub
+let alicePreKeyId  = 1 (* the Id of alicePreKey *)
+let bobPreKeyPub   = bobPreKey.pub
+let bobPreKeyId    = 1 (* the Id of bobPreKey   *)
+;;
+
+(*  SIXTH: Alice establishes a session with Bob. *)
+let aliceSessionWithBob = T.newSession
+  aliceSignedPreKey
+  alicePreKey
+  (KEY.toBitstring bobIdentityKeyPub)
+  (KEY.toBitstring bobIdentityDHKeyPub)
+  (KEY.toBitstring bobSignedPreKeyPub)
+  bobSignedPreKeySignature
+  (KEY.toBitstring bobPreKeyPub)
+  bobPreKeyId
+;;
+
+(*  SEVENTH: Alice sends a message to Bob. *)
+let aliceToBobMsg1        = P.of_string &quot;Hi Bob!&quot;
+let aliceToBobSendOutput1 = T.send
+  aliceIdentityKey
+  aliceSessionWithBob
+  aliceToBobMsg1
+;;
+Format.printf &quot;Did Alice send successfully? %b\n&quot; aliceToBobSendOutput1.output.valid
+;;
+
+(*  EIGHTH: Bob establishes his own session with Alice. *)
+let bobSessionWithAlice = T.newSession
+  bobSignedPreKey
+  bobPreKey
+  (KEY.toBitstring aliceIdentityKeyPub)
+  (KEY.toBitstring aliceIdentityDHKeyPub)
+  (KEY.toBitstring aliceSignedPreKeyPub)
+  aliceSignedPreKeySignature
+  (KEY.toBitstring alicePreKeyPub)
+  alicePreKeyId
+;;
+
+(*  NINTH: Bob receives the message from Alice. *)
+let bobFromAliceMsg2           = aliceToBobSendOutput1.output
+let bobFromAliceReceiveOutput2 = T.recv
+  bobIdentityKey
+  bobSignedPreKey
+  bobSessionWithAlice
+  bobFromAliceMsg2
+;;
+Format.printf &quot;Did Bob receive a message? %b\n&quot;
+  bobFromAliceReceiveOutput2.output.valid
+;;
+Format.printf &quot;Bob just received a new message: %s\n&quot;
+  (bobFromAliceReceiveOutput2.plaintext |&gt; P.to_bytes |&gt; Bytes.to_string)</code></pre><p>The intent of the library is to provide software engineers with auditable source code that has some level of safety assurance (typically proofs) from security researchers. By &quot;auditable&quot; we mean the ability to justify every line of source code when undergoing an audit by a competent security engineer. No third-party vetting of the source code has been conducted (unless noted explicitly), and the original authors at Diskuv did not have security researchers or engineers on staff when the library was originally written. Contact <a href="mailto:security@diskuv.com">security@diskuv.com</a> to report any security issues, and feel free to shame publicly on <a href="https://twitter.com/diskuv">Twitter @diskuv</a> if Diskuv is not being responsive.</p><p>See <a href="index.html#SourceCodeVerification"><span>Source Code Verification</span></a> for help authenticating the source code history.</p><h2 id="institutions"><a href="#institutions" class="anchor"></a>Institutions</h2><p>The security research used in <code>dirsp-exchange</code> comes from various research and corporate institutions. Diskuv has no affiliation with any of the institutions below:</p><ol><li>Signal (formerly Open Whisper Systems), a non-profit organization in the US</li><li>INRIA (National Institute for Research in Digital Science and Technology), a national research institute of France</li></ol><p>Please cite the institutions above rather than Diskuv. In fact, many academic licenses require you to credit the institution by name; see <a href="index.html#Licenses"><span>Licenses</span></a> further below.</p><h2 id="algorithms"><a href="#algorithms" class="anchor"></a>Algorithms</h2><h3 id="x3dh-and-double-ratchet"><a href="#x3dh-and-double-ratchet" class="anchor"></a>X3DH and Double Ratchet</h3><p>X3DH was created by Open Whisper Systems and placed in the public domain in the publication <a href="https://www.signal.org/docs/specifications/x3dh/">The X3DH Key Agreement Protocol</a>. That publication defines X3DH as &quot;establish[ing] a shared secret key between two parties who mutually authenticate each other based on public keys. X3DH provides forward secrecy and cryptographic deniability.&quot;</p><p>X3DH uses <a href="https://www.signal.org/docs/specifications/doubleratchet/">The Double Ratchet Algorithm</a> as a building block.</p><h2 id="Licenses"><a href="#Licenses" class="anchor"></a>Licenses</h2><p><code>dirsp-exchange-kbb2017</code> is distributed under the <a href="https://opensource.org/licenses/Apache-2.0">Apache-2.0</a> license.</p><p>The <code>proscript-messaging</code> source files used in <code>Make_kbb2017</code> are distributed with the <a href="https://github.com/Inria-Prosecco/proscript-messaging/blob/ddb66e4934fefbbf10bbd393cabc4ecda5b75546/ps2pv/LICENSE">following license</a>:</p><pre>    Copyright (c) 2012-2013 Institut National de Recherche en Informatique et Automatique (Inria Paris-Rocquencourt)
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+    1. Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+
+    2. Redistributions in binary form must reproduce the above
+        copyright notice, this list of conditions and the following
+        disclaimer in the documentation and/or other materials provided
+        with the distribution.
+
+    THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS OR
+    IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL &lt;COPYRIGHT HOLDER&gt; OR CONTRIBUTORS BE
+    LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+    CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+    SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+    BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+    OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+    IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    The views and conclusions contained in the software and documentation
+    are those of the authors and should not be interpreted as representing
+    official policies, either expressed or implied, of the authors.</pre><h2 id="SourceCodeVerification"><a href="#SourceCodeVerification" class="anchor"></a>Source Code Verification</h2><p>We primarily use an independent third party tool <a href="https://github.com/codenotary/vcn">vChain CodeNotary</a> to establish an audit trail of what source code was placed when in this library. <code>vcn</code> lets us both create a trusted timestamp of commits and sign snapshots of third-party repositories, neither of which classical GPG git signing accomplish. Use <a href="https://github.com/codenotary/vcn/blob/master/docs/cmd/vcn_authenticate.md"><code>vcn authenticate --signerID</code></a> to validate git history.</p><ol><li><p>The <a href="https://github.com/Inria-Prosecco/proscript-messaging">proscript-messaging source code repository</a> has been forked at <a href="https://github.com/diskuv/proscript-messaging">https://github.com/diskuv/proscript-messaging</a> for audit redundancy.</p><pre>SignerID: 0xdaf31b40f750c92afc50e5750fac6a28da4cedc4
+Code: https://github.com/Inria-Prosecco/proscript-messaging.git@ddb66e4
+Hash: 3354e25ec0e92f6e99a1e26591c8c356d0c7b35b652539b624286c83e89a2a47</pre></li></ol><h2 id="unit-testing"><a href="#unit-testing" class="anchor"></a>Unit Testing</h2><p>If you need determinism, you can instantiate your own random number generation like the toy example below:</p><pre><code class="ml">module P = Dirsp_proscript_mirage.CustomizedMake(struct
+  include Dirsp_proscript_mirage.DefaultOptions
+  (** We use the first byte of MD5(id), and repeat it until we fill the requested size.
+      {b DO NOT USE THIS IN PRODUCTION}; only use this in unit tests. *)
+  let random_bytes sz id =
+    let md5bytes = Digest.string id in
+    let firstbyte = String.get md5bytes 0 in
+    Bytes.init sz (fun i -&gt; firstbyte)
+end)</code></pre><dl><dt>author</dt><dd>Diskuv, Inc.</dd></dl></header><dl><dt class="spec module" id="module-Make_kbb2017"><a href="#module-Make_kbb2017" class="anchor"></a><code><span class="keyword">module</span> <a href="Make_kbb2017/index.html">Make_kbb2017</a> : <a href="../Dirsp_exchange_kbb2017__/Kobeissi_bhargavan_blanchet_intf/index.html#module-type-PROTOCOLFUNCTOR">Dirsp_exchange_kbb2017__.Kobeissi_bhargavan_blanchet_intf.PROTOCOLFUNCTOR</a></code></dt><dd><p>Makes the Kobeissi, Bhargavan and Blanchet (KBB2017) verified security protocol that will delegate to a Proscript runtime library of cryptographic primitives.</p></dd></dl></div></body></html>

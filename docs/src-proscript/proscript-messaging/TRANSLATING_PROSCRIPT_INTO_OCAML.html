@@ -1,0 +1,819 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Building ProScript into OCaml &mdash; Diskuv Implementations of Research Security Protocols  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Developing" href="../../DEVELOPING.html" />
+    <link rel="prev" title="OCaml Library Documentation" href="../../OCAML_LIBRARIES.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Diskuv Implementations of Research Security Protocols
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../OCAML_LIBRARIES.html">OCaml Library Documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Building ProScript into OCaml</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#files">Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-you-integrate">How You Integrate</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#interface-module">Interface Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#interface-file">Interface File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#shims-module">Shims Module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#faqs">FAQs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#question-1-how-do-i-know-i-got-the-record-types-and-the-mutability-right">Question 1. How do I know I got the record types and the mutability right?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#question-2-what-is-proscript-t">Question 2. What is <code class="docutils literal notranslate"><span class="pre">ProScript.t</span></code>?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#question-3-what-about-the-runtime-safety-of-int-operations">Question 3. What about the runtime safety of ‘int’ operations?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#question-4-how-do-i-insert-my-own-assertions">Question 4. How do I insert my own assertions?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#question-5-how-do-i-annotate-function-parameters-with-explicit-types">Question 5. How do I annotate function parameters with explicit types?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#debugging">Debugging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#enabling-stack-traces">Enabling Stack Traces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ide-debugging">IDE Debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utop">utop</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#pscl-js-and-the-proscript-api">pscl.js and the ProScript API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../DEVELOPING.html">Developing</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Diskuv Implementations of Research Security Protocols</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Building ProScript into OCaml</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/src-proscript/proscript-messaging/TRANSLATING_PROSCRIPT_INTO_OCAML.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="building-proscript-into-ocaml">
+<h1>Building ProScript into OCaml<a class="headerlink" href="#building-proscript-into-ocaml" title="Permalink to this headline">¶</a></h1>
+<p>The <a class="reference internal" href="#kbb2017" id="id1"><span>[KBB2017]</span></a> “Automated Verification for Secure Messaging Protocols
+and Their Implementations: A Symbolic and Computational Approach” paper produced by the Prosecco research group has a
+<a class="reference external" href="https://github.com/Inria-Prosecco/proscript-messaging">source code repository called proscript-messaging</a>.
+We call the paper’s algorithm the “Kobeissi, Bhargavan and Blanchet” (KBB2017) algorithm
+to both recognize the paper’s authors and to avoid the use of the word “Signal” (which the Signal non-profit who
+created the original algorithm has <a class="reference external" href="https://github.com/libresignal/libresignal/issues/37#issuecomment-216975737">protected with trademarks</a>).
+The KBB2017 algorithm describes how to integrate security algorithms like authenticated 1-on-1
+conversation management with OCaml-based proof verification tools (ProScript and ProVerify) and a
+runtime deployment target of Javascript.</p>
+<p><strong>Why build ProScript into OCaml?</strong> You can use OCaml for much more than handling 1-on-1
+conversations; for example, KBB2017 does not cover group conversations or multi-device parties. So if you need multiple security
+or privacy algorithms, writing those in a mixture of ProScript and/or OCaml and <em>delaying the conversion into your production languages</em>
+(ex. OCaml can easily be converted into Javascript or integrated with C programs) make it relatively easy to verify proofs and
+guarantee type safety between the algorithms. Said another way, why shoot yourself in the foot by not letting OCaml tooling
+check all of your security and privacy data models?</p>
+<p>There is OCaml documentation that discusses why <code class="docutils literal notranslate"><span class="pre">proscript-messaging</span></code> was chosen and how to use the ProScript generated
+OCaml KBB2017 libraries. But in this documentation, we describe the <em>build process</em> of KBB2017 ProScript into OCaml,
+with some general pointers if you are using your own ProScript algorithm.
+So <strong>you can</strong> use the structure of this code for integrating ProScript into your own OCaml libraries. Read on.</p>
+<div class="section" id="files">
+<h2>Files<a class="headerlink" href="#files" title="Permalink to this headline">¶</a></h2>
+<p><em>Security Engineers and Auditors: Everything that says “Unmodified” is a verbatim copy of the Prosecco source code. The git commit and authenticated timestamps are available in &lt;diskuv-communicator-models&gt;/dirsp-exchange/dirsp_exchange.mli</em>.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">kobeissi_bhargavan_blanchet.ml</span></code></dt><dd><p><strong>Auto-generated</strong>. This is a ProScript-to-OCaml translation of <code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps/sp.js</span></code> (aka KBB2017).
+Generated from the dirsp-ps2ocaml.exe program, with auto-formatting by ocamlformat.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kobeissi_bhargavan_blanchet_intf.ml</span></code></dt><dd><p><strong>New content</strong>. OCaml interface for <code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps/sp.js</span></code>, plus a few shims for functions that could
+not be auto-translated.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/TRANSLATING_PROSCRIPT_INTO_OCAML.rst</span></code></dt><dd><p><strong>New content</strong>. The documentation you are reading now.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/pscl/pscl.js</span></code></dt><dd><p><strong>Unmodified</strong>. Javascript implementation of the ProScript Cryptography Library. This has implementations
+of SHA256 and other core security primitives.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/pscl/dirsp_Dirsp_proscript_intf.ml</span></code></dt><dd><p><strong>New content</strong>. OCaml interface for the ProScript runtime. This is an OCaml reimagining of the
+Javascript API implicit in <code class="docutils literal notranslate"><span class="pre">pscl.js</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/pscl/dirsp_proscript.mli</span></code></dt><dd><p><strong>New content</strong>. Just includes the <code class="docutils literal notranslate"><span class="pre">Dirsp_proscript_intf.ml</span></code>. This is an idiomatic way to share the same interfaces
+for external use (you!) and internal library use.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/pscl/dirsp_proscript.ml</span></code></dt><dd><p><strong>New content</strong>. A hand-written OCaml implementation of the ProScript runtime. It mimics <code class="docutils literal notranslate"><span class="pre">pscl.js</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps/sp.js</span></code></dt><dd><p><strong>Unmodified</strong>. ProScript implementation of what the Prosecco team calls the version 3 of the
+“Signal Protocol” (X3DH and Double Ratchet). We call it KBB2017.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/LICENSE</span></code></dt><dd><p><strong>Unmodified</strong>. License file from the proscript-messaging team</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/globals.ml</span></code></dt><dd><p><strong>Unmodified</strong>. Global variables and common utility functions.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/lexer.ml</span></code></dt><dd><p><strong>Unmodified</strong>. Lexical instructions for how to create tokens (ex. <code class="docutils literal notranslate"><span class="pre">BOOL</span></code>, <code class="docutils literal notranslate"><span class="pre">FUNCTION</span></code>, <code class="docutils literal notranslate"><span class="pre">FINALLY</span></code>, <code class="docutils literal notranslate"><span class="pre">IF</span></code>) from the ProScript dialect of JavaScript.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/ast.ml</span></code></dt><dd><p><strong>Unmodified</strong>. The abstract syntax tree of ProScript. The tree contains the relevant details of ProScript that are necessary
+for recreating a proof with the author’s ProVerif tool; it is <strong>not</strong> a perfect representation of ProScript. So we need
+to replace the lossiness (like losing arrays of hexadecimal constants).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/parser.mly</span></code></dt><dd><p><strong>Unmodified</strong>. Instructions for how to produce the AST from the lexer.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/pretty.ml</span></code></dt><dd><p><strong>Unmodified</strong>. Pretty-printer of the AST.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/_tags</span></code></dt><dd><p><strong>Unmodified</strong>. Build instructions for the legacy <code class="docutils literal notranslate"><span class="pre">ocamlbuild</span></code> tool. It allows for building a legacy syntax and parser
+generators for OCaml called <code class="docutils literal notranslate"><span class="pre">camlp4</span></code>, which is difficult to build with modern OCaml tooling.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/lexerror.ml</span></code></dt><dd><p><strong>New content</strong>. Error utility functions to report lexical information (line and column) when there is an error.
+Similar to the Prosecco team’s <code class="docutils literal notranslate"><span class="pre">error.ml</span></code> file, which is not included in this distribution.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/ast2ocaml.ml</span></code> <code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/astpredicates.ml</span></code></dt><dd><p><strong>New content</strong>. Translates the AST into OCaml source code.
+Similar to the Prosecco team’s <code class="docutils literal notranslate"><span class="pre">pretty.ml</span></code> file; both of which walk the AST.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/ast2ocaml_tests.ml</span></code></dt><dd><p><strong>New content</strong>. Tests for <code class="docutils literal notranslate"><span class="pre">ast2ocaml.ml</span></code> (ex. overflow/underflow compliance).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/dirsp_ps2ocamlcore.ml</span></code></dt><dd><p><strong>New content</strong>. Parses source code into AST and translates via <code class="docutils literal notranslate"><span class="pre">ast2ocaml.ml</span></code> into OCaml.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/dirsp_ps2ocaml.ml</span></code></dt><dd><p><strong>New content</strong>. A command-line driver. When you run <code class="docutils literal notranslate"><span class="pre">dirsp-ps2ocaml.exe</span></code> you are running this.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/.gitignore</span></code></dt><dd><p><strong>New content</strong>. Which files are ignored for git</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/.ocamlformat</span></code>, <code class="docutils literal notranslate"><span class="pre">proscript-messaging/.ocamlformat-ignore</span></code></dt><dd><p><strong>New content</strong>. Formatting instructions for new content.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/debug-parsing.mlt</span></code></dt><dd><p><strong>New content</strong>. Instructions for <code class="docutils literal notranslate"><span class="pre">utop</span></code> to quickly begin a debug session.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="how-you-integrate">
+<h2>How You Integrate<a class="headerlink" href="#how-you-integrate" title="Permalink to this headline">¶</a></h2>
+<p>Assuming you ran <code class="docutils literal notranslate"><span class="pre">opam</span> <span class="pre">install</span> <span class="pre">dirsp-ps2ocaml</span></code> and <code class="docutils literal notranslate"><span class="pre">eval</span> <span class="pre">$(opam</span> <span class="pre">env)</span></code>, you can run <code class="docutils literal notranslate"><span class="pre">dirsp-ps2ocaml</span></code>
+from your shell.</p>
+<p>Otherwise:</p>
+<ul class="simple">
+<li><p>Build the translator with <code class="docutils literal notranslate"><span class="pre">dune</span> <span class="pre">build</span> <span class="pre">src-proscript/dirsp_ps2ocaml.exe</span></code>. That
+will produce a standalone executable at <code class="docutils literal notranslate"><span class="pre">&lt;dirsp-exchange&gt;/_build/default/src-proscript/dirsp-ps2ocaml.exe</span></code>
+which you can run directly or use the shorthand <code class="docutils literal notranslate"><span class="pre">dune</span> <span class="pre">exec</span> <span class="pre">src-proscript/dirsp_ps2ocaml.exe</span></code>.</p></li>
+<li><p>In everything that follows, use <code class="docutils literal notranslate"><span class="pre">dune</span> <span class="pre">exec</span> <span class="pre">src-proscript/dirsp_ps2ocaml.exe</span></code> wherever you see
+<code class="docutils literal notranslate"><span class="pre">dirsp-ps2ocaml</span></code>.</p></li>
+</ul>
+<p>The command line options are:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>dirsp-ps2ocaml &lt;proscript_file&gt;
+    [-a]
+    [-i &lt;ocaml_interface_module&gt;]
+    [-s &lt;ocaml_shims_module&gt;]
+    (-p [&lt;module_name&gt;.]&lt;parameter_name&gt;:&lt;parameter_type&gt;)*
+    -o &lt;ocaml_output_file&gt;
+</pre></div>
+</div>
+<p>For KBB2017 this is automatically done by the build scripts, but we can invoke it by hand as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>dirsp-ps2ocaml -- src-proscript/proscript-messaging/ps/sp.js <span class="se">\</span>
+    -p <span class="s2">&quot;them:t record_them&quot;</span> <span class="se">\</span>
+    -p <span class="s2">&quot;msg:t record_msg&quot;</span> <span class="se">\</span>
+    -p <span class="s2">&quot;Type_sendoutput.a:t record_sendoutput&quot;</span> <span class="se">\</span>
+    -o src-proscript/kobeissi_bhargavan_blanchet.ml
+</pre></div>
+</div>
+<p>Here is what that command is doing:</p>
+<ol class="arabic">
+<li><p>Takes the ProScript file <code class="docutils literal notranslate"><span class="pre">src-proscript/proscript-messaging/ps/sp.js</span></code> and translates into an OCaml implementation at
+<code class="docutils literal notranslate"><span class="pre">src-proscript/kobeissi_bhargavan_blanchet.ml</span></code>.</p></li>
+<li><p>The implementation will rely on an <a class="reference internal" href="#interface-file">Interface File</a> (the <code class="docutils literal notranslate"><span class="pre">.mli</span></code> file)</p></li>
+<li><p>The implementation will rely on an <a class="reference internal" href="#interface-module">Interface module</a> called
+<code class="docutils literal notranslate"><span class="pre">Kobeissi_bhargavan_blanchet_intf</span></code> (the naming is automatically derived from your <code class="docutils literal notranslate"><span class="pre">-o</span></code> option
+unless you use the <code class="docutils literal notranslate"><span class="pre">-t</span></code> option)</p></li>
+<li><p>The implementation will rely on a <a class="reference internal" href="#shims-module">Shims module</a> called
+<code class="docutils literal notranslate"><span class="pre">Kobeissi_bhargavan_blanchet_shims</span></code> (the naming is automatically derived from your <code class="docutils literal notranslate"><span class="pre">-o</span></code> option
+unless you use the <code class="docutils literal notranslate"><span class="pre">-s</span></code> option)</p></li>
+<li><p>Any ProScript function parameter with the name <code class="docutils literal notranslate"><span class="pre">them</span></code> will be annotated with the <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">record_them</span></code> type
+defined in the OCaml interface module described later.
+Any <code class="docutils literal notranslate"><span class="pre">msg</span></code> parameter will be annotated with <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">record_msg</span></code>.
+And any <code class="docutils literal notranslate"><span class="pre">a</span></code> parameter in a module <code class="docutils literal notranslate"><span class="pre">Type_sendoutput</span></code> will be annotated with <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">record_sendoutput</span></code>.
+For example, the ProScript function</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">tryDecrypt</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">myIdentityKey</span><span class="p">,</span> <span class="nx">myEphemeralKey</span><span class="p">,</span> <span class="nx">them</span><span class="p">,</span> <span class="nx">msg</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* ... */</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>becomes</p>
+<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span>    <span class="k">let</span> <span class="n">tryDecrypt</span> <span class="n">myIdentityKey</span> <span class="n">myEphemeralKey</span> <span class="o">(</span><span class="n">them</span> <span class="o">:</span> <span class="n">t</span> <span class="n">record_them</span><span class="o">)</span> <span class="o">(</span><span class="n">msg</span> <span class="o">:</span> <span class="n">t</span> <span class="n">record_msg</span><span class="o">)</span> <span class="o">=</span> <span class="k">begin</span> <span class="c">(* ... *)</span> <span class="k">end</span>
+
+<span class="ow">and</span>
+
+<span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">block</span><span class="o">::</span> <span class="n">javascript</span>
+
+    <span class="n">const</span> <span class="nc">Type_sendoutput</span> <span class="o">=</span> <span class="o">{</span>
+        <span class="o">/*</span> <span class="o">...</span> <span class="o">*/</span>
+        <span class="k">assert</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="n">a</span><span class="o">)</span> <span class="o">{</span>
+            <span class="o">/*</span> <span class="o">...</span> <span class="o">*/</span>
+        <span class="o">}</span>
+    <span class="o">};</span>
+    <span class="n">const</span> <span class="nc">Type_recvoutput</span> <span class="o">=</span> <span class="o">{</span>
+        <span class="o">/*</span> <span class="o">...</span> <span class="o">*/</span>
+        <span class="k">assert</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="n">a</span><span class="o">)</span> <span class="o">{</span>
+            <span class="o">/*</span> <span class="o">...</span> <span class="o">*/</span>
+        <span class="o">}</span>
+    <span class="o">};</span>
+
+<span class="n">becomes</span>
+
+<span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">block</span><span class="o">::</span> <span class="n">ocaml</span>
+
+    <span class="k">module</span> <span class="nc">Type_sendoutput</span> <span class="o">=</span> <span class="k">struct</span>
+        <span class="c">(* ... *)</span>
+        <span class="k">let</span> <span class="n">xassert</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">t</span> <span class="n">record_sendoutput</span><span class="o">)</span> <span class="o">=</span> <span class="c">(* ... *)</span>
+    <span class="k">end</span>
+    <span class="k">module</span> <span class="nc">Type_recvoutput</span> <span class="o">=</span> <span class="k">struct</span>
+        <span class="c">(* ... *)</span>
+        <span class="k">let</span> <span class="n">xassert</span> <span class="n">a</span> <span class="o">=</span> <span class="c">(* ... *)</span>
+    <span class="k">end</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<div class="section" id="interface-module">
+<h3>Interface Module<a class="headerlink" href="#interface-module" title="Permalink to this headline">¶</a></h3>
+<p>It is your responsibility to write the OCaml interface module. For KBB2017 we wrote
+<code class="docutils literal notranslate"><span class="pre">src-proscript/kobeissi_bhargavan_blanchet_intf.mli</span></code>.</p>
+<p>The interface module interface (<code class="docutils literal notranslate"><span class="pre">.mli</span></code> file) has all the record types for any records your ProScript algorithm implicitly uses.</p>
+<p>It also has any undefined parameter types that you use as annotations with the [(-p &lt;parameter_name:parameter_type&gt;)*] option.
+- For example, with <code class="docutils literal notranslate"><span class="pre">ps2ocaml</span> <span class="pre">-p</span> <span class="pre">&quot;msg:t</span> <span class="pre">record_msg&quot;</span></code> you must have a <code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">`a</span> <span class="pre">record_msg</span></code> defined.
+- For example, with <code class="docutils literal notranslate"><span class="pre">ps2ocaml</span> <span class="pre">-p</span> <span class="pre">msg:string</span></code> nothing is needed since <code class="docutils literal notranslate"><span class="pre">string</span></code> is built-in.
+- For example, with <code class="docutils literal notranslate"><span class="pre">ps2ocaml</span> <span class="pre">-p</span> <span class="pre">msg:Bigarray.int16_unsigned_elt</span></code> nothing is needed since <code class="docutils literal notranslate"><span class="pre">int16_unsigned_elt</span></code> was specified with a named module <code class="docutils literal notranslate"><span class="pre">Bigarray</span></code>.</p>
+<p>An example you would include in the interface module that accounts for implicit record used in the following ProScript KBB2017 algorithm code</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">construct</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="nx">valid</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="nx">ephemeralKey</span><span class="o">:</span> <span class="nx">Type_key</span><span class="p">.</span><span class="nx">construct</span><span class="p">(),</span>
+        <span class="nx">initEphemeralKey</span><span class="o">:</span> <span class="nx">Type_key</span><span class="p">.</span><span class="nx">construct</span><span class="p">(),</span>
+        <span class="nx">ciphertext</span><span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="nx">iv</span><span class="o">:</span> <span class="nx">Type_iv</span><span class="p">.</span><span class="nx">construct</span><span class="p">(),</span>
+        <span class="nx">tag</span><span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="nx">preKeyId</span><span class="o">:</span> <span class="mf">0</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>is:</p>
+<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span><span class="k">type</span> <span class="k">&#39;</span><span class="n">a</span> <span class="n">record_msg</span> <span class="o">=</span>
+    <span class="o">{</span> <span class="n">valid</span> <span class="o">:</span> <span class="kt">bool</span>
+    <span class="o">;</span> <span class="k">mutable</span> <span class="n">ephemeralKey</span> <span class="o">:</span> <span class="k">&#39;</span><span class="n">a</span>
+    <span class="o">;</span> <span class="k">mutable</span> <span class="n">initEphemeralKey</span> <span class="o">:</span> <span class="k">&#39;</span><span class="n">a</span>
+    <span class="o">;</span> <span class="n">ciphertext</span> <span class="o">:</span> <span class="k">&#39;</span><span class="n">a</span>
+    <span class="o">;</span> <span class="k">mutable</span> <span class="n">iv</span> <span class="o">:</span> <span class="k">&#39;</span><span class="n">a</span>
+    <span class="o">;</span> <span class="n">tag</span> <span class="o">:</span> <span class="k">&#39;</span><span class="n">a</span>
+    <span class="o">;</span> <span class="n">preKeyId</span> <span class="o">:</span> <span class="kt">int</span>
+    <span class="o">}</span>
+</pre></div>
+</div>
+<p>In addition you must define a <code class="docutils literal notranslate"><span class="pre">PROTOCOL</span></code> type that declares the signatures for any ProScript functions where OCaml can’t infer their types, and
+a <code class="docutils literal notranslate"><span class="pre">PROTOCOLFUNCTOR</span></code> and <code class="docutils literal notranslate"><span class="pre">PROTOCOLMODULE</span></code> that can instantiate it as follows:</p>
+<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="k">type</span> <span class="nc">PROTOCOL</span> <span class="o">=</span> <span class="k">sig</span>
+    <span class="c">(** The type that will be used to represent contiguous bytes in the protocol; typically Bytes.t or Cstruct.t *)</span>
+    <span class="k">type</span> <span class="n">t</span>
+
+    <span class="c">(** An internal type representing a decrypted AES message *)</span>
+    <span class="k">type</span> <span class="n">t_aes_decrypted</span>
+
+    <span class="c">(* Everything else below is optional, unless OCaml can&#39;t compile because it needs a signature for a function *)</span>
+
+    <span class="k">module</span> <span class="nc">Type_key</span> <span class="o">:</span> <span class="k">sig</span>
+        <span class="k">val</span> <span class="n">construct</span> <span class="o">:</span> <span class="k">&#39;</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">t</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">module</span> <span class="k">type</span> <span class="nc">PROTOCOLFUNCTOR</span> <span class="o">=</span> <span class="k">functor</span> <span class="o">(</span><span class="nc">ProScript</span> <span class="o">:</span> <span class="nn">Dirsp_proscript</span><span class="p">.</span><span class="nc">S</span><span class="o">)</span> <span class="o">-&gt;</span>
+    <span class="nc">PROTOCOL</span> <span class="k">with</span> <span class="k">type</span> <span class="n">t</span> <span class="o">=</span> <span class="nn">ProScript</span><span class="p">.</span><span class="n">t</span>
+
+<span class="k">module</span> <span class="k">type</span> <span class="nc">PROTOCOLMODULE</span> <span class="o">=</span> <span class="k">sig</span>
+    <span class="k">module</span> <span class="nc">Make</span><span class="o">:</span> <span class="nc">PROTOCOL</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">PROTOCOL</span></code> is also a great place to put in documentation!</p>
+<p>Tip: You can instantiate your auto-translated module in <code class="docutils literal notranslate"><span class="pre">utop</span></code> and then <code class="docutils literal notranslate"><span class="pre">#show</span></code> it to generate a complete signature of your ProScript code. Use
+that signature as your Protocol, replace any references to <code class="docutils literal notranslate"><span class="pre">ProScript.t</span></code> with <code class="docutils literal notranslate"><span class="pre">t</span></code>, and then document each signature.</p>
+</div>
+<div class="section" id="interface-file">
+<h3>Interface File<a class="headerlink" href="#interface-file" title="Permalink to this headline">¶</a></h3>
+<p>It is your responsibility to write the interface file. For KBB2017 we wrote
+<code class="docutils literal notranslate"><span class="pre">src-proscript/kobeissi_bhargavan_blanchet.mli</span></code>.</p>
+<p>Here is an example:</p>
+<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span><span class="c">(* filename: kobeissi_bhargavan_blanchet.mli *)</span>
+
+<span class="c">(* Use whichever _intf module you defined earlier *)</span>
+<span class="c">(** @inline *)</span>
+<span class="k">include</span> <span class="nn">Kobeissi_bhargavan_blanchet_intf</span><span class="p">.</span><span class="nc">PROTOCOLMODULE</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="shims-module">
+<h3>Shims Module<a class="headerlink" href="#shims-module" title="Permalink to this headline">¶</a></h3>
+<p>It is your responsibility to write the shims module. For KBB2017 we wrote
+<code class="docutils literal notranslate"><span class="pre">src-proscript/kobeissi_bhargavan_blanchet_shims.ml</span></code>.</p>
+<p>The shims module (<code class="docutils literal notranslate"><span class="pre">.ml</span></code> file) needs to contain a <code class="docutils literal notranslate"><span class="pre">Make</span></code> functor that defines all functions in your ProScript algorithm
+that can’t be auto-translated into OCaml. Even if all functions can be auto-translated, the <code class="docutils literal notranslate"><span class="pre">Make</span></code> functor
+must still exist.</p>
+<p>Here is an example:</p>
+<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span><span class="c">(* filename: kobeissi_bhargavan_blanchet_shims.ml *)</span>
+
+<span class="c">(* Use whichever _intf module you defined earlier *)</span>
+<span class="k">include</span> <span class="n">kobeissi_bhargavan_blanchet_intf</span>
+
+<span class="k">module</span> <span class="nc">Make</span> <span class="o">(</span><span class="nc">ProScript</span> <span class="o">:</span> <span class="nn">Proscript</span><span class="p">.</span><span class="nc">S</span><span class="o">)</span> <span class="o">:</span> <span class="nc">Protocol</span> <span class="o">=</span> <span class="k">struct</span>
+    <span class="c">(**</span>
+<span class="c">      In KBB2017, we had the following ProScript algorithm code that did not convert:</span>
+
+<span class="c">      {v</span>
+<span class="c">            const UTIL = {</span>
+<span class="c">                newKeyPair: function(id) {</span>
+<span class="c">                    const priv = ProScript.Crypto.random32Bytes(&#39;aPK&#39; + id);</span>
+<span class="c">                    return {</span>
+<span class="c">                        priv: priv,</span>
+<span class="c">                        pub: ProScript.Crypto.DH25519(priv, [</span>
+<span class="c">                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,</span>
+<span class="c">                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,</span>
+<span class="c">                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,</span>
+<span class="c">                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x09</span>
+<span class="c">                        ])</span>
+<span class="c">                    };</span>
+<span class="c">                }</span>
+<span class="c">            }</span>
+<span class="c">       v}</span>
+
+<span class="c">       That Javascript function will be replaced by your hand-written [shim_UTIL_newKeyPair]</span>
+<span class="c">       in this module.</span>
+<span class="c">     *)</span>
+
+    <span class="k">let</span> <span class="n">shim_UTIL_newKeyPair</span> <span class="n">id</span> <span class="o">=</span>
+        <span class="k">let</span> <span class="n">priv</span> <span class="o">=</span> <span class="nn">ProScript</span><span class="p">.</span><span class="nn">Crypto</span><span class="p">.</span><span class="n">random32Bytes</span> <span class="o">(</span><span class="nn">ProScript</span><span class="p">.</span><span class="n">concat</span> <span class="o">[</span> <span class="nn">ProScript</span><span class="p">.</span><span class="n">of_string</span> <span class="s2">&quot;aID&quot;</span><span class="o">;</span> <span class="n">id</span> <span class="o">])</span> <span class="k">in</span>
+        <span class="k">let</span> <span class="n">byte</span> <span class="o">=</span> <span class="nn">ProScript</span><span class="p">.</span><span class="n">elem_of_char</span> <span class="k">in</span>
+        <span class="o">{</span>
+            <span class="n">priv</span> <span class="o">=</span> <span class="n">priv</span><span class="o">;</span>
+            <span class="n">pub</span> <span class="o">=</span> <span class="nn">ProScript</span><span class="p">.</span><span class="n">crypto</span><span class="o">.</span><span class="n">xDH25519</span> <span class="n">priv</span> <span class="o">(</span><span class="nn">ProScript</span><span class="p">.</span><span class="n">of_elem_list</span> <span class="o">[</span>
+                <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span>
+                <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span>
+                <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span>
+                <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x00&#39;</span><span class="o">;</span> <span class="n">byte</span> <span class="sc">&#39;\x09&#39;</span>
+            <span class="o">])</span>
+        <span class="o">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="faqs">
+<h2>FAQs<a class="headerlink" href="#faqs" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="question-1-how-do-i-know-i-got-the-record-types-and-the-mutability-right">
+<h3>Question 1. How do I know I got the record types and the mutability right?<a class="headerlink" href="#question-1-how-do-i-know-i-got-the-record-types-and-the-mutability-right" title="Permalink to this headline">¶</a></h3>
+<p>Compile the code with <code class="docutils literal notranslate"><span class="pre">dune</span> <span class="pre">build</span></code>. You can rely on OCaml’s compile-time type safety.</p>
+<p>If it doesn’t compile, you are missing a record, you are missing a field, you have the wrong field type, or you didn’t make the field
+mutable.</p>
+</div>
+<div class="section" id="question-2-what-is-proscript-t">
+<h3>Question 2. What is <code class="docutils literal notranslate"><span class="pre">ProScript.t</span></code>?<a class="headerlink" href="#question-2-what-is-proscript-t" title="Permalink to this headline">¶</a></h3>
+<p>It represents what in ProScript would be the memory structure of a string.
+The Ocaml type is hidden in ProScript.t, but may be an OCaml <code class="docutils literal notranslate"><span class="pre">char</span> <span class="pre">array</span></code> or it may be the more
+efficient <a class="reference external" href="https://ocaml.org/api/Bytes.html">bytes</a> depending on the version of the ProScript
+runtime.</p>
+<p><em>All</em> strings in your ProScript code replaced with <code class="docutils literal notranslate"><span class="pre">ProScript.t</span></code> in generated OCaml code. And <em>all</em>
+lists of element accesses like:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">return</span> <span class="p">[</span> <span class="nx">a</span><span class="p">[</span><span class="mf">0</span><span class="p">],</span> <span class="nx">a</span><span class="p">[</span><span class="mf">1</span><span class="p">],</span> <span class="nx">a</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="p">];</span>
+</pre></div>
+</div>
+<p>will be converted to use <code class="docutils literal notranslate"><span class="pre">ProScript.t</span></code>.</p>
+</div>
+<div class="section" id="question-3-what-about-the-runtime-safety-of-int-operations">
+<h3>Question 3. What about the runtime safety of ‘int’ operations?<a class="headerlink" href="#question-3-what-about-the-runtime-safety-of-int-operations" title="Permalink to this headline">¶</a></h3>
+<p>OCaml ints are machine and compiler specific sizes (ex. 32-bit) and are not normally checked for overflow.
+However, the ps2ocaml code generator will generate overflow safety checks if you write a standalone ProScript
+statement like:</p>
+<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">.</span><span class="n">preKeyId</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+</pre></div>
+</div>
+<p>The generated code will insert an assertion that makes sure that the “+” operation will not overflow or underflow.
+Look in the “assert” functions of <code class="docutils literal notranslate"><span class="pre">ps/sp.js</span></code> for ProScript examples, and then look in
+<code class="docutils literal notranslate"><span class="pre">ps/kobeissi_bhargavan_blanchet.ml</span></code> for the corresponding auto-generated overflow checks.</p>
+</div>
+<div class="section" id="question-4-how-do-i-insert-my-own-assertions">
+<h3>Question 4. How do I insert my own assertions?<a class="headerlink" href="#question-4-how-do-i-insert-my-own-assertions" title="Permalink to this headline">¶</a></h3>
+<p>Write a standalone ProScript equality statement like:</p>
+<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">.</span><span class="n">valid</span> <span class="o">===</span> <span class="bp">true</span><span class="o">;</span>
+</pre></div>
+</div>
+<p>and then use the <code class="docutils literal notranslate"><span class="pre">-a</span></code> option in <code class="docutils literal notranslate"><span class="pre">dirsp-ps2ocaml.exe</span></code>.</p>
+<p>Without the <code class="docutils literal notranslate"><span class="pre">-a</span></code> option an equality statement is used to constrain the types:</p>
+<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span><span class="c">(* OCaml will force the type of a.valid to be bool (either true or false) because of this line *)</span>
+<span class="k">let</span> <span class="o">_</span> <span class="o">=</span> <span class="o">(</span><span class="n">a</span><span class="o">.</span><span class="n">valid</span> <span class="o">=</span> <span class="bp">true</span> <span class="o">|&gt;</span> <span class="n">ignore</span><span class="o">)</span> <span class="k">in</span> <span class="c">(* ... *)</span>
+</pre></div>
+</div>
+<p>but with <code class="docutils literal notranslate"><span class="pre">-a</span></code> enabled the equality statement is used to constrain the type and value:</p>
+<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span><span class="c">(* OCaml will force the type of a.valid to be bool _and_ check that a.valid is true because of this line *)</span>
+<span class="k">let</span> <span class="o">_</span> <span class="o">=</span> <span class="k">if</span> <span class="o">(</span><span class="n">a</span><span class="o">.</span><span class="n">valid</span> <span class="o">=</span> <span class="bp">true</span><span class="o">)</span> <span class="k">then</span> <span class="bp">()</span> <span class="k">else</span> <span class="k">raise</span> <span class="o">(</span><span class="nc">Invalid_argument</span> <span class="s2">&quot;not (a.valid = true)&quot;</span><span class="o">)</span> <span class="k">in</span> <span class="c">(* ... *)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="question-5-how-do-i-annotate-function-parameters-with-explicit-types">
+<h3>Question 5. How do I annotate function parameters with explicit types?<a class="headerlink" href="#question-5-how-do-i-annotate-function-parameters-with-explicit-types" title="Permalink to this headline">¶</a></h3>
+<p>You may be forced to annotate if your ProScript code is
+<a class="reference external" href="https://dev.realworldocaml.org/records.html#reusing-field-names">sharing field names in multiple record types</a>.</p>
+<p>When you run <code class="docutils literal notranslate"><span class="pre">ps2ocaml</span></code>, use the <code class="docutils literal notranslate"><span class="pre">-p</span></code> option to map function parameter names to field types.</p>
+<p>For example, if you have the ProScript code:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">deriveSendKeys</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">them</span><span class="p">,</span> <span class="nx">myEphemeralKeyPriv</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="nx">sendKeys</span><span class="o">:</span> <span class="nx">sendKeys</span><span class="p">,</span>
+        <span class="nx">kENC</span><span class="o">:</span> <span class="nx">myEphemeralKeyPriv</span><span class="p">[</span><span class="mf">0</span><span class="p">]</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>then using</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>dirsp-ps2ocaml.exe -p them:record_them ...
+</pre></div>
+</div>
+<p>will produce the OCaml code:</p>
+<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span><span class="k">let</span> <span class="n">deriveSendKeys</span> <span class="o">(</span><span class="n">them</span> <span class="o">:</span> <span class="n">record_them</span><span class="o">)</span> <span class="n">myEphemeralKeyPriv</span> <span class="o">=</span> <span class="k">begin</span>
+    <span class="o">{</span>
+        <span class="n">sendKeys</span> <span class="o">=</span> <span class="n">sendKeys</span><span class="o">;</span>
+        <span class="n">kENC</span> <span class="o">=</span> <span class="n">myEphemeralKeyPriv</span><span class="o">.(</span><span class="mi">0</span><span class="o">)</span>
+    <span class="o">}</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>The better option is to rename the field names so that the field names are unique across all records.</p>
+</div>
+</div>
+<div class="section" id="debugging">
+<h2>Debugging<a class="headerlink" href="#debugging" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="enabling-stack-traces">
+<h3>Enabling Stack Traces<a class="headerlink" href="#enabling-stack-traces" title="Permalink to this headline">¶</a></h3>
+<p>Use <code class="docutils literal notranslate"><span class="pre">OCAMLRUNPARAM=b</span> <span class="pre">dirsp-ps2ocaml</span></code></p>
+</div>
+<div class="section" id="ide-debugging">
+<h3>IDE Debugging<a class="headerlink" href="#ide-debugging" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://github.com/hackwaly/ocamlearlybird">ocamlearlybird</a> can sometimes work with Visual Studio Code (it is an early release).
+There is already a launch configuration available; just place a breakpoint in within the build directory (ex.
+<code class="docutils literal notranslate"><span class="pre">_build/default/src-proscript/proscript-messaging/ps2pv/_build/ps2ocaml.ml</span></code>)</p>
+</div>
+<div class="section" id="utop">
+<h3>utop<a class="headerlink" href="#utop" title="Permalink to this headline">¶</a></h3>
+<p>In your project directory (which holds the src-proscript/ subdirectory), run <code class="docutils literal notranslate"><span class="pre">utop</span></code> within Dune so that all the compiled libraries can be loaded:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>dune build
+utop
+</pre></div>
+</div>
+<p>Then within your <code class="docutils literal notranslate"><span class="pre">utop</span></code> session you can explore the ProScript AST:</p>
+<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span><span class="o">#</span><span class="n">use</span> <span class="s2">&quot;src-proscript/proscript-messaging/debug-parsing.mlt&quot;</span><span class="o">;;</span>
+
+<span class="k">let</span> <span class="n">ast</span> <span class="o">=</span> <span class="nn">Ps2ocaml</span><span class="p">.</span><span class="n">parse</span> <span class="s2">&quot;src-proscript/proscript-messaging/ps/sp.js&quot;</span> <span class="o">(</span><span class="nn">Ps2ocaml</span><span class="p">.</span><span class="n">init_parsing_options</span> <span class="bp">()</span><span class="o">);;</span>
+
+<span class="k">let</span> <span class="n">only_Type_iv</span> <span class="o">=</span> <span class="nn">List</span><span class="p">.</span><span class="n">find_opt</span> <span class="o">(</span><span class="nn">Ps2ocaml</span><span class="p">.</span><span class="n">is_Statement_of</span> <span class="o">(</span><span class="nn">Ps2ocaml</span><span class="p">.</span><span class="n">is_Const_with_identifier</span> <span class="s2">&quot;Type_iv&quot;</span><span class="o">)</span> <span class="o">)</span> <span class="n">ast</span><span class="o">;;</span>
+
+<span class="k">let</span> <span class="n">value_Type_iv</span> <span class="o">=</span> <span class="k">match</span> <span class="n">only_Type_iv</span> <span class="k">with</span> <span class="o">|</span> <span class="nc">Some</span> <span class="o">(`</span><span class="nc">Statement</span> <span class="o">(`</span><span class="nc">Const</span> <span class="o">_</span><span class="n">c</span><span class="o">,</span> <span class="o">_),</span> <span class="o">_)</span> <span class="o">-&gt;</span> <span class="nn">List</span><span class="p">.</span><span class="n">assoc</span> <span class="s2">&quot;Type_iv&quot;</span> <span class="o">_</span><span class="n">c</span><span class="o">;;</span>
+
+<span class="k">let</span> <span class="n">fromBitstring</span> <span class="o">=</span> <span class="k">match</span> <span class="n">value_Type_iv</span> <span class="k">with</span> <span class="o">|</span> <span class="nc">Some</span> <span class="o">(`</span><span class="nc">Object</span> <span class="n">obj_prop_l</span><span class="o">,</span> <span class="o">_)</span> <span class="o">-&gt;</span> <span class="nn">List</span><span class="p">.</span><span class="n">find_opt</span> <span class="o">(</span><span class="nn">Ps2ocaml</span><span class="p">.</span><span class="n">is_Property_with_identifier</span> <span class="s2">&quot;fromBitstring&quot;</span><span class="o">)</span> <span class="n">obj_prop_l</span><span class="o">;;</span>
+
+<span class="k">let</span> <span class="n">function_fromBitstring</span> <span class="o">=</span> <span class="k">match</span> <span class="n">fromBitstring</span> <span class="k">with</span> <span class="nc">Some</span> <span class="o">(`</span><span class="nc">Property</span> <span class="o">(_</span><span class="n">id</span><span class="o">,</span> <span class="o">_</span><span class="n">func</span><span class="o">),</span> <span class="o">_)</span> <span class="o">-&gt;</span> <span class="o">_</span><span class="n">func</span><span class="o">;;</span>
+
+<span class="c">(* 1. Run something that may not work to your liking. In our example it is Astpredicates *)</span>
+<span class="k">open</span> <span class="nc">Astpredicates</span><span class="o">;;</span>
+<span class="n">is_ast_writable_with_letin_style</span> <span class="o">(</span><span class="k">match</span> <span class="n">function_fromBitstring</span> <span class="k">with</span> <span class="o">`</span><span class="nc">Function</span> <span class="o">(_</span><span class="n">fname</span><span class="o">,</span> <span class="o">_</span><span class="n">fargs</span><span class="o">,</span> <span class="o">_</span><span class="n">f</span><span class="o">),</span> <span class="o">_</span><span class="n">loc</span> <span class="o">-&gt;</span> <span class="o">_</span><span class="n">f</span><span class="o">)</span> <span class="o">{</span> <span class="n">skip_nested_functions</span><span class="o">=</span><span class="bp">true</span> <span class="o">};;</span>
+
+<span class="c">(* 2. Edit the source code (ex. place the following inside is_ast_writable_with_letin_style in astpredicates.ml: Printf.printf &quot;Hello!\n&quot;; *)</span>
+
+<span class="c">(* 3. Reload the source code *)</span>
+<span class="o">#</span><span class="n">use</span> <span class="s2">&quot;src-proscript/proscript-messaging/ps2pv/astpredicates.ml&quot;</span><span class="o">;;</span>
+
+<span class="c">(* 4. Retest it *)</span>
+<span class="n">is_ast_writable_with_letin_style</span> <span class="o">(</span><span class="k">match</span> <span class="n">function_fromBitstring</span> <span class="k">with</span> <span class="o">`</span><span class="nc">Function</span> <span class="o">(_</span><span class="n">fname</span><span class="o">,</span> <span class="o">_</span><span class="n">fargs</span><span class="o">,</span> <span class="o">_</span><span class="n">f</span><span class="o">),</span> <span class="o">_</span><span class="n">loc</span> <span class="o">-&gt;</span> <span class="o">_</span><span class="n">f</span><span class="o">)</span> <span class="o">{</span> <span class="n">skip_nested_functions</span><span class="o">=</span><span class="bp">true</span> <span class="o">};;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="pscl-js-and-the-proscript-api">
+<h1>pscl.js and the ProScript API<a class="headerlink" href="#pscl-js-and-the-proscript-api" title="Permalink to this headline">¶</a></h1>
+<p>We do _not_ use pscl.js in dirsp-exchange! PSCL is used as an API during ProVerif proof testing, and we use it as an API
+(see the OCaml library <code class="docutils literal notranslate"><span class="pre">dirsp-proscript</span></code>). There is a <code class="docutils literal notranslate"><span class="pre">dirsp-proscript-mirage</span></code> that uses the Mirage crypto libraries,
+which themselves use a correct-by-construction implementation from <a class="reference external" href="https://github.com/mit-plv/fiat-crypto">fiat-crypto</a>
+for its elliptic curve functions.</p>
+<p>We decided to abandon pscl.js after trying to compare its output with ours. Some cautionary notes:</p>
+<ol class="arabic simple">
+<li><p>Comparing dirsp-exchange’s output to sp.js + pscl.js is a bit of a fool’s errand. After burning two days trying
+to match results, I realized that pscl.js’ DH25519 was non-standard. In fact, pscl.js is not used for the security
+proofs (the ProVerif translation will replace references to PSCL functions like DH25519). See comment about DH25519 in
+<a class="reference external" href="https://github.com/Inria-Prosecco/proscript-messaging/issues/1">https://github.com/Inria-Prosecco/proscript-messaging/issues/1</a> ; I had likewise ran test vectors through pscl.js
+and its DH25519 failed.</p></li>
+<li><p>It was difficult to understand which parameters to pscl.js need to be hex-encoded and which ones don’t. And it _really_
+matters in JavaScript. In node.js, the <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">Buffer(some_variable,</span> <span class="pre">'hex')</span></code> construction used frequently in pscl.js
+will silently return an empty buffer if the input is not hex. For example, in crypto.ED25519.signature the Buffer-based
+hex decoding is used; supply values without hex encoding will cause the <code class="docutils literal notranslate"><span class="pre">ProScript.crypto.ED25519Hash(sk)</span></code> function
+to return empty. But inconsistently the ProVerif code does not hex encode that <code class="docutils literal notranslate"><span class="pre">sk</span></code> parameter. If pscl.js is going
+to be used, it needs to do a length check on the Buffer length (and node.js complains that “Buffer() is deprecated due
+to security and usability issues”).</p></li>
+<li><p>Completely as a reaction to hex-encoding ambiguities in pscl.js, nothing is expected to be hex encoded in
+<code class="docutils literal notranslate"><span class="pre">dirsp-proscript</span></code>. Just raw bytes. The hex encoders <code class="docutils literal notranslate"><span class="pre">toBitstring</span></code> and <code class="docutils literal notranslate"><span class="pre">fromBitstring</span></code> in the first ProScript
+algorithm (sp.js; aka KBB2017) are still present however.</p></li>
+</ol>
+<p>So there is no need for pscl.js, and you won’t get matching results because the kinda critical Diffie-Hellman
+implementation in pscl.js is non-standard and perhaps broken.</p>
+<p>Final Sidethought: None of this affects the proof, but one suggestion for ProScript is to statically type or annotate
+which parameters are hex-encoded. It is _way_ too easy to make a mistake where you pass in a hex encoded input to a
+parameter that doesn’t need hex encoding, or you hex encode something twice.</p>
+<p>Now that the cautionary preamble is out of the way … here is how you would run sp.js + pscl.js.</p>
+<p>You’ll need node.js v10+ installed.</p>
+<p>Then:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>npm install --save-dev window hexy
+npm install --save-dev @peculiar/webcrypto <span class="c1"># only needed if node.js v14 or earlier</span>
+node --experimental-repl-await <span class="c1"># or &#39;nvm exec 16.0 node --experimental-repl-await&#39; depending on your installation</span>
+</pre></div>
+</div>
+<p>Within <code class="docutils literal notranslate"><span class="pre">node</span></code>:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// EITHER: this section is for node.js v10-v14</span>
+<span class="kd">const</span> <span class="nx">getRandomValues</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;get-random-values&#39;</span><span class="p">)</span>
+
+<span class="c1">// OR: this section is for node.js v15+ which has built-in (more vetted) webcrypto support</span>
+<span class="kd">const</span> <span class="p">{</span> <span class="nx">getRandomValues</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;crypto&#39;</span><span class="p">).</span><span class="nx">webcrypto</span>
+
+<span class="c1">// THEN continue with the following ...</span>
+
+<span class="c1">// Make an approximation of the browser</span>
+<span class="kd">const</span> <span class="nx">Window</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;window&#39;</span><span class="p">)</span>
+<span class="kd">const</span> <span class="p">{</span> <span class="nx">createHash</span><span class="p">,</span> <span class="nx">createHmac</span><span class="p">,</span> <span class="nx">createCipheriv</span><span class="p">,</span> <span class="nx">createDecipheriv</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;crypto&#39;</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nb">window</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Window</span><span class="p">()</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">crypto</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">getRandomValues</span> <span class="p">}</span>
+<span class="kd">const</span> <span class="nx">NodeCrypto</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">createHash</span><span class="p">,</span> <span class="nx">createHmac</span><span class="p">,</span> <span class="nx">createCipheriv</span><span class="p">,</span> <span class="nx">createDecipheriv</span> <span class="p">}</span>
+
+<span class="c1">// Load the Javascript files</span>
+<span class="kd">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">require</span><span class="p">(</span><span class="s2">&quot;fs&quot;</span><span class="p">)</span>
+<span class="kd">const</span> <span class="nx">pscl_js</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="s1">&#39;./src-proscript/proscript-messaging/pscl/pscl.js&#39;</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">)</span>
+<span class="nb">eval</span><span class="p">(</span><span class="nx">pscl_js</span><span class="p">)</span>
+<span class="kd">const</span> <span class="nx">sp_js</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="s1">&#39;./src-proscript/proscript-messaging//ps/sp.js&#39;</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">)</span>
+<span class="nb">eval</span><span class="p">(</span><span class="nx">sp_js</span><span class="p">.</span><span class="nx">replaceAll</span><span class="p">(</span><span class="sr">/\bconst /g</span><span class="p">,</span><span class="s2">&quot;var &quot;</span><span class="p">))</span>
+
+<span class="c1">// Now you have access to the ProScript Cryptographic Library (pscl.js)</span>
+<span class="c1">// and the &#39;Signal Protocol&#39;/KBB2017 (sp.js)</span>
+<span class="nx">ProScript</span><span class="p">.</span><span class="nx">crypto</span><span class="p">.</span><span class="nx">random16Bytes</span><span class="p">()</span>
+<span class="nx">Type_key</span><span class="p">.</span><span class="nx">construct</span><span class="p">()</span>
+<span class="kd">const</span> <span class="p">{</span> <span class="nx">hexy</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;hexy&#39;</span><span class="p">)</span>
+<span class="nx">hexy</span><span class="p">(</span><span class="nx">Type_key</span><span class="p">.</span><span class="nx">construct</span><span class="p">())</span>
+
+<span class="c1">// You can also override the random functions so you can do a</span>
+<span class="c1">// repeatable comparison between JavaScript and OCaml</span>
+<span class="kd">const</span> <span class="nx">firstByteMd5</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">NodeCrypto</span><span class="p">.</span><span class="nx">createHash</span><span class="p">(</span><span class="s1">&#39;md5&#39;</span><span class="p">).</span><span class="nx">update</span><span class="p">(</span><span class="nx">s</span><span class="p">).</span><span class="nx">digest</span><span class="p">()[</span><span class="mf">0</span><span class="p">]</span> <span class="p">}</span>
+<span class="nx">ProScript</span><span class="p">.</span><span class="nx">crypto</span><span class="p">.</span><span class="nx">random12Bytes</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span> <span class="kd">const</span> <span class="nx">fb</span> <span class="o">=</span> <span class="nx">firstByteMd5</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span> <span class="k">return</span> <span class="nb">Array</span><span class="p">.</span><span class="k">from</span><span class="p">({</span><span class="nx">length</span><span class="o">:</span> <span class="mf">12</span><span class="p">},</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="nx">fb</span><span class="p">)</span> <span class="p">}</span>
+<span class="nx">ProScript</span><span class="p">.</span><span class="nx">crypto</span><span class="p">.</span><span class="nx">random16Bytes</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span> <span class="kd">const</span> <span class="nx">fb</span> <span class="o">=</span> <span class="nx">firstByteMd5</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span> <span class="k">return</span> <span class="nb">Array</span><span class="p">.</span><span class="k">from</span><span class="p">({</span><span class="nx">length</span><span class="o">:</span> <span class="mf">16</span><span class="p">},</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="nx">fb</span><span class="p">)</span> <span class="p">}</span>
+<span class="nx">ProScript</span><span class="p">.</span><span class="nx">crypto</span><span class="p">.</span><span class="nx">random32Bytes</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span> <span class="kd">const</span> <span class="nx">fb</span> <span class="o">=</span> <span class="nx">firstByteMd5</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span> <span class="k">return</span> <span class="nb">Array</span><span class="p">.</span><span class="k">from</span><span class="p">({</span><span class="nx">length</span><span class="o">:</span> <span class="mf">32</span><span class="p">},</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="nx">fb</span><span class="p">)</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>You can simulate a conversation between Alice and Bob:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span> <span class="nx">P</span>   <span class="o">=</span> <span class="nx">ProScript</span>
+<span class="kd">const</span> <span class="nx">C</span>   <span class="o">=</span> <span class="nx">P</span><span class="p">.</span><span class="nx">crypto</span>
+<span class="kd">const</span> <span class="nx">E</span>   <span class="o">=</span> <span class="nx">P</span><span class="p">.</span><span class="nx">crypto</span><span class="p">.</span><span class="nx">ED25519</span>
+<span class="kd">const</span> <span class="nx">U</span>   <span class="o">=</span> <span class="nx">UTIL</span>
+<span class="kd">const</span> <span class="nx">T</span>   <span class="o">=</span> <span class="nx">TOPLEVEL</span>
+<span class="kd">const</span> <span class="nx">KEY</span> <span class="o">=</span> <span class="nx">Type_key</span>
+<span class="kd">const</span> <span class="nx">MSG</span> <span class="o">=</span> <span class="nx">Type_msg</span>
+
+<span class="kd">let</span> <span class="nx">aliceIdentityKey</span>  <span class="o">=</span> <span class="nx">U</span><span class="p">.</span><span class="nx">newIdentityKey</span> <span class="p">(</span><span class="s2">&quot;alice-identity&quot;</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">aliceSignedPreKey</span> <span class="o">=</span> <span class="nx">U</span><span class="p">.</span><span class="nx">newKeyPair</span>     <span class="p">(</span><span class="s2">&quot;alice-signed-prekey&quot;</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">bobIdentityKey</span>    <span class="o">=</span> <span class="nx">U</span><span class="p">.</span><span class="nx">newIdentityKey</span> <span class="p">(</span><span class="s2">&quot;bob-identity&quot;</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">bobSignedPreKey</span>   <span class="o">=</span> <span class="nx">U</span><span class="p">.</span><span class="nx">newKeyPair</span>     <span class="p">(</span><span class="s2">&quot;bob-signed-prekey&quot;</span><span class="p">)</span>
+
+<span class="kd">let</span> <span class="nx">aliceIdentityKeyPub</span>        <span class="o">=</span> <span class="nx">aliceIdentityKey</span><span class="p">.</span><span class="nx">pub</span>
+<span class="kd">let</span> <span class="nx">aliceIdentityDHKeyPub</span>      <span class="o">=</span> <span class="nx">U</span><span class="p">.</span><span class="nx">getDHPublicKey</span> <span class="p">(</span><span class="nx">aliceIdentityKey</span><span class="p">.</span><span class="nx">priv</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">aliceSignedPreKeyPub</span>       <span class="o">=</span> <span class="nx">aliceSignedPreKey</span><span class="p">.</span><span class="nx">pub</span>
+<span class="kd">let</span> <span class="nx">aliceSignedPreKeySignature</span> <span class="o">=</span> <span class="nx">E</span><span class="p">.</span><span class="nx">signature</span> <span class="p">(</span><span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span><span class="p">(</span><span class="nx">aliceSignedPreKeyPub</span><span class="p">),</span> <span class="nx">aliceIdentityKey</span><span class="p">.</span><span class="nx">priv</span><span class="p">,</span> <span class="nx">aliceIdentityKeyPub</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">bobIdentityKeyPub</span>          <span class="o">=</span> <span class="nx">bobIdentityKey</span><span class="p">.</span><span class="nx">pub</span>
+<span class="kd">let</span> <span class="nx">bobIdentityDHKeyPub</span>        <span class="o">=</span> <span class="nx">U</span><span class="p">.</span><span class="nx">getDHPublicKey</span><span class="p">(</span><span class="nx">bobIdentityKey</span><span class="p">.</span><span class="nx">priv</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">bobSignedPreKeyPub</span>         <span class="o">=</span> <span class="nx">bobSignedPreKey</span><span class="p">.</span><span class="nx">pub</span>
+<span class="kd">let</span> <span class="nx">bobSignedPreKeySignature</span>   <span class="o">=</span> <span class="nx">E</span><span class="p">.</span><span class="nx">signature</span> <span class="p">(</span><span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span><span class="p">(</span><span class="nx">bobSignedPreKeyPub</span>  <span class="p">),</span> <span class="nx">bobIdentityKey</span><span class="p">.</span><span class="nx">priv</span><span class="p">,</span>   <span class="nx">bobIdentityKeyPub</span><span class="p">)</span>
+
+<span class="kd">let</span> <span class="nx">alicePreKey</span>   <span class="o">=</span> <span class="nx">U</span><span class="p">.</span><span class="nx">newKeyPair</span>     <span class="p">(</span><span class="s2">&quot;alice-prekey&quot;</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">bobPreKey</span>     <span class="o">=</span> <span class="nx">U</span><span class="p">.</span><span class="nx">newKeyPair</span>     <span class="p">(</span><span class="s2">&quot;bob-prekey&quot;</span><span class="p">)</span>
+
+<span class="kd">let</span> <span class="nx">alicePreKeyPub</span> <span class="o">=</span> <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">alicePreKey</span><span class="p">.</span><span class="nx">pub</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">alicePreKeyId</span>  <span class="o">=</span> <span class="mf">1</span> <span class="cm">/* the Id of alicePreKey */</span>
+<span class="kd">let</span> <span class="nx">bobPreKeyPub</span>   <span class="o">=</span> <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">bobPreKey</span><span class="p">.</span><span class="nx">pub</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">bobPreKeyId</span>    <span class="o">=</span> <span class="mf">1</span> <span class="cm">/* the Id of bobPreKey   */</span>
+
+<span class="kd">let</span> <span class="nx">aliceSessionWithBob</span> <span class="o">=</span> <span class="nx">T</span><span class="p">.</span><span class="nx">newSession</span><span class="p">(</span>
+    <span class="nx">aliceSignedPreKey</span><span class="p">,</span>
+    <span class="nx">alicePreKey</span><span class="p">,</span>
+    <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">bobIdentityKeyPub</span><span class="p">),</span>
+    <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">bobIdentityDHKeyPub</span><span class="p">),</span>
+    <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">bobSignedPreKeyPub</span><span class="p">),</span>
+    <span class="nx">bobSignedPreKeySignature</span><span class="p">,</span>
+    <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">bobPreKeyPub</span><span class="p">),</span>
+    <span class="nx">bobPreKeyId</span>
+    <span class="p">)</span>
+<span class="kd">let</span> <span class="nx">bobSessionWithAlice</span> <span class="o">=</span> <span class="nx">T</span><span class="p">.</span><span class="nx">newSession</span><span class="p">(</span>
+    <span class="nx">bobSignedPreKey</span><span class="p">,</span>
+    <span class="nx">bobPreKey</span><span class="p">,</span>
+    <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">aliceIdentityKeyPub</span><span class="p">),</span>
+    <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">aliceIdentityDHKeyPub</span><span class="p">),</span>
+    <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">aliceSignedPreKeyPub</span><span class="p">),</span>
+    <span class="nx">aliceSignedPreKeySignature</span><span class="p">,</span>
+    <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">alicePreKeyPub</span><span class="p">),</span>
+    <span class="nx">alicePreKeyId</span>
+    <span class="p">)</span>
+
+<span class="kd">let</span> <span class="nx">aliceToBobMsg1</span>        <span class="o">=</span> <span class="s2">&quot;Hi Bob!&quot;</span>
+<span class="kd">let</span> <span class="nx">aliceToBobSendOutput1</span> <span class="o">=</span> <span class="nx">T</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span>
+    <span class="nx">aliceIdentityKey</span><span class="p">,</span>
+    <span class="nx">aliceSessionWithBob</span><span class="p">,</span>
+    <span class="nx">aliceToBobMsg1</span>
+<span class="p">)</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">util</span><span class="p">.</span><span class="nx">format</span><span class="p">(</span><span class="s2">&quot;Did Alice send successfully? %s\n&quot;</span><span class="p">,</span> <span class="nx">aliceToBobSendOutput1</span><span class="p">.</span><span class="nx">output</span><span class="p">.</span><span class="nx">valid</span><span class="p">))</span>
+
+<span class="kd">let</span> <span class="nx">bobFromAliceMsg2</span>           <span class="o">=</span> <span class="nx">aliceToBobSendOutput1</span><span class="p">.</span><span class="nx">output</span>
+<span class="kd">let</span> <span class="nx">bobFromAliceReceiveOutput2</span> <span class="o">=</span> <span class="nx">T</span><span class="p">.</span><span class="nx">recv</span><span class="p">(</span>
+  <span class="nx">bobIdentityKey</span><span class="p">,</span>
+  <span class="nx">bobSignedPreKey</span><span class="p">,</span>
+  <span class="nx">bobSessionWithAlice</span><span class="p">,</span>
+  <span class="nx">bobFromAliceMsg2</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">util</span><span class="p">.</span><span class="nx">format</span><span class="p">(</span><span class="s2">&quot;Did Bob receive successfully? %s\n&quot;</span><span class="p">,</span> <span class="nx">bobFromAliceReceiveOutput2</span><span class="p">.</span><span class="nx">output</span><span class="p">.</span><span class="nx">valid</span><span class="p">))</span>
+<span class="cm">/* this should work, but doesn&#39;t */</span>
+</pre></div>
+</div>
+<dl class="citation">
+<dt class="label" id="kbb2017"><span class="brackets"><a class="fn-backref" href="#id1">KBB2017</a></span></dt>
+<dd><p>Nadim Kobeissi, Karthikeyan Bhargavan, Bruno Blanchet.
+Automated Verification for Secure Messaging Protocols
+and Their Implementations: A Symbolic and Computational Approach.
+2nd IEEE European Symposium on Security and Privacy , Apr 2017, Paris, France.
+pp.435 - 450, 2017, &lt;<a class="reference external" href="https://www.ieee-security.org/TC/EuroSP2017/">https://www.ieee-security.org/TC/EuroSP2017/</a>&gt;.
+&lt;10.1109/EuroSP.2017.38&gt;. &lt;hal-01575923&gt;</p>
+</dd>
+</dl>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../../DEVELOPING.html" class="btn btn-neutral float-right" title="Developing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../../OCAML_LIBRARIES.html" class="btn btn-neutral float-left" title="OCaml Library Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Diskuv, Inc..
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
