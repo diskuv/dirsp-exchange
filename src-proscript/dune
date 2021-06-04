@@ -7,15 +7,15 @@
 ; We do this to preserve the audit history for the proscript-messaging/ subdirectory,
 ; which is in use by these same multiple libraries.
 
-; -------------------------------------------------------------------------------
-; Build the common utilities that anyone can use to generate OCaml from ProScript
-; -------------------------------------------------------------------------------
-
 (include_subdirs
  ; needed since files are spread in multiple subdirectories
  unqualified)
 
-; camlp4 compilation rule
+; --------------------------
+; Create ps2ocaml executable
+; --------------------------
+
+; The camlp4 compilation rule:
 
 (rule
  ; Use the legacy ocamlbuild tool (from Makefile.dirsp) to produce most of the
@@ -203,6 +203,10 @@
    -deprecated))
  (action
   (run %{test} -e)))
+
+(documentation
+ (package dirsp-ps2ocaml)
+ (mld_files ("index")))
 
 ; ------------------------------
 ; Create dirsp-proscript library
