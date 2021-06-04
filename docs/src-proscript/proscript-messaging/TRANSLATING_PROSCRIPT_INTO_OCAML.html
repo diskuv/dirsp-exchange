@@ -114,7 +114,10 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#pscl-js-and-the-proscript-api">pscl.js and the ProScript API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#pscl-js-and-the-proscript-api">pscl.js and the ProScript API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#suggested-improvements">Suggested Improvements</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../DEVELOPING.html">Developing</a></li>
 </ul>
 
@@ -316,37 +319,33 @@ For example, the ProScript function</p>
 </pre></div>
 </div>
 <p>becomes</p>
-<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span>    <span class="k">let</span> <span class="n">tryDecrypt</span> <span class="n">myIdentityKey</span> <span class="n">myEphemeralKey</span> <span class="o">(</span><span class="n">them</span> <span class="o">:</span> <span class="n">t</span> <span class="n">record_them</span><span class="o">)</span> <span class="o">(</span><span class="n">msg</span> <span class="o">:</span> <span class="n">t</span> <span class="n">record_msg</span><span class="o">)</span> <span class="o">=</span> <span class="k">begin</span> <span class="c">(* ... *)</span> <span class="k">end</span>
-
-<span class="ow">and</span>
-
-<span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">block</span><span class="o">::</span> <span class="n">javascript</span>
-
-    <span class="n">const</span> <span class="nc">Type_sendoutput</span> <span class="o">=</span> <span class="o">{</span>
-        <span class="o">/*</span> <span class="o">...</span> <span class="o">*/</span>
-        <span class="k">assert</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-            <span class="o">/*</span> <span class="o">...</span> <span class="o">*/</span>
-        <span class="o">}</span>
-    <span class="o">};</span>
-    <span class="n">const</span> <span class="nc">Type_recvoutput</span> <span class="o">=</span> <span class="o">{</span>
-        <span class="o">/*</span> <span class="o">...</span> <span class="o">*/</span>
-        <span class="k">assert</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-            <span class="o">/*</span> <span class="o">...</span> <span class="o">*/</span>
-        <span class="o">}</span>
-    <span class="o">};</span>
-
-<span class="n">becomes</span>
-
-<span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">block</span><span class="o">::</span> <span class="n">ocaml</span>
-
-    <span class="k">module</span> <span class="nc">Type_sendoutput</span> <span class="o">=</span> <span class="k">struct</span>
-        <span class="c">(* ... *)</span>
-        <span class="k">let</span> <span class="n">xassert</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">t</span> <span class="n">record_sendoutput</span><span class="o">)</span> <span class="o">=</span> <span class="c">(* ... *)</span>
-    <span class="k">end</span>
-    <span class="k">module</span> <span class="nc">Type_recvoutput</span> <span class="o">=</span> <span class="k">struct</span>
-        <span class="c">(* ... *)</span>
-        <span class="k">let</span> <span class="n">xassert</span> <span class="n">a</span> <span class="o">=</span> <span class="c">(* ... *)</span>
-    <span class="k">end</span>
+<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span><span class="k">let</span> <span class="n">tryDecrypt</span> <span class="n">myIdentityKey</span> <span class="n">myEphemeralKey</span> <span class="o">(</span><span class="n">them</span> <span class="o">:</span> <span class="n">t</span> <span class="n">record_them</span><span class="o">)</span> <span class="o">(</span><span class="n">msg</span> <span class="o">:</span> <span class="n">t</span> <span class="n">record_msg</span><span class="o">)</span> <span class="o">=</span> <span class="k">begin</span> <span class="c">(* ... *)</span> <span class="k">end</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span> <span class="nx">Type_sendoutput</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="cm">/* ... */</span>
+    <span class="nx">assert</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
+        <span class="cm">/* ... */</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+<span class="kd">const</span> <span class="nx">Type_recvoutput</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="cm">/* ... */</span>
+    <span class="nx">assert</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
+        <span class="cm">/* ... */</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>becomes</p>
+<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="nc">Type_sendoutput</span> <span class="o">=</span> <span class="k">struct</span>
+    <span class="c">(* ... *)</span>
+    <span class="k">let</span> <span class="n">xassert</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">t</span> <span class="n">record_sendoutput</span><span class="o">)</span> <span class="o">=</span> <span class="c">(* ... *)</span>
+<span class="k">end</span>
+<span class="k">module</span> <span class="nc">Type_recvoutput</span> <span class="o">=</span> <span class="k">struct</span>
+    <span class="c">(* ... *)</span>
+    <span class="k">let</span> <span class="n">xassert</span> <span class="n">a</span> <span class="o">=</span> <span class="c">(* ... *)</span>
+<span class="k">end</span>
 </pre></div>
 </div>
 </li>
@@ -625,20 +624,17 @@ proofs (the ProVerif translation will replace references to PSCL functions like 
 and its DH25519 failed.</p></li>
 <li><p>It was difficult to understand which parameters to pscl.js need to be hex-encoded and which ones don’t. And it _really_
 matters in JavaScript. In node.js, the <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">Buffer(some_variable,</span> <span class="pre">'hex')</span></code> construction used frequently in pscl.js
-will silently return an empty buffer if the input is not hex. For example, in crypto.ED25519.signature the Buffer-based
-hex decoding is used; supply values without hex encoding will cause the <code class="docutils literal notranslate"><span class="pre">ProScript.crypto.ED25519Hash(sk)</span></code> function
-to return empty. But inconsistently the ProVerif code does not hex encode that <code class="docutils literal notranslate"><span class="pre">sk</span></code> parameter. If pscl.js is going
-to be used, it needs to do a length check on the Buffer length (and node.js complains that “Buffer() is deprecated due
-to security and usability issues”).</p></li>
+will silently return an empty buffer if the input is not hex. For example, supplying values without hex encoding
+to <code class="docutils literal notranslate"><span class="pre">ProScript.crypto.ED25519.signature</span></code> would result in a call to <code class="docutils literal notranslate"><span class="pre">ProScript.crypto.ED25519Hash(sk)</span></code>,
+which in turn would return a SHA512 hash of an empty value because of the Buffer-based hex decoding. Yet the ProVerif code
+does not hex encode that <code class="docutils literal notranslate"><span class="pre">sk</span></code> parameter when calling the <code class="docutils literal notranslate"><span class="pre">ProScript.crypto.ED25519.signature</span></code> API.</p></li>
 <li><p>Completely as a reaction to hex-encoding ambiguities in pscl.js, nothing is expected to be hex encoded in
-<code class="docutils literal notranslate"><span class="pre">dirsp-proscript</span></code>. Just raw bytes. The hex encoders <code class="docutils literal notranslate"><span class="pre">toBitstring</span></code> and <code class="docutils literal notranslate"><span class="pre">fromBitstring</span></code> in the first ProScript
-algorithm (sp.js; aka KBB2017) are still present however.</p></li>
+<code class="docutils literal notranslate"><span class="pre">dirsp-proscript</span></code>. The <code class="docutils literal notranslate"><span class="pre">dirsp-proscript</span></code> API is just raw bytes. However, the hex encoders <code class="docutils literal notranslate"><span class="pre">toBitstring</span></code> and
+<code class="docutils literal notranslate"><span class="pre">fromBitstring</span></code> used in the higher-level KBB2017 algorithm (<code class="docutils literal notranslate"><span class="pre">ps/sp.js</span></code>) are still present.</p></li>
 </ol>
 <p>So there is no need for pscl.js, and you won’t get matching results because the kinda critical Diffie-Hellman
 implementation in pscl.js is non-standard and perhaps broken.</p>
-<p>Final Sidethought: None of this affects the proof, but one suggestion for ProScript is to statically type or annotate
-which parameters are hex-encoded. It is _way_ too easy to make a mistake where you pass in a hex encoded input to a
-parameter that doesn’t need hex encoding, or you hex encode something twice.</p>
+<p><em>Sidebar: None of the above caution affects the KBB2017 proof</em></p>
 <p>Now that the cautionary preamble is out of the way … here is how you would run sp.js + pscl.js.</p>
 <p>You’ll need node.js v10+ installed.</p>
 <p>Then:</p>
@@ -756,6 +752,15 @@ node --experimental-repl-await <span class="c1"># or &#39;nvm exec 16.0 node --e
 <span class="cm">/* this should work, but doesn&#39;t */</span>
 </pre></div>
 </div>
+<div class="section" id="suggested-improvements">
+<h2>Suggested Improvements<a class="headerlink" href="#suggested-improvements" title="Permalink to this headline">¶</a></h2>
+<p>We don’t control the development of ProScript. So here are the feature requests we would send to the ProScript team:</p>
+<ol class="arabic simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">pscl.js</span></code> is going to be used by anyone, it needs to do a length check on the result of any Buffer conversion. In fact,
+node.js complains that “Buffer() is deprecated due to security and usability issues”, so removing the code would be better.</p></li>
+<li><p>Let’s statically type or annotate which parameters are hex-encoded. It is _way_ too easy to make a mistake where you pass
+in a hex encoded input to a parameter that doesn’t need hex encoding, or you hex encode something twice.</p></li>
+</ol>
 <dl class="citation">
 <dt class="label" id="kbb2017"><span class="brackets"><a class="fn-backref" href="#id1">KBB2017</a></span></dt>
 <dd><p>Nadim Kobeissi, Karthikeyan Bhargavan, Bruno Blanchet.
@@ -766,6 +771,7 @@ pp.435 - 450, 2017, &lt;<a class="reference external" href="https://www.ieee-sec
 &lt;10.1109/EuroSP.2017.38&gt;. &lt;hal-01575923&gt;</p>
 </dd>
 </dl>
+</div>
 </div>
 
 

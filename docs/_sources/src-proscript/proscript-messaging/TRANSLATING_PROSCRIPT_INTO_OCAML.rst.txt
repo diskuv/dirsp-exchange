@@ -171,9 +171,9 @@ Here is what that command is doing:
 
         let tryDecrypt myIdentityKey myEphemeralKey (them : t record_them) (msg : t record_msg) = begin (* ... *) end
 
-    and
+   and
 
-    .. code-block:: javascript
+   .. code-block:: javascript
 
         const Type_sendoutput = {
             /* ... */
@@ -188,9 +188,9 @@ Here is what that command is doing:
             }
         };
 
-    becomes
+   becomes
 
-    .. code-block:: ocaml
+   .. code-block:: ocaml
 
         module Type_sendoutput = struct
             (* ... *)
@@ -524,21 +524,18 @@ We decided to abandon pscl.js after trying to compare its output with ours. Some
    and its DH25519 failed.
 2. It was difficult to understand which parameters to pscl.js need to be hex-encoded and which ones don't. And it _really_
    matters in JavaScript. In node.js, the ``new Buffer(some_variable, 'hex')`` construction used frequently in pscl.js
-   will silently return an empty buffer if the input is not hex. For example, in crypto.ED25519.signature the Buffer-based
-   hex decoding is used; supply values without hex encoding will cause the ``ProScript.crypto.ED25519Hash(sk)`` function
-   to return empty. But inconsistently the ProVerif code does not hex encode that ``sk`` parameter. If pscl.js is going
-   to be used, it needs to do a length check on the Buffer length (and node.js complains that "Buffer() is deprecated due
-   to security and usability issues").
+   will silently return an empty buffer if the input is not hex. For example, supplying values without hex encoding
+   to ``ProScript.crypto.ED25519.signature`` would result in a call to ``ProScript.crypto.ED25519Hash(sk)``,
+   which in turn would return a SHA512 hash of an empty value because of the Buffer-based hex decoding. Yet the ProVerif code
+   does not hex encode that ``sk`` parameter when calling the ``ProScript.crypto.ED25519.signature`` API.
 3. Completely as a reaction to hex-encoding ambiguities in pscl.js, nothing is expected to be hex encoded in
-   ``dirsp-proscript``. Just raw bytes. The hex encoders ``toBitstring`` and ``fromBitstring`` in the first ProScript
-   algorithm (sp.js; aka KBB2017) are still present however.
+   ``dirsp-proscript``. The ``dirsp-proscript`` API is just raw bytes. However, the hex encoders ``toBitstring`` and
+   ``fromBitstring`` used in the higher-level KBB2017 algorithm (``ps/sp.js``) are still present.
 
 So there is no need for pscl.js, and you won't get matching results because the kinda critical Diffie-Hellman
 implementation in pscl.js is non-standard and perhaps broken.
 
-Final Sidethought: None of this affects the proof, but one suggestion for ProScript is to statically type or annotate
-which parameters are hex-encoded. It is _way_ too easy to make a mistake where you pass in a hex encoded input to a
-parameter that doesn't need hex encoding, or you hex encode something twice.
+*Sidebar: None of the above caution affects the KBB2017 proof*
 
 Now that the cautionary preamble is out of the way ... here is how you would run sp.js + pscl.js.
 
@@ -664,6 +661,16 @@ You can simulate a conversation between Alice and Bob:
     )
     console.log(util.format("Did Bob receive successfully? %s\n", bobFromAliceReceiveOutput2.output.valid))
     /* this should work, but doesn't */
+
+Suggested Improvements
+----------------------
+
+We don't control the development of ProScript. So here are the feature requests we would send to the ProScript team:
+
+1. If ``pscl.js`` is going to be used by anyone, it needs to do a length check on the result of any Buffer conversion. In fact,
+   node.js complains that "Buffer() is deprecated due to security and usability issues", so removing the code would be better.
+2. Let's statically type or annotate which parameters are hex-encoded. It is _way_ too easy to make a mistake where you pass
+   in a hex encoded input to a parameter that doesn't need hex encoding, or you hex encode something twice.
 
 .. [KBB2017]  Nadim Kobeissi, Karthikeyan Bhargavan, Bruno Blanchet.
     Automated Verification for Secure Messaging Protocols
