@@ -35,10 +35,10 @@ of [dirsp]. The only soft spot is that the ProScript execution model is JavaScri
 [dirsp]) is not an ideal production language! So we built a tool `dirsp-ps2ocaml` to translate algorithms written
 in ProScript into OCaml.
 
-Let's be clear ... we don't think OCaml is an ideal production language; the OCaml ecosystem is quite small.
-But we think there is a navigable path compared to JavaScript for OCaml to be embedded in several host
+Let's be clear ... we don't think OCaml is an ideal production language either; we suspect many teams will find the OCaml ecosystem
+to be too small. But we think there is a navigable path compared to JavaScript for OCaml to be embedded in several host
 languages (Java, Objective-C, JavaScript, etc.) and able to run logic (security and privacy algorithms) on many
-different platforms (web sites and services, Android, iOS, Windows, etc.).
+different host platforms (desktop, server, mobile, etc.).
 
 ## Libraries
 
