@@ -1,0 +1,271 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Translating ProScript to OCaml &mdash; Diskuv Implementations of Research Security Protocols  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Integration Guide" href="PS2OCAML_GUIDE.html" />
+    <link rel="prev" title="OCaml Library Documentation" href="../../OCAML_LIBRARIES.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Diskuv Implementations of Research Security Protocols
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../OCAML_LIBRARIES.html">OCaml Library Documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Translating ProScript to OCaml</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PS2OCAML_GUIDE.html">Integration Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PS2OCAML_FAQS.html">FAQs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PSCL_JS_PROSCRIPT_API.html">pscl.js and the ProScript API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="KBB2017_FILES.html">File Structure for Auditing KBB2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../CONTRIBUTING.html">Contributing</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Diskuv Implementations of Research Security Protocols</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Translating ProScript to OCaml</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/src-proscript/proscript-messaging/PS2OCAML.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="translating-proscript-to-ocaml">
+<h1>Translating ProScript to OCaml<a class="headerlink" href="#translating-proscript-to-ocaml" title="Permalink to this headline">¶</a></h1>
+<p><strong>Why build ProScript into OCaml?</strong></p>
+<p>tldr: ProScript can run in production <em>and</em> be formally verified with proof tools. But ProScript is JavaScript, and in production you may be using more than JavaScript.</p>
+<p>Our original motivation came from reading <a class="reference internal" href="#kbb2017" id="id1"><span>[KBB2017]</span></a> “Automated Verification for Secure Messaging Protocols
+and Their Implementations: A Symbolic and Computational Approach” paper produced by the Prosecco research group.
+We call the paper’s algorithm the “Kobeissi, Bhargavan and Blanchet” (KBB2017) algorithm here and elsewhere
+to both recognize the paper’s authors and to avoid the use of the word “Signal” (which the Signal non-profit who
+created the original algorithm has <a class="reference external" href="https://github.com/libresignal/libresignal/issues/37#issuecomment-216975737">protected with trademarks</a>).
+The KBB2017 algorithm describes how to integrate security algorithms like authenticated 1-on-1
+conversation management with OCaml-based proof verification tools (CryptoVerif and ProVerif) and a
+runtime deployment target of Javascript. They used the subset of Javascript called “ProScript” to automatically
+generated models for ProVerify and CryptoVerif. In a real sense the OCaml basis was hidden.</p>
+<p>You can use OCaml for much more than handling 1-on-1 conversations. So if you need multiple security
+or privacy algorithms, writing those in a mixture of ProScript and/or OCaml and <em>delaying the conversion into your production languages</em>
+(ex. OCaml can easily be converted into Javascript or integrated with C programs) make it relatively easy to verify proofs and
+guarantee type safety between the algorithms. Said another way, why shoot yourself in the foot by not letting OCaml tooling
+check all of your security and privacy data models?</p>
+<p>There is <a class="reference external" href="https://diskuv.github.io/dirsp-exchange/ocaml/dirsp-exchange-kbb2017/Dirsp_exchange_kbb2017/index.html">OCaml documentation</a>
+that describes how to use the ProScript-generated OCaml KBB2017 libraries. But in this documentation, we describe the
+<em>machine translation</em> of KBB2017 ProScript into OCaml, with some general pointers if you are using your own ProScript algorithm.
+So <strong>you can</strong> use the structure of this code for integrating ProScript into your own OCaml libraries. Read on.</p>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="PS2OCAML_GUIDE.html">Integration Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PS2OCAML_GUIDE.html#general-principles">General Principles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PS2OCAML_GUIDE.html#ps2ocaml-usage">ps2ocaml Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PS2OCAML_GUIDE.html#interface-module">Interface Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PS2OCAML_GUIDE.html#interface-signature">Interface Signature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PS2OCAML_GUIDE.html#shims-module">Shims Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PS2OCAML_FAQS.html">FAQs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PS2OCAML_FAQS.html#question-1-how-do-i-know-i-got-the-record-types-and-the-mutability-right">Question 1. How do I know I got the record types and the mutability right?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PS2OCAML_FAQS.html#question-2-what-is-proscript-t">Question 2. What is <code class="docutils literal notranslate"><span class="pre">ProScript.t</span></code>?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PS2OCAML_FAQS.html#question-3-what-about-the-runtime-safety-of-int-operations">Question 3. What about the runtime safety of ‘int’ operations?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PS2OCAML_FAQS.html#question-4-how-do-i-disable-assertions">Question 4. How do I disable assertions?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PS2OCAML_FAQS.html#question-5-how-do-i-annotate-function-parameters-with-explicit-types">Question 5. How do I annotate function parameters with explicit types?</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<dl class="citation">
+<dt class="label" id="kbb2017"><span class="brackets"><a class="fn-backref" href="#id1">KBB2017</a></span></dt>
+<dd><p>Nadim Kobeissi, Karthikeyan Bhargavan, Bruno Blanchet.
+Automated Verification for Secure Messaging Protocols
+and Their Implementations: A Symbolic and Computational Approach.
+2nd IEEE European Symposium on Security and Privacy , Apr 2017, Paris, France.
+pp.435 - 450, 2017, &lt;<a class="reference external" href="https://www.ieee-security.org/TC/EuroSP2017/">https://www.ieee-security.org/TC/EuroSP2017/</a>&gt;.
+&lt;10.1109/EuroSP.2017.38&gt;. &lt;hal-01575923&gt;</p>
+</dd>
+</dl>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="PS2OCAML_GUIDE.html" class="btn btn-neutral float-right" title="Integration Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../../OCAML_LIBRARIES.html" class="btn btn-neutral float-left" title="OCaml Library Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Diskuv, Inc..
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

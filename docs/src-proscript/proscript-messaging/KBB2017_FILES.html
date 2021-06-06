@@ -1,0 +1,276 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>File Structure for Auditing KBB2017 &mdash; Diskuv Implementations of Research Security Protocols  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Contributing" href="../../CONTRIBUTING.html" />
+    <link rel="prev" title="pscl.js and the ProScript API" href="PSCL_JS_PROSCRIPT_API.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Diskuv Implementations of Research Security Protocols
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../OCAML_LIBRARIES.html">OCaml Library Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PS2OCAML.html">Translating ProScript to OCaml</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PSCL_JS_PROSCRIPT_API.html">pscl.js and the ProScript API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">File Structure for Auditing KBB2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../CONTRIBUTING.html">Contributing</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Diskuv Implementations of Research Security Protocols</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>File Structure for Auditing KBB2017</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/src-proscript/proscript-messaging/KBB2017_FILES.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="file-structure-for-auditing-kbb2017">
+<h1>File Structure for Auditing KBB2017<a class="headerlink" href="#file-structure-for-auditing-kbb2017" title="Permalink to this headline">¶</a></h1>
+<p><em>Security Engineers and Auditors: Everything that says “Unmodified” is a verbatim copy of the Prosecco source code. The git commit and authenticated timestamps are available in &lt;diskuv-communicator-models&gt;/dirsp-exchange/dirsp_exchange.mli</em>.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">kobeissi_bhargavan_blanchet.ml</span></code></dt><dd><p><strong>Auto-generated</strong>. This is a ProScript-to-OCaml translation of <code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps/sp.js</span></code> (aka KBB2017).
+Generated from the dirsp-ps2ocaml.exe program, with auto-formatting by ocamlformat.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kobeissi_bhargavan_blanchet_intf.ml</span></code></dt><dd><p><strong>New content</strong>. OCaml interface for <code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps/sp.js</span></code>, plus a few shims for functions that could
+not be machine translated.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/*.rst</span></code></dt><dd><p><strong>New content</strong>. The documentation you are reading now.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/pscl/pscl.js</span></code></dt><dd><p><strong>Unmodified</strong>. Javascript implementation of the ProScript Cryptography Library. This has implementations
+of SHA256 and other core security primitives.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/pscl/dirsp_Dirsp_proscript_intf.ml</span></code></dt><dd><p><strong>New content</strong>. OCaml interface for the ProScript runtime. This is an OCaml reimagining of the
+Javascript API implicit in <code class="docutils literal notranslate"><span class="pre">pscl.js</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/pscl/dirsp_proscript.mli</span></code></dt><dd><p><strong>New content</strong>. Just includes the <code class="docutils literal notranslate"><span class="pre">Dirsp_proscript_intf.ml</span></code>. This is a way to share the same interfaces
+for external use (you!) and internal library use.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/pscl/dirsp_proscript.ml</span></code></dt><dd><p><strong>New content</strong>. A hand-written OCaml implementation of the ProScript runtime. It mimics <code class="docutils literal notranslate"><span class="pre">pscl.js</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps/sp.js</span></code></dt><dd><p><strong>Unmodified</strong>. ProScript implementation of what the Prosecco team calls the version 3 of the
+“Signal Protocol” (X3DH and Double Ratchet). We call it KBB2017.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/LICENSE</span></code></dt><dd><p><strong>Unmodified</strong>. License file from the proscript-messaging team</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/globals.ml</span></code></dt><dd><p><strong>Unmodified</strong>. Global variables and common utility functions.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/lexer.ml</span></code></dt><dd><p><strong>Unmodified</strong>. Lexical instructions for how to create tokens (ex. <code class="docutils literal notranslate"><span class="pre">BOOL</span></code>, <code class="docutils literal notranslate"><span class="pre">FUNCTION</span></code>, <code class="docutils literal notranslate"><span class="pre">FINALLY</span></code>, <code class="docutils literal notranslate"><span class="pre">IF</span></code>) from the ProScript dialect of JavaScript.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/ast.ml</span></code></dt><dd><p><strong>Unmodified</strong>. The abstract syntax tree of ProScript. The tree contains the relevant details of ProScript that are necessary
+for recreating a proof with the author’s ProVerif tool; it is <strong>not</strong> a perfect representation of ProScript. So we need
+to replace the lossiness (like losing arrays of hexadecimal constants).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/parser.mly</span></code></dt><dd><p><strong>Unmodified</strong>. Instructions for how to produce the AST from the lexer.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/pretty.ml</span></code></dt><dd><p><strong>Unmodified</strong>. Pretty-printer of the AST.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/_tags</span></code></dt><dd><p><strong>Unmodified</strong>. Build instructions for the legacy <code class="docutils literal notranslate"><span class="pre">ocamlbuild</span></code> tool. It allows for building a legacy syntax and parser
+generators for OCaml called <code class="docutils literal notranslate"><span class="pre">camlp4</span></code>, which is difficult to build with modern OCaml tooling.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/lexerror.ml</span></code></dt><dd><p><strong>New content</strong>. Error utility functions to report lexical information (line and column) when there is an error.
+Similar to the Prosecco team’s <code class="docutils literal notranslate"><span class="pre">error.ml</span></code> file, which is not included in this distribution.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/ast2ocaml.ml</span></code> <code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/astpredicates.ml</span></code></dt><dd><p><strong>New content</strong>. Translates the AST into OCaml source code.
+Similar to the Prosecco team’s <code class="docutils literal notranslate"><span class="pre">pretty.ml</span></code> file; both of which walk the AST.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/ast2ocaml_tests.ml</span></code></dt><dd><p><strong>New content</strong>. Tests for <code class="docutils literal notranslate"><span class="pre">ast2ocaml.ml</span></code> (ex. overflow/underflow compliance).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/dirsp_ps2ocamlcore.ml</span></code></dt><dd><p><strong>New content</strong>. Parses source code into AST and translates via <code class="docutils literal notranslate"><span class="pre">ast2ocaml.ml</span></code> into OCaml.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/ps2pv/dirsp_ps2ocaml.ml</span></code></dt><dd><p><strong>New content</strong>. A command-line driver. When you run <code class="docutils literal notranslate"><span class="pre">dirsp-ps2ocaml.exe</span></code> you are running this.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/.gitignore</span></code></dt><dd><p><strong>New content</strong>. Which files are ignored for git</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/.ocamlformat</span></code>, <code class="docutils literal notranslate"><span class="pre">proscript-messaging/.ocamlformat-ignore</span></code></dt><dd><p><strong>New content</strong>. Formatting instructions for new content.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">proscript-messaging/debug-parsing.mlt</span></code></dt><dd><p><strong>New content</strong>. Instructions for <code class="docutils literal notranslate"><span class="pre">utop</span></code> to quickly begin a debug session.</p>
+</dd>
+</dl>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../../CONTRIBUTING.html" class="btn btn-neutral float-right" title="Contributing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="PSCL_JS_PROSCRIPT_API.html" class="btn btn-neutral float-left" title="pscl.js and the ProScript API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Diskuv, Inc..
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -41,7 +41,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Building ProScript into OCaml" href="src-proscript/proscript-messaging/TRANSLATING_PROSCRIPT_INTO_OCAML.html" />
+    <link rel="next" title="Translating ProScript to OCaml" href="src-proscript/proscript-messaging/PS2OCAML.html" />
     <link rel="prev" title="Welcome to Diskuv Implementations of Research Security Protocols’s documentation!" href="index.html" /> 
 </head>
 
@@ -89,10 +89,18 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">OCaml Library Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="src-proscript/proscript-messaging/TRANSLATING_PROSCRIPT_INTO_OCAML.html">Building ProScript into OCaml</a></li>
-<li class="toctree-l1"><a class="reference internal" href="src-proscript/proscript-messaging/TRANSLATING_PROSCRIPT_INTO_OCAML.html#pscl-js-and-the-proscript-api">pscl.js and the ProScript API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="DEVELOPING.html">Developing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">OCaml Library Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dirsp-exchange"><code class="docutils literal notranslate"><span class="pre">dirsp-exchange</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dirsp-exchange-kbb2017"><code class="docutils literal notranslate"><span class="pre">dirsp-exchange-kbb2017</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dirsp-proscript"><code class="docutils literal notranslate"><span class="pre">dirsp-proscript</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dirsp-proscript-mirage"><code class="docutils literal notranslate"><span class="pre">dirsp-proscript-mirage</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dirsp-ps2ocaml"><code class="docutils literal notranslate"><span class="pre">dirsp-ps2ocaml</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src-proscript/proscript-messaging/PS2OCAML.html">Translating ProScript to OCaml</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src-proscript/proscript-messaging/PSCL_JS_PROSCRIPT_API.html">pscl.js and the ProScript API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src-proscript/proscript-messaging/KBB2017_FILES.html">File Structure for Auditing KBB2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contributing</a></li>
 </ul>
 
             
@@ -162,14 +170,37 @@
             
   <div class="section" id="ocaml-library-documentation">
 <h1>OCaml Library Documentation<a class="headerlink" href="#ocaml-library-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="dirsp-exchange">
+<h2><code class="docutils literal notranslate"><span class="pre">dirsp-exchange</span></code><a class="headerlink" href="#dirsp-exchange" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference external" href="ocaml/dirsp-ps2ocaml">dirsp-ps2ocaml</a> -A ProScript to OCaml translator.</p></li>
-<li><p><a class="reference external" href="ocaml/dirsp-exchange">dirsp-exchange</a> - No-op as of May 2021.</p></li>
-<li><p><a class="reference external" href="ocaml/dirsp-exchange-kbb2017">dirsp-exchange-kbb2017</a> - The KBB2017 protocol for securing a two-party conversation. Similar to
-Signal Protocol v3 <a class="reference external" href="https://signal.org/docs/specifications/x3dh">[1]</a> <a class="reference external" href="https://signal.org/docs/specifications/doubleratchet">[2]</a></p></li>
-<li><p><a class="reference external" href="ocaml/dirsp-proscript">dirsp-proscript</a> - The ProScript Cryptographic Library (PSCL) API interface.</p></li>
-<li><p><a class="reference external" href="ocaml/dirsp-proscript-mirage">dirsp-proscript-mirage</a> - A PSCL implementation based on <cite>mirage-crypto</cite> and related libraries</p></li>
+<li><p><a class="reference external" href="ocaml/dirsp-exchange">OCaml Library: dirsp-exchange</a> - No-op as of May 2021.</p></li>
 </ul>
+</div>
+<div class="section" id="dirsp-exchange-kbb2017">
+<h2><code class="docutils literal notranslate"><span class="pre">dirsp-exchange-kbb2017</span></code><a class="headerlink" href="#dirsp-exchange-kbb2017" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="ocaml/dirsp-exchange-kbb2017">OCaml Library: dirsp-exchange-kbb2017</a> - The KBB2017 protocol for securing a two-party conversation. Similar to
+Signal Protocol v3 <a class="reference external" href="https://signal.org/docs/specifications/x3dh">[1]</a> <a class="reference external" href="https://signal.org/docs/specifications/doubleratchet">[2]</a></p></li>
+</ul>
+</div>
+<div class="section" id="dirsp-proscript">
+<h2><code class="docutils literal notranslate"><span class="pre">dirsp-proscript</span></code><a class="headerlink" href="#dirsp-proscript" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="ocaml/dirsp-proscript">OCaml Library: dirsp-proscript</a> - The ProScript Cryptographic Library (PSCL) API interface.</p></li>
+</ul>
+</div>
+<div class="section" id="dirsp-proscript-mirage">
+<h2><code class="docutils literal notranslate"><span class="pre">dirsp-proscript-mirage</span></code><a class="headerlink" href="#dirsp-proscript-mirage" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="ocaml/dirsp-proscript-mirage">OCaml Library: dirsp-proscript-mirage</a> - A PSCL implementation based on <cite>mirage-crypto</cite> and related libraries</p></li>
+</ul>
+</div>
+<div class="section" id="dirsp-ps2ocaml">
+<h2><code class="docutils literal notranslate"><span class="pre">dirsp-ps2ocaml</span></code><a class="headerlink" href="#dirsp-ps2ocaml" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="ocaml/dirsp-ps2ocaml">Executable: dirsp-ps2ocaml</a> - A ProScript to OCaml translator.</p></li>
+</ul>
+</div>
 </div>
 
 
@@ -178,7 +209,7 @@ Signal Protocol v3 <a class="reference external" href="https://signal.org/docs/s
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="src-proscript/proscript-messaging/TRANSLATING_PROSCRIPT_INTO_OCAML.html" class="btn btn-neutral float-right" title="Building ProScript into OCaml" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="src-proscript/proscript-messaging/PS2OCAML.html" class="btn btn-neutral float-right" title="Translating ProScript to OCaml" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Diskuv Implementations of Research Security Protocols’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

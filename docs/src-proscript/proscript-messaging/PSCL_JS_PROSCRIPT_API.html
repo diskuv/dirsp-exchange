@@ -1,0 +1,375 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>pscl.js and the ProScript API &mdash; Diskuv Implementations of Research Security Protocols  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="File Structure for Auditing KBB2017" href="KBB2017_FILES.html" />
+    <link rel="prev" title="FAQs" href="PS2OCAML_FAQS.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Diskuv Implementations of Research Security Protocols
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../OCAML_LIBRARIES.html">OCaml Library Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PS2OCAML.html">Translating ProScript to OCaml</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">pscl.js and the ProScript API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#using-pscl-js">Using pscl.js</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#suggested-improvements">Suggested Improvements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="KBB2017_FILES.html">File Structure for Auditing KBB2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../CONTRIBUTING.html">Contributing</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Diskuv Implementations of Research Security Protocols</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>pscl.js and the ProScript API</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/src-proscript/proscript-messaging/PSCL_JS_PROSCRIPT_API.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pscl-js-and-the-proscript-api">
+<h1>pscl.js and the ProScript API<a class="headerlink" href="#pscl-js-and-the-proscript-api" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="using-pscl-js">
+<h2>Using pscl.js<a class="headerlink" href="#using-pscl-js" title="Permalink to this headline">¶</a></h2>
+<p>We do <em>not</em> use pscl.js in dirsp-exchange! The ProScript Cryptography Library (PSCL) is used as an API during ProVerif proof
+testing, and we use it as an API
+(see the OCaml library <code class="docutils literal notranslate"><span class="pre">dirsp-proscript</span></code>). There is a <code class="docutils literal notranslate"><span class="pre">dirsp-proscript-mirage</span></code> that uses the Mirage crypto libraries,
+which themselves use a correct-by-construction implementation from <a class="reference external" href="https://github.com/mit-plv/fiat-crypto">fiat-crypto</a>
+for its elliptic curve functions.</p>
+<p>We decided to abandon pscl.js after trying to compare its output with ours. Some cautionary notes:</p>
+<ol class="arabic simple">
+<li><p>Comparing dirsp-exchange’s output to sp.js + pscl.js is a bit of a fool’s errand. After burning two days trying
+to match results, I realized that pscl.js’ DH25519 was non-standard. In fact, pscl.js is not used for the security
+proofs (the ProVerif translation will replace references to PSCL functions like DH25519). See comment about DH25519 in
+<a class="reference external" href="https://github.com/Inria-Prosecco/proscript-messaging/issues/1">https://github.com/Inria-Prosecco/proscript-messaging/issues/1</a> ; I had likewise ran test vectors through pscl.js
+and its DH25519 failed.</p></li>
+<li><p>It was difficult to understand which parameters to pscl.js need to be hex-encoded and which ones don’t. And it <strong>really</strong>
+matters in JavaScript. In node.js, the <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">Buffer(some_variable,</span> <span class="pre">'hex')</span></code> construction used frequently in pscl.js
+will silently return an empty buffer if the input is not hex. For example, supplying values without hex encoding
+to <code class="docutils literal notranslate"><span class="pre">ProScript.crypto.ED25519.signature</span></code> would result in a call to <code class="docutils literal notranslate"><span class="pre">ProScript.crypto.ED25519Hash(sk)</span></code>,
+which in turn would return a SHA512 hash of an empty value because of the Buffer-based hex decoding. Yet the ProVerif code
+does not hex encode that <code class="docutils literal notranslate"><span class="pre">sk</span></code> parameter when calling the <code class="docutils literal notranslate"><span class="pre">ProScript.crypto.ED25519.signature</span></code> API.</p></li>
+<li><p>Completely as a reaction to hex-encoding ambiguities in pscl.js, nothing is expected to be hex encoded in
+<code class="docutils literal notranslate"><span class="pre">dirsp-proscript</span></code>. The <code class="docutils literal notranslate"><span class="pre">dirsp-proscript</span></code> API is just raw bytes. However, the hex encoders <code class="docutils literal notranslate"><span class="pre">toBitstring</span></code> and
+<code class="docutils literal notranslate"><span class="pre">fromBitstring</span></code> used in the higher-level KBB2017 algorithm (<code class="docutils literal notranslate"><span class="pre">ps/sp.js</span></code>) are still present.</p></li>
+</ol>
+<p>So there is no need for pscl.js, and you won’t get matching results because the kinda critical Diffie-Hellman
+implementation in pscl.js is non-standard and perhaps broken.</p>
+<p><em>Sidebar: None of the above caution affects the KBB2017 proof</em></p>
+<p>Now that the cautionary preamble is out of the way … here is how you would run sp.js + pscl.js.</p>
+<p>You’ll need node.js v10+ installed.</p>
+<p>Then:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>npm install --save-dev window hexy
+npm install --save-dev @peculiar/webcrypto <span class="c1"># only needed if node.js v14 or earlier</span>
+node --experimental-repl-await <span class="c1"># or &#39;nvm exec 16.0 node --experimental-repl-await&#39; depending on your installation</span>
+</pre></div>
+</div>
+<p>Within <code class="docutils literal notranslate"><span class="pre">node</span></code>:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// EITHER: this section is for node.js v10-v14</span>
+<span class="kd">const</span> <span class="nx">getRandomValues</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;get-random-values&#39;</span><span class="p">)</span>
+
+<span class="c1">// OR: this section is for node.js v15+ which has built-in (more vetted) webcrypto support</span>
+<span class="kd">const</span> <span class="p">{</span> <span class="nx">getRandomValues</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;crypto&#39;</span><span class="p">).</span><span class="nx">webcrypto</span>
+
+<span class="c1">// THEN continue with the following ...</span>
+
+<span class="c1">// Make an approximation of the browser</span>
+<span class="kd">const</span> <span class="nx">Window</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;window&#39;</span><span class="p">)</span>
+<span class="kd">const</span> <span class="p">{</span> <span class="nx">createHash</span><span class="p">,</span> <span class="nx">createHmac</span><span class="p">,</span> <span class="nx">createCipheriv</span><span class="p">,</span> <span class="nx">createDecipheriv</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;crypto&#39;</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nb">window</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Window</span><span class="p">()</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">crypto</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">getRandomValues</span> <span class="p">}</span>
+<span class="kd">const</span> <span class="nx">NodeCrypto</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">createHash</span><span class="p">,</span> <span class="nx">createHmac</span><span class="p">,</span> <span class="nx">createCipheriv</span><span class="p">,</span> <span class="nx">createDecipheriv</span> <span class="p">}</span>
+
+<span class="c1">// Load the Javascript files</span>
+<span class="kd">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">require</span><span class="p">(</span><span class="s2">&quot;fs&quot;</span><span class="p">)</span>
+<span class="kd">const</span> <span class="nx">pscl_js</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="s1">&#39;./src-proscript/proscript-messaging/pscl/pscl.js&#39;</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">)</span>
+<span class="nb">eval</span><span class="p">(</span><span class="nx">pscl_js</span><span class="p">)</span>
+<span class="kd">const</span> <span class="nx">sp_js</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="s1">&#39;./src-proscript/proscript-messaging//ps/sp.js&#39;</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">)</span>
+<span class="nb">eval</span><span class="p">(</span><span class="nx">sp_js</span><span class="p">.</span><span class="nx">replaceAll</span><span class="p">(</span><span class="sr">/\bconst /g</span><span class="p">,</span><span class="s2">&quot;var &quot;</span><span class="p">))</span>
+
+<span class="c1">// Now you have access to the ProScript Cryptographic Library (pscl.js)</span>
+<span class="c1">// and the &#39;Signal Protocol&#39;/KBB2017 (sp.js)</span>
+<span class="nx">ProScript</span><span class="p">.</span><span class="nx">crypto</span><span class="p">.</span><span class="nx">random16Bytes</span><span class="p">()</span>
+<span class="nx">Type_key</span><span class="p">.</span><span class="nx">construct</span><span class="p">()</span>
+<span class="kd">const</span> <span class="p">{</span> <span class="nx">hexy</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;hexy&#39;</span><span class="p">)</span>
+<span class="nx">hexy</span><span class="p">(</span><span class="nx">Type_key</span><span class="p">.</span><span class="nx">construct</span><span class="p">())</span>
+
+<span class="c1">// You can also override the random functions so you can do a</span>
+<span class="c1">// repeatable comparison between JavaScript and OCaml</span>
+<span class="kd">const</span> <span class="nx">firstByteMd5</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">NodeCrypto</span><span class="p">.</span><span class="nx">createHash</span><span class="p">(</span><span class="s1">&#39;md5&#39;</span><span class="p">).</span><span class="nx">update</span><span class="p">(</span><span class="nx">s</span><span class="p">).</span><span class="nx">digest</span><span class="p">()[</span><span class="mf">0</span><span class="p">]</span> <span class="p">}</span>
+<span class="nx">ProScript</span><span class="p">.</span><span class="nx">crypto</span><span class="p">.</span><span class="nx">random12Bytes</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span> <span class="kd">const</span> <span class="nx">fb</span> <span class="o">=</span> <span class="nx">firstByteMd5</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span> <span class="k">return</span> <span class="nb">Array</span><span class="p">.</span><span class="k">from</span><span class="p">({</span><span class="nx">length</span><span class="o">:</span> <span class="mf">12</span><span class="p">},</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="nx">fb</span><span class="p">)</span> <span class="p">}</span>
+<span class="nx">ProScript</span><span class="p">.</span><span class="nx">crypto</span><span class="p">.</span><span class="nx">random16Bytes</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span> <span class="kd">const</span> <span class="nx">fb</span> <span class="o">=</span> <span class="nx">firstByteMd5</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span> <span class="k">return</span> <span class="nb">Array</span><span class="p">.</span><span class="k">from</span><span class="p">({</span><span class="nx">length</span><span class="o">:</span> <span class="mf">16</span><span class="p">},</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="nx">fb</span><span class="p">)</span> <span class="p">}</span>
+<span class="nx">ProScript</span><span class="p">.</span><span class="nx">crypto</span><span class="p">.</span><span class="nx">random32Bytes</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span> <span class="kd">const</span> <span class="nx">fb</span> <span class="o">=</span> <span class="nx">firstByteMd5</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span> <span class="k">return</span> <span class="nb">Array</span><span class="p">.</span><span class="k">from</span><span class="p">({</span><span class="nx">length</span><span class="o">:</span> <span class="mf">32</span><span class="p">},</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="nx">fb</span><span class="p">)</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>You can simulate a conversation between Alice and Bob:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span> <span class="nx">P</span>   <span class="o">=</span> <span class="nx">ProScript</span>
+<span class="kd">const</span> <span class="nx">C</span>   <span class="o">=</span> <span class="nx">P</span><span class="p">.</span><span class="nx">crypto</span>
+<span class="kd">const</span> <span class="nx">E</span>   <span class="o">=</span> <span class="nx">P</span><span class="p">.</span><span class="nx">crypto</span><span class="p">.</span><span class="nx">ED25519</span>
+<span class="kd">const</span> <span class="nx">U</span>   <span class="o">=</span> <span class="nx">UTIL</span>
+<span class="kd">const</span> <span class="nx">T</span>   <span class="o">=</span> <span class="nx">TOPLEVEL</span>
+<span class="kd">const</span> <span class="nx">KEY</span> <span class="o">=</span> <span class="nx">Type_key</span>
+<span class="kd">const</span> <span class="nx">MSG</span> <span class="o">=</span> <span class="nx">Type_msg</span>
+
+<span class="kd">let</span> <span class="nx">aliceIdentityKey</span>  <span class="o">=</span> <span class="nx">U</span><span class="p">.</span><span class="nx">newIdentityKey</span> <span class="p">(</span><span class="s2">&quot;alice-identity&quot;</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">aliceSignedPreKey</span> <span class="o">=</span> <span class="nx">U</span><span class="p">.</span><span class="nx">newKeyPair</span>     <span class="p">(</span><span class="s2">&quot;alice-signed-prekey&quot;</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">bobIdentityKey</span>    <span class="o">=</span> <span class="nx">U</span><span class="p">.</span><span class="nx">newIdentityKey</span> <span class="p">(</span><span class="s2">&quot;bob-identity&quot;</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">bobSignedPreKey</span>   <span class="o">=</span> <span class="nx">U</span><span class="p">.</span><span class="nx">newKeyPair</span>     <span class="p">(</span><span class="s2">&quot;bob-signed-prekey&quot;</span><span class="p">)</span>
+
+<span class="kd">let</span> <span class="nx">aliceIdentityKeyPub</span>        <span class="o">=</span> <span class="nx">aliceIdentityKey</span><span class="p">.</span><span class="nx">pub</span>
+<span class="kd">let</span> <span class="nx">aliceIdentityDHKeyPub</span>      <span class="o">=</span> <span class="nx">U</span><span class="p">.</span><span class="nx">getDHPublicKey</span> <span class="p">(</span><span class="nx">aliceIdentityKey</span><span class="p">.</span><span class="nx">priv</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">aliceSignedPreKeyPub</span>       <span class="o">=</span> <span class="nx">aliceSignedPreKey</span><span class="p">.</span><span class="nx">pub</span>
+<span class="kd">let</span> <span class="nx">aliceSignedPreKeySignature</span> <span class="o">=</span> <span class="nx">E</span><span class="p">.</span><span class="nx">signature</span> <span class="p">(</span><span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span><span class="p">(</span><span class="nx">aliceSignedPreKeyPub</span><span class="p">),</span> <span class="nx">aliceIdentityKey</span><span class="p">.</span><span class="nx">priv</span><span class="p">,</span> <span class="nx">aliceIdentityKeyPub</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">bobIdentityKeyPub</span>          <span class="o">=</span> <span class="nx">bobIdentityKey</span><span class="p">.</span><span class="nx">pub</span>
+<span class="kd">let</span> <span class="nx">bobIdentityDHKeyPub</span>        <span class="o">=</span> <span class="nx">U</span><span class="p">.</span><span class="nx">getDHPublicKey</span><span class="p">(</span><span class="nx">bobIdentityKey</span><span class="p">.</span><span class="nx">priv</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">bobSignedPreKeyPub</span>         <span class="o">=</span> <span class="nx">bobSignedPreKey</span><span class="p">.</span><span class="nx">pub</span>
+<span class="kd">let</span> <span class="nx">bobSignedPreKeySignature</span>   <span class="o">=</span> <span class="nx">E</span><span class="p">.</span><span class="nx">signature</span> <span class="p">(</span><span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span><span class="p">(</span><span class="nx">bobSignedPreKeyPub</span>  <span class="p">),</span> <span class="nx">bobIdentityKey</span><span class="p">.</span><span class="nx">priv</span><span class="p">,</span>   <span class="nx">bobIdentityKeyPub</span><span class="p">)</span>
+
+<span class="kd">let</span> <span class="nx">alicePreKey</span>   <span class="o">=</span> <span class="nx">U</span><span class="p">.</span><span class="nx">newKeyPair</span>     <span class="p">(</span><span class="s2">&quot;alice-prekey&quot;</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">bobPreKey</span>     <span class="o">=</span> <span class="nx">U</span><span class="p">.</span><span class="nx">newKeyPair</span>     <span class="p">(</span><span class="s2">&quot;bob-prekey&quot;</span><span class="p">)</span>
+
+<span class="kd">let</span> <span class="nx">alicePreKeyPub</span> <span class="o">=</span> <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">alicePreKey</span><span class="p">.</span><span class="nx">pub</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">alicePreKeyId</span>  <span class="o">=</span> <span class="mf">1</span> <span class="cm">/* the Id of alicePreKey */</span>
+<span class="kd">let</span> <span class="nx">bobPreKeyPub</span>   <span class="o">=</span> <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">bobPreKey</span><span class="p">.</span><span class="nx">pub</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">bobPreKeyId</span>    <span class="o">=</span> <span class="mf">1</span> <span class="cm">/* the Id of bobPreKey   */</span>
+
+<span class="kd">let</span> <span class="nx">aliceSessionWithBob</span> <span class="o">=</span> <span class="nx">T</span><span class="p">.</span><span class="nx">newSession</span><span class="p">(</span>
+    <span class="nx">aliceSignedPreKey</span><span class="p">,</span>
+    <span class="nx">alicePreKey</span><span class="p">,</span>
+    <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">bobIdentityKeyPub</span><span class="p">),</span>
+    <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">bobIdentityDHKeyPub</span><span class="p">),</span>
+    <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">bobSignedPreKeyPub</span><span class="p">),</span>
+    <span class="nx">bobSignedPreKeySignature</span><span class="p">,</span>
+    <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">bobPreKeyPub</span><span class="p">),</span>
+    <span class="nx">bobPreKeyId</span>
+    <span class="p">)</span>
+<span class="kd">let</span> <span class="nx">bobSessionWithAlice</span> <span class="o">=</span> <span class="nx">T</span><span class="p">.</span><span class="nx">newSession</span><span class="p">(</span>
+    <span class="nx">bobSignedPreKey</span><span class="p">,</span>
+    <span class="nx">bobPreKey</span><span class="p">,</span>
+    <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">aliceIdentityKeyPub</span><span class="p">),</span>
+    <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">aliceIdentityDHKeyPub</span><span class="p">),</span>
+    <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">aliceSignedPreKeyPub</span><span class="p">),</span>
+    <span class="nx">aliceSignedPreKeySignature</span><span class="p">,</span>
+    <span class="nx">KEY</span><span class="p">.</span><span class="nx">toBitstring</span> <span class="p">(</span><span class="nx">alicePreKeyPub</span><span class="p">),</span>
+    <span class="nx">alicePreKeyId</span>
+    <span class="p">)</span>
+
+<span class="kd">let</span> <span class="nx">aliceToBobMsg1</span>        <span class="o">=</span> <span class="s2">&quot;Hi Bob!&quot;</span>
+<span class="kd">let</span> <span class="nx">aliceToBobSendOutput1</span> <span class="o">=</span> <span class="nx">T</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span>
+    <span class="nx">aliceIdentityKey</span><span class="p">,</span>
+    <span class="nx">aliceSessionWithBob</span><span class="p">,</span>
+    <span class="nx">aliceToBobMsg1</span>
+<span class="p">)</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">util</span><span class="p">.</span><span class="nx">format</span><span class="p">(</span><span class="s2">&quot;Did Alice send successfully? %s\n&quot;</span><span class="p">,</span> <span class="nx">aliceToBobSendOutput1</span><span class="p">.</span><span class="nx">output</span><span class="p">.</span><span class="nx">valid</span><span class="p">))</span>
+
+<span class="kd">let</span> <span class="nx">bobFromAliceMsg2</span>           <span class="o">=</span> <span class="nx">aliceToBobSendOutput1</span><span class="p">.</span><span class="nx">output</span>
+<span class="kd">let</span> <span class="nx">bobFromAliceReceiveOutput2</span> <span class="o">=</span> <span class="nx">T</span><span class="p">.</span><span class="nx">recv</span><span class="p">(</span>
+  <span class="nx">bobIdentityKey</span><span class="p">,</span>
+  <span class="nx">bobSignedPreKey</span><span class="p">,</span>
+  <span class="nx">bobSessionWithAlice</span><span class="p">,</span>
+  <span class="nx">bobFromAliceMsg2</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">util</span><span class="p">.</span><span class="nx">format</span><span class="p">(</span><span class="s2">&quot;Did Bob receive successfully? %s\n&quot;</span><span class="p">,</span> <span class="nx">bobFromAliceReceiveOutput2</span><span class="p">.</span><span class="nx">output</span><span class="p">.</span><span class="nx">valid</span><span class="p">))</span>
+<span class="cm">/* this should work, but doesn&#39;t */</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="suggested-improvements">
+<h2>Suggested Improvements<a class="headerlink" href="#suggested-improvements" title="Permalink to this headline">¶</a></h2>
+<p>We don’t control the development of ProScript. So here are the feature requests we would send to the ProScript team:</p>
+<ol class="arabic simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">pscl.js</span></code> is going to be used by anyone, it needs to do a length check on the result of any Buffer conversion. In fact,
+node.js complains that “Buffer() is deprecated due to security and usability issues”, so removing the code would be better.</p></li>
+<li><p>Let’s statically type or annotate which parameters are hex-encoded. It is _way_ too easy to make a mistake where you pass
+in a hex encoded input to a parameter that doesn’t need hex encoding, or you hex encode something twice.</p></li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="KBB2017_FILES.html" class="btn btn-neutral float-right" title="File Structure for Auditing KBB2017" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="PS2OCAML_FAQS.html" class="btn btn-neutral float-left" title="FAQs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Diskuv, Inc..
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

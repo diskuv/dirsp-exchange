@@ -1,0 +1,309 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>FAQs &mdash; Diskuv Implementations of Research Security Protocols  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="pscl.js and the ProScript API" href="PSCL_JS_PROSCRIPT_API.html" />
+    <link rel="prev" title="Integration Guide" href="PS2OCAML_GUIDE.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Diskuv Implementations of Research Security Protocols
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../OCAML_LIBRARIES.html">OCaml Library Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PS2OCAML.html">Translating ProScript to OCaml</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PS2OCAML_GUIDE.html">Integration Guide</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">FAQs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#question-1-how-do-i-know-i-got-the-record-types-and-the-mutability-right">Question 1. How do I know I got the record types and the mutability right?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#question-2-what-is-proscript-t">Question 2. What is <code class="docutils literal notranslate"><span class="pre">ProScript.t</span></code>?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#question-3-what-about-the-runtime-safety-of-int-operations">Question 3. What about the runtime safety of ‘int’ operations?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#question-4-how-do-i-disable-assertions">Question 4. How do I disable assertions?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#question-5-how-do-i-annotate-function-parameters-with-explicit-types">Question 5. How do I annotate function parameters with explicit types?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PSCL_JS_PROSCRIPT_API.html">pscl.js and the ProScript API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="KBB2017_FILES.html">File Structure for Auditing KBB2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../CONTRIBUTING.html">Contributing</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Diskuv Implementations of Research Security Protocols</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="PS2OCAML.html">Translating ProScript to OCaml</a> &raquo;</li>
+        
+      <li>FAQs</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/src-proscript/proscript-messaging/PS2OCAML_FAQS.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="faqs">
+<h1>FAQs<a class="headerlink" href="#faqs" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="question-1-how-do-i-know-i-got-the-record-types-and-the-mutability-right">
+<h2>Question 1. How do I know I got the record types and the mutability right?<a class="headerlink" href="#question-1-how-do-i-know-i-got-the-record-types-and-the-mutability-right" title="Permalink to this headline">¶</a></h2>
+<p>Compile the code with <code class="docutils literal notranslate"><span class="pre">dune</span> <span class="pre">build</span></code>. You can rely on OCaml’s compile-time type safety.</p>
+<p>If it doesn’t compile, you are missing a record, you are missing a field, you have the wrong field type, or you didn’t make the field
+mutable.</p>
+</div>
+<div class="section" id="question-2-what-is-proscript-t">
+<h2>Question 2. What is <code class="docutils literal notranslate"><span class="pre">ProScript.t</span></code>?<a class="headerlink" href="#question-2-what-is-proscript-t" title="Permalink to this headline">¶</a></h2>
+<p>It represents what in ProScript would be the memory structure of a string.
+The Ocaml type is hidden in ProScript.t, but may be an OCaml <code class="docutils literal notranslate"><span class="pre">char</span> <span class="pre">array</span></code> or it may be the more
+efficient <a class="reference external" href="https://ocaml.org/api/Bytes.html">bytes</a> depending on the version of the ProScript
+runtime.</p>
+<p><em>All</em> strings in your ProScript code replaced with <code class="docutils literal notranslate"><span class="pre">ProScript.t</span></code> in generated OCaml code. And <em>all</em>
+lists of element accesses like:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">return</span> <span class="p">[</span> <span class="nx">a</span><span class="p">[</span><span class="mf">0</span><span class="p">],</span> <span class="nx">a</span><span class="p">[</span><span class="mf">1</span><span class="p">],</span> <span class="nx">a</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="p">];</span>
+</pre></div>
+</div>
+<p>will be converted to use <code class="docutils literal notranslate"><span class="pre">ProScript.t</span></code>.</p>
+</div>
+<div class="section" id="question-3-what-about-the-runtime-safety-of-int-operations">
+<span id="faq-integer-safety"></span><h2>Question 3. What about the runtime safety of ‘int’ operations?<a class="headerlink" href="#question-3-what-about-the-runtime-safety-of-int-operations" title="Permalink to this headline">¶</a></h2>
+<p>OCaml ints are machine and compiler specific sizes (ex. 32-bit) and are not normally checked for overflow.
+However, the ps2ocaml code generator will generate overflow safety checks if you write a standalone ProScript
+statement like:</p>
+<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">.</span><span class="n">preKeyId</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+</pre></div>
+</div>
+<p>The generated code will insert an assertion that makes sure that the “+” operation will not overflow or underflow.
+Look in the “assert” functions of <code class="docutils literal notranslate"><span class="pre">ps/sp.js</span></code> for ProScript examples, and then look in
+<code class="docutils literal notranslate"><span class="pre">ps/kobeissi_bhargavan_blanchet.ml</span></code> for the corresponding auto-generated overflow checks.</p>
+</div>
+<div class="section" id="question-4-how-do-i-disable-assertions">
+<span id="faq-disable-asserts"></span><h2>Question 4. How do I disable assertions?<a class="headerlink" href="#question-4-how-do-i-disable-assertions" title="Permalink to this headline">¶</a></h2>
+<p>ps2ocaml will generate <code class="docutils literal notranslate"><span class="pre">Invalid_argument</span></code> exceptions rather than asserts.</p>
+<p>When you write a standalone ProScript equality statement like:</p>
+<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">.</span><span class="n">valid</span> <span class="o">===</span> <span class="bp">true</span><span class="o">;</span>
+</pre></div>
+</div>
+<p>the translation is:</p>
+<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="o">(</span><span class="n">a</span><span class="o">.</span><span class="n">valid</span> <span class="o">=</span> <span class="bp">true</span><span class="o">)</span> <span class="k">then</span> <span class="bp">()</span>
+<span class="k">else</span> <span class="k">raise</span> <span class="o">(</span><span class="nc">Invalid_argument</span> <span class="s2">&quot;not (a.valid = true)&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>When you don’t want to raise the exception, you can use the <code class="docutils literal notranslate"><span class="pre">-disable_strictequals_assertions</span></code>
+option in <code class="docutils literal notranslate"><span class="pre">dirsp-ps2ocaml.exe</span></code>. That will produce the following translation:</p>
+<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span><span class="k">let</span> <span class="o">(_:</span> <span class="kt">bool</span><span class="o">)</span> <span class="o">=</span> <span class="c">(* no-op statement-by-statement equivalence *)</span> <span class="n">a</span><span class="o">.</span><span class="n">valid</span> <span class="k">in</span> <span class="c">(* ... *)</span>
+</pre></div>
+</div>
+<p>NOTE: With the current version of ps2ocaml you <em>cannot disable</em> Invalid_argument when an <a class="reference internal" href="#faq-integer-safety"><span class="std std-ref">overflow
+or underflow is detected</span></a>.</p>
+</div>
+<div class="section" id="question-5-how-do-i-annotate-function-parameters-with-explicit-types">
+<h2>Question 5. How do I annotate function parameters with explicit types?<a class="headerlink" href="#question-5-how-do-i-annotate-function-parameters-with-explicit-types" title="Permalink to this headline">¶</a></h2>
+<p>You may be forced to annotate if your ProScript code is
+<a class="reference external" href="https://dev.realworldocaml.org/records.html#reusing-field-names">sharing field names in multiple record types</a>.</p>
+<p>When you run <code class="docutils literal notranslate"><span class="pre">ps2ocaml</span></code>, use the <code class="docutils literal notranslate"><span class="pre">-p</span></code> option to map function parameter names to field types.</p>
+<p>For example, if you have the ProScript code:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">deriveSendKeys</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">them</span><span class="p">,</span> <span class="nx">myEphemeralKeyPriv</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="nx">sendKeys</span><span class="o">:</span> <span class="nx">sendKeys</span><span class="p">,</span>
+        <span class="nx">kENC</span><span class="o">:</span> <span class="nx">myEphemeralKeyPriv</span><span class="p">[</span><span class="mf">0</span><span class="p">]</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>then using</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>dirsp-ps2ocaml.exe -p them:record_them ...
+</pre></div>
+</div>
+<p>will produce the OCaml code:</p>
+<div class="highlight-ocaml notranslate"><div class="highlight"><pre><span></span><span class="k">let</span> <span class="n">deriveSendKeys</span> <span class="o">(</span><span class="n">them</span> <span class="o">:</span> <span class="n">record_them</span><span class="o">)</span> <span class="n">myEphemeralKeyPriv</span> <span class="o">=</span> <span class="k">begin</span>
+    <span class="o">{</span>
+        <span class="n">sendKeys</span> <span class="o">=</span> <span class="n">sendKeys</span><span class="o">;</span>
+        <span class="n">kENC</span> <span class="o">=</span> <span class="n">myEphemeralKeyPriv</span><span class="o">.(</span><span class="mi">0</span><span class="o">)</span>
+    <span class="o">}</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>The better option is to rename the field names so that the field names are unique across all records.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="PSCL_JS_PROSCRIPT_API.html" class="btn btn-neutral float-right" title="pscl.js and the ProScript API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="PS2OCAML_GUIDE.html" class="btn btn-neutral float-left" title="Integration Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Diskuv, Inc..
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
