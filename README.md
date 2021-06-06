@@ -1,5 +1,9 @@
 # gh-pages branch
 
+To publish to GitHub Pages, switch to the `main` branch and run `make publish-docs`.
+
+You can also use the following commands but be warned this is not as reproducible as `make publish-docs`:
+
 ```bash
 git switch main
 dune clean
