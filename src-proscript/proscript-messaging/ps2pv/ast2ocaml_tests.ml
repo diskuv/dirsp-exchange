@@ -12,28 +12,7 @@
    See the License for the specific language governing permissions and
    limitations under the License. *)
 
-(** Inline tests for [ast2ocaml].
-
-  Writing more tests or debugging existing results?
-
-  1. Make sure the "proscript_messaging_tests" library builds with [dune build proscript_messaging_tests.cma]
-  2. Use [dune utop] (if it fails, you may need to comment out everything until only proscript_messaging_tests builds), and then:
-
-  [
-    module ast2ocaml = Proscript_messaging_tests__ast2ocaml;;
-
-    (*
-      Now you can simply copy and paste expressions from this test file and try them interactively in
-      utop. Make sure to end each block of statements with ";;" like the example below.
-    *)
-    let emptyctx = Dirsp_ps2ocamlcore.create_empty_context ();;
-  ]
-
-  You can simply copy and paste expressions from this test code and try them interactively in
-  utop.
-*)
-
-let emptyctx = Dirsp_ps2ocamlcore.create_empty_context ()
+let emptyctx = Dirsp_ps2ocamlcore.Stack_context.create ()
 
 let emptyloc = (Lexing.dummy_pos, Lexing.dummy_pos)
 

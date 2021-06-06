@@ -45,6 +45,56 @@ let is_array_composed_only_of_element_accesses (a : Ast.expression_t list) =
     a
 
 
+module VariableAssignmentCounts = struct
+  include Map.Make (String)
+
+  let merge_counts a b =
+    union (fun _varname cnt1 cnt2 -> Some (cnt1 + cnt2)) a b
+end
+
+module Ast_style = struct
+  type t =
+    | LetIn of int VariableAssignmentCounts.t
+    | LetInSemicolonCapable of int VariableAssignmentCounts.t
+    | NotLetIn of int VariableAssignmentCounts.t
+
+  let to_string = function
+    | LetIn _l -> "LetIn"
+    | LetInSemicolonCapable _l -> "LetInSemicolonCapable"
+    | NotLetIn _l -> "NotLetIn"
+
+
+  let compose st_a st_b =
+    match (st_a, st_b) with
+    | LetInSemicolonCapable cnt1, LetInSemicolonCapable cnt2 ->
+        LetInSemicolonCapable VariableAssignmentCounts.(merge_counts cnt1 cnt2)
+    | ( (LetIn cnt1 | LetInSemicolonCapable cnt1)
+      , (LetIn cnt2 | LetInSemicolonCapable cnt2) ) ->
+        LetIn VariableAssignmentCounts.(merge_counts cnt1 cnt2)
+    | NotLetIn cnt1, (LetIn cnt2 | LetInSemicolonCapable cnt2 | NotLetIn cnt2)
+      ->
+        NotLetIn VariableAssignmentCounts.(merge_counts cnt1 cnt2)
+    | (LetIn cnt1 | LetInSemicolonCapable cnt1), NotLetIn cnt2 ->
+        NotLetIn VariableAssignmentCounts.(merge_counts cnt1 cnt2)
+
+
+  let compose3 st_a st_b st_c = compose st_a st_b |> compose st_c
+
+  let add_variable_assignment st varname : t =
+    let add_one cnt =
+      VariableAssignmentCounts.(merge_counts cnt (singleton varname 1))
+    in
+    match st with
+    | LetIn cnt -> LetIn (add_one cnt)
+    | LetInSemicolonCapable cnt -> LetInSemicolonCapable (add_one cnt)
+    | NotLetIn cnt -> NotLetIn (add_one cnt)
+
+
+  let for_all f l =
+    let g a b = compose a (f b) in
+    List.fold_left g (LetInSemicolonCapable VariableAssignmentCounts.empty) l
+end
+
 (** Can we rewrite the AST by replacing all imperative statements with the functional OCaml "let in" form?
 
     {1 Preconditions}
@@ -55,7 +105,8 @@ let is_array_composed_only_of_element_accesses (a : Ast.expression_t list) =
 
     OCaml can model mutable fields in record types, which maps well to ProScript code (at least the code used in KBB2017).
     The "let in" form works great with mutable fields and keeps the translated code easy to review and looking like
-    idiomatic OCaml.
+    somewhat idiomatic OCaml (although we always choose statement-by-statement equivalence if there is a conflict between
+    idioms and equivalence).
 
     One alternative to "let in" is to translate all of the ProScript functions to use mutable "ref".
     "ref" rewriting is fairly complicated and may never be implemented. Another alternative is to translate
@@ -79,15 +130,15 @@ let is_array_composed_only_of_element_accesses (a : Ast.expression_t list) =
     Those become:
 
     [
-      let _ () = begin let _ = a () in let _ = b () in let _ = c () in d () end
+      begin let () = a () in let () = b () in let () = c () in d () end
     ]
 
     [
-      let _ () begin let _ = a () in ( if b () then c () else d () ) in e () end
+      begin let () = a () in ( if b () then c () else d () ) in e () end
     ]
 
     [
-      let _ () begin let v = a () in let v = v + b () in let v = v - c () in v * d () end
+      begin let v = a () in let v = v + b () in let v = v - c () in v * d () end
     ]
 
     The following ProScript cannot be rewritten:
@@ -96,17 +147,17 @@ let is_array_composed_only_of_element_accesses (a : Ast.expression_t list) =
       function() { var v = a(); for (i in b()) { v += c(); }; return v + d() }
     ]
 
-    As long as **you cannot skip over any variable assignments**, then we can use "let in".
+    As long as **you cannot skip over any local variable mutations**, then we can use "let in".
     And mutations through mutable records are fine to use with "let in".
 
     {1 Logic}
 
     R1. We descend into all Ast.statement_t and all Ast.expression_t because statements can interrupt sequential
-        top-down execution flow; statements can possibly result in variable assignments skipped, and expressions
+        top-down execution flow; statements can possibly result in local variable mutations skipped, and expressions
         can contain statements.
     R2. We evaluate all Ast.expression_t within conditionals (ex. `If) to see whether they contain
-        variable assignments. A variable assignment within a conditional statement is not safe to rewrite in
-        "let in" form. However variable assignments in the main flow of a function are safe!
+        local variable mutations. A local variable mutation within a conditional statement is not safe to rewrite in
+        "let in" form. However local variable mutations in the main flow of a function are safe!
     R3. Any use of `Return occurs that is not the last _statement_ of a sequential statement list is not
         safe to rewrite. For clarity, there is no impact on safety if a conditional like `If is the last
         statement.
@@ -125,173 +176,223 @@ let is_array_composed_only_of_element_accesses (a : Ast.expression_t list) =
 
     The logic is a recursive evaluation of those rules. We short-circuit return
     if we run into any rules says is not rewritable.
+
+    There is also one idiomatic OCaml pattern we'd like to follow. If and only if there are no
+    local variable mutations then we can write a letin based function of form [let ... in let ... in ...] as the
+    semicolon form [... ; ...; ...]. We return {!LetInSemicolonCapable} in this special case.
+    That leads to more rules ...
+
+    R5. If there are any local variable mutations, then not safe for rewriting with semicolons.
 *)
-let rec is_ast_writable_with_letin_style
-    (ast : Ast.t) (opts : letin_check_options) =
+let rec characterize_ast_style (ast : Ast.t) (opts : letin_check_options) :
+    Ast_style.t =
   (* Helper for R3 *)
   let rec test_statements_while_distinguishing_last_statement
       (ctx : letin_check_context)
-      (test : letin_check_context -> Ast.stm_t -> bool) = function
-    | [] -> true
+      (test : letin_check_context -> Ast.stm_t -> Ast_style.t) = function
+    | [] -> Ast_style.LetInSemicolonCapable VariableAssignmentCounts.empty
     | [ (hd, _loc) ] ->
         test { ctx with last_statement_in_letin_sequence = true } hd
     | (hd, _loc) :: tl ->
-        test { ctx with last_statement_in_letin_sequence = true } hd
-        && test_statements_while_distinguishing_last_statement ctx test tl
+        Ast_style.compose
+          (test { ctx with last_statement_in_letin_sequence = true } hd)
+          (test_statements_while_distinguishing_last_statement ctx test tl)
   in
   (* Core Logic: is_*_safe *)
-  let rec is_source_safe ctx = function
-    | [] -> true
+  let rec characterize_source_t ctx = function
+    | [] -> Ast_style.LetInSemicolonCapable VariableAssignmentCounts.empty
     | (`FunctionDeclaration childf, _loc) :: _tl ->
         (* R1. A function declared within another function is a brand-new scope. *)
-        let _id_opt, _args, childast = childf in
-        opts.skip_nested_functions
-        || is_ast_writable_with_letin_style childast opts
+        let id_opt, _args, childast = childf in
+        if opts.skip_nested_functions
+        then
+          if Option.is_some id_opt
+          then
+            Ast_style.LetInSemicolonCapable
+              (VariableAssignmentCounts.singleton (Option.get id_opt) 1)
+          else Ast_style.LetInSemicolonCapable VariableAssignmentCounts.empty
+        else characterize_ast_style childast opts
     | [ (`Statement (stm, _loc2), _loc) ] ->
         (* R1. Descend into all statements *)
         (* R3. Distinguish last statement in sequence from others *)
-        is_statement_safe
+        characterize_statement_t
           { ctx with last_statement_in_letin_sequence = true }
           stm
-    | (`Statement (stm, _loc2), _loc) :: tl ->
+    | (`Statement (stm, st_loc), _loc) :: tl ->
         (* R1. Descend into all statements *)
         (* R3. Distinguish last statement in sequence from others *)
-        is_statement_safe
-          { ctx with last_statement_in_letin_sequence = false }
-          stm
-        && is_source_safe ctx tl
-  and is_statement_safe ctx = function
-    | `Empty | `Debugger -> true
+        let hd_result =
+          characterize_statement_t
+            { ctx with last_statement_in_letin_sequence = false }
+            stm
+        in
+        if enable_debugging
+        then
+          Printf.printf
+            "characterize_source_t %s result=%s\n"
+            (Lexerror.get_error st_loc "code")
+            (Ast_style.to_string hd_result) ;
+        Ast_style.compose hd_result (characterize_source_t ctx tl)
+  and characterize_statement_t ctx = function
+    | `Empty | `Debugger -> LetInSemicolonCapable VariableAssignmentCounts.empty
     | `Return expression_opt ->
         (* R3. Return as last statement is OK! *)
         (* R1. Descend into all expressions *)
-        let _ =
-          if enable_debugging
-          then
-            Printf.printf
-              "is_statement_safe last_statement_in_letin_sequence=%b\n"
-              ctx.last_statement_in_letin_sequence
-        in
-        ctx.last_statement_in_letin_sequence
-        &&
-        ( match expression_opt with
-        | None -> true
-        | Some expression ->
-            let expr, _loc = expression in
-            let result = is_expression_safe ctx expr in
-            let _ =
+        if enable_debugging
+        then
+          Printf.printf
+            "characterize_statement_t last_statement_in_letin_sequence=%b\n"
+            ctx.last_statement_in_letin_sequence ;
+        if ctx.last_statement_in_letin_sequence
+        then (
+          match expression_opt with
+          | None -> LetInSemicolonCapable VariableAssignmentCounts.empty
+          | Some expression ->
+              let expr, _loc = expression in
+              let result = characterize_expression_t ctx expr in
               if enable_debugging
-              then Printf.printf "is_statement_safe Return result=%b\n" result
-            in
-            result )
+              then
+                Printf.printf
+                  "characterize_statement_t Return result=%s\n"
+                  (Ast_style.to_string result) ;
+              result )
+        else (
+          if enable_debugging
+          then Printf.printf "characterize_statement_t Return NotLetIn\n" ;
+          NotLetIn VariableAssignmentCounts.empty )
     | `Throw _ ->
         (* R4. Throwing an exception is unsafe (for now) *)
-        false
+        if enable_debugging
+        then Printf.printf "characterize_statement_t Throw NotLetIn\n" ;
+        Ast_style.NotLetIn VariableAssignmentCounts.empty
     | `Continue _ | `Break _ | `Try _ | `Label _ ->
         (* R1. Anything that can cause a jump in sequential execution flow is not safe. *)
-        false
+        if enable_debugging
+        then
+          Printf.printf
+            "characterize_statement_t Continue,Break,Try,Label NotLetIn\n" ;
+        Ast_style.NotLetIn VariableAssignmentCounts.empty
     | `Do _ | `While _ | `For _ | `Forin _ ->
         (* R0. Conservative laziness.
-           We in fact could accept loops as long as they didn't have variable assignments
+           We in fact could accept loops as long as they didn't have local variable mutations
            inside the loop.
         *)
-        false
+        if enable_debugging
+        then
+          Printf.printf "characterize_statement_t Do,While,For,Forin NotLetIn\n" ;
+        Ast_style.NotLetIn VariableAssignmentCounts.empty
     | `Block statement_l ->
         (* R1. Sequential execution is OK, if child statements are OK *)
         (* R3. Distinguish last statement in sequence from others *)
         test_statements_while_distinguishing_last_statement
           ctx
-          is_statement_safe
+          characterize_statement_t
           statement_l
     | `Expression expression ->
         (* R1. Descend into all expressions *)
         let expr, _loc = expression in
-        is_expression_safe ctx expr
+        characterize_expression_t ctx expr
     | `If (expression, if_statement, else_statement_opt) ->
         (* R1. Consider statement branches and consider the expression *)
-        (* R2. An assignment within a conditional is unsafe *)
+        (* R2. A local variable mutation within a conditional is unsafe *)
         let ctx = { ctx with within_conditional = true } in
-        let expr, _loc = expression in
-        is_expression_safe ctx expr
-        &&
-        let if_stmt, _loc = if_statement in
-        is_statement_safe ctx if_stmt
-        && Option.fold
-             ~none:true
-             ~some:(function
-               | else_stmt, _loc -> is_statement_safe ctx else_stmt )
-             else_statement_opt
+        Ast_style.compose
+          (let expr, _loc = expression in
+           characterize_expression_t ctx expr )
+          (let if_stmt, _loc = if_statement in
+           Ast_style.compose
+             (characterize_statement_t ctx if_stmt)
+             (Option.fold
+                ~none:
+                  (Ast_style.LetInSemicolonCapable
+                     VariableAssignmentCounts.empty )
+                ~some:(function
+                  | else_stmt, _loc -> characterize_statement_t ctx else_stmt )
+                else_statement_opt ) )
     | `Switch (expression, default_statement_l_opt, case_expr_statement_l_l) ->
         (* R1. Consider statement branches and consider the expression *)
-        (* R2. An assignment within a conditional is unsafe *)
+        (* R2. A local variable mutation within a conditional is unsafe *)
         let ctx = { ctx with within_conditional = true } in
         let expr, _loc = expression in
-        is_expression_safe ctx expr
-        && Option.fold
-             ~none:true
+        Ast_style.compose3
+          (characterize_expression_t ctx expr)
+          (Option.fold
+             ~none:
+               (Ast_style.LetInSemicolonCapable VariableAssignmentCounts.empty)
              ~some:
                ((* R3. Distinguish last statement in sequence from others *)
                 test_statements_while_distinguishing_last_statement
                   ctx
-                  is_statement_safe )
-             default_statement_l_opt
-        && List.for_all
+                  characterize_statement_t )
+             default_statement_l_opt )
+          (Ast_style.for_all
              (function
                | _expr, statement_l ->
                    (* R3. Distinguish last statement in sequence from others *)
                    test_statements_while_distinguishing_last_statement
                      ctx
-                     is_statement_safe
+                     characterize_statement_t
                      statement_l )
-             case_expr_statement_l_l
+             case_expr_statement_l_l )
     | `Const id_expression_opt_l | `Declaration id_expression_opt_l ->
         (* R1. Descend into all expressions *)
-        List.for_all
+        Ast_style.for_all
           (function
-            | _id, None -> true
-            | _id, Some (expr, _loc) -> is_expression_safe ctx expr )
+            | id, None ->
+                Ast_style.LetInSemicolonCapable
+                  (VariableAssignmentCounts.singleton id 1)
+            | id, Some (expr, _loc) ->
+                Ast_style.add_variable_assignment
+                  (characterize_expression_t ctx expr)
+                  id )
           id_expression_opt_l
     | `With _ ->
         (* R0. Conservative laziness. This will rarely be used. Too difficult to reason about what objects
             are being accessed, so punt *)
-        false
-  and is_expression_safe ctx = function
+        if enable_debugging
+        then Printf.printf "characterize_statement_t With NotLetIn\n" ;
+        Ast_style.NotLetIn VariableAssignmentCounts.empty
+  and characterize_expression_t ctx = function
     | `This | `Null | `Undefined | `Elision | `Bool _ | `Byte _ | `Number _
      |`String _ | `Regexp _ | `Identifier _ ->
         (* Primitive values are safe *)
-        true
+        Ast_style.LetInSemicolonCapable VariableAssignmentCounts.empty
     | `Array expression_l | `Sequence expression_l ->
         (* R1. Descend into all expressions *)
-        List.for_all
+        Ast_style.for_all
           (function
-            | expr, _loc -> is_expression_safe ctx expr )
+            | expr, _loc -> characterize_expression_t ctx expr )
           expression_l
     | `Object (object_prop_l : Ast.object_prop_t list) ->
-        List.for_all
+        Ast_style.for_all
           (function
             | (_oprop : Ast.oprop_t), _loc ->
               ( match _oprop with
               | `Property (_id, ((expr : Ast.expr_t), _loc)) ->
                   (* R1. Descend into all expressions *)
-                  is_expression_safe ctx expr
-              | `Getter (_id, childf) | `Setter (_id, childf) ->
+                  characterize_expression_t ctx expr
+              | `Getter (id, childf) | `Setter (id, childf) ->
                   (* R1. A function declared within another function is a brand-new scope. *)
                   let _id_opt, _args, childast = childf in
-                  opts.skip_nested_functions
-                  || is_ast_writable_with_letin_style childast opts ) )
+                  if opts.skip_nested_functions
+                  then
+                    Ast_style.LetInSemicolonCapable
+                      (VariableAssignmentCounts.singleton id 1)
+                  else characterize_ast_style childast opts ) )
           object_prop_l
     | `New (left_expression, right_expression_l_opt) ->
         (* R1. Descend into all expressions *)
         let left_expr, _loc = left_expression in
-        is_expression_safe ctx left_expr
-        &&
-        ( match right_expression_l_opt with
-        | None -> true
-        | Some right_expression_l ->
-            List.for_all
-              (function
-                | expr, _loc -> is_expression_safe ctx expr )
-              right_expression_l )
+        Ast_style.compose
+          (characterize_expression_t ctx left_expr)
+          ( match right_expression_l_opt with
+          | None ->
+              Ast_style.LetInSemicolonCapable VariableAssignmentCounts.empty
+          | Some right_expression_l ->
+              Ast_style.for_all
+                (function
+                  | expr, _loc -> characterize_expression_t ctx expr )
+                right_expression_l )
     | `Typeof expression
      |`Delete expression
      |`Void expression
@@ -305,40 +406,94 @@ let rec is_ast_writable_with_letin_style
      |`Bnot expression ->
         (* R1. Descend into all expressions *)
         let expr, _loc = expression in
-        is_expression_safe ctx expr
+        characterize_expression_t ctx expr
     | `Function childf ->
         (* R1. A function declared within another function is a brand-new scope. *)
-        let _id_opt, _args, childast = childf in
-        opts.skip_nested_functions
-        || is_ast_writable_with_letin_style childast opts
+        let id_opt, _args, childast = childf in
+        if opts.skip_nested_functions
+        then
+          if Option.is_some id_opt
+          then
+            Ast_style.LetInSemicolonCapable
+              (VariableAssignmentCounts.singleton (Option.get id_opt) 1)
+          else Ast_style.LetInSemicolonCapable VariableAssignmentCounts.empty
+        else characterize_ast_style childast opts
     | `Conditional ((expr1, _loc1), (expr2, _loc2), (expr3, _loc3)) ->
         (* R1. Descend into all expressions *)
-        (* R2. An assignment within a conditional is unsafe. x ? y : z is a conditional *)
+        (* R2. A local variable mutation within a conditional is unsafe. x ? y : z is a conditional *)
         let ctx = { ctx with within_conditional = true } in
-        is_expression_safe ctx expr1
-        && is_expression_safe ctx expr2
-        && is_expression_safe ctx expr3
-    | `Assign (lhs_expression, rhs_expression)
-     |`Ashassign (lhs_expression, rhs_expression) ->
+        Ast_style.compose3
+          (characterize_expression_t ctx expr1)
+          (characterize_expression_t ctx expr2)
+          (characterize_expression_t ctx expr3)
+    | `Assign
+        ((`Dot ((dot_expression, _loc2), _id), _loc1), (rhs_expression, _loc3))
+      ->
+        (* property mutation. ex. a.iv = Type_iv.assert(a.iv); *)
         (* R1. Descend into all expressions *)
-        (* R2. An assignment within a conditional is unsafe. We abort immediately if we are in a conditional *)
-        (not ctx.within_conditional)
-        &&
-        let lhs_expr, _lloc = lhs_expression in
-        is_expression_safe ctx lhs_expr
-        &&
-        let rhs_expr, _rloc = rhs_expression in
-        is_expression_safe ctx rhs_expr
+        if enable_debugging
+        then
+          Printf.printf "characterize_expression_t Assign property mutation\n" ;
+        Ast_style.compose
+          (characterize_expression_t ctx dot_expression)
+          (characterize_expression_t ctx rhs_expression)
+    | `Assign ((lhs_expr, _lloc), (rhs_expr, _rloc))
+     |`Ashassign ((lhs_expr, _lloc), (rhs_expr, _rloc)) ->
+        (* R1. Descend into all expressions *)
+        (* R2. A local variable mutation within a conditional is unsafe. We abort immediately if we are in a conditional *)
+        (* R5. Semicolon style is not possible with semicolons *)
+        let subresult =
+          Ast_style.compose
+            (characterize_expression_t ctx lhs_expr)
+            (characterize_expression_t ctx rhs_expr)
+        in
+        let subresult =
+          match lhs_expr with
+          | `Identifier id -> Ast_style.add_variable_assignment subresult id
+          | _ -> subresult
+        in
+        let is_property_assignment =
+          match lhs_expr with
+          | `Property _ -> true
+          | _ -> false
+        in
+        if enable_debugging
+        then
+          Printf.printf
+            "characterize_expression_t Assign,Ashassign subresult=%s (before)\n"
+            (Ast_style.to_string subresult) ;
+        let result =
+          if ctx.within_conditional
+          then
+            match subresult with
+            | LetIn cnt | LetInSemicolonCapable cnt | NotLetIn cnt ->
+                Ast_style.NotLetIn cnt
+          else
+            (* Downgrade LetInSemicolonCapable to LetIn for local variable assignments only. Property assignments are fine! *)
+            match subresult with
+            | Ast_style.LetInSemicolonCapable cnt ->
+                if is_property_assignment
+                then subresult
+                else Ast_style.LetIn cnt
+            | _ -> subresult
+        in
+        if enable_debugging
+        then (
+          Printf.printf
+            "characterize_expression_t Assign,Ashassign result=%s (after)\n"
+            (Ast_style.to_string result) ;
+          result )
+        else result
     | `Lor (lhs_expression, rhs_expression)
      |`Land (lhs_expression, rhs_expression) ->
         (* R1. Descend into all expressions *)
-        (* R2. An assignment within a conditional is unsafe. || and && are short-circuit conditionals *)
+        (* R2. A local variable mutation within a conditional is unsafe. || and && are short-circuit conditionals *)
         let ctx = { ctx with within_conditional = true } in
-        let lhs_expr, _lloc = lhs_expression in
-        is_expression_safe ctx lhs_expr
-        &&
-        let rhs_expr, _rloc = rhs_expression in
-        is_expression_safe ctx rhs_expr
+        Ast_style.compose
+          (let lhs_expr, _lloc = lhs_expression in
+           characterize_expression_t ctx lhs_expr )
+          (let rhs_expr, _rloc = rhs_expression in
+           characterize_expression_t ctx rhs_expr )
     | `Property (lhs_expression, rhs_expression)
      |`In (lhs_expression, rhs_expression)
      |`Instanceof (lhs_expression, rhs_expression)
@@ -360,39 +515,38 @@ let rec is_ast_writable_with_letin_style
      |`Ge (lhs_expression, rhs_expression)
      |`Sequal (lhs_expression, rhs_expression) ->
         (* R1. Descend into all expressions *)
-        let lhs_expr, _lloc = lhs_expression in
-        is_expression_safe ctx lhs_expr
-        &&
-        let rhs_expr, _rloc = rhs_expression in
-        is_expression_safe ctx rhs_expr
+        Ast_style.compose
+          (let lhs_expr, _lloc = lhs_expression in
+           characterize_expression_t ctx lhs_expr )
+          (let rhs_expr, _rloc = rhs_expression in
+           characterize_expression_t ctx rhs_expr )
     | `Dot (expression, _id) ->
         (* R1. Descend into all expressions *)
         let expr, _loc = expression in
-        let _ =
-          if enable_debugging
-          then
-            Printf.printf
-              "is_expression_safe Dot(expr=%b, id=%s)\n"
-              (is_expression_safe ctx expr)
-              _id
-        in
-        is_expression_safe ctx expr
+        let result = characterize_expression_t ctx expr in
+        if enable_debugging
+        then
+          Printf.printf
+            "characterize_expression_t Dot(expr=%s, id=%s)\n"
+            (Ast_style.to_string result)
+            _id ;
+        result
     | `Call (target_expression, args_expression_l) ->
         (* R1. Descend into all expressions *)
         let target_expr, _loc = target_expression in
-        let _ =
-          if enable_debugging
-          then
-            Printf.printf
-              "is_expression_safe Call target_result=%b\n"
-              (is_expression_safe ctx target_expr)
-        in
-        is_expression_safe ctx target_expr
-        && List.for_all
+        let target_result = characterize_expression_t ctx target_expr in
+        if enable_debugging
+        then
+          Printf.printf
+            "characterize_expression_t Call target_result=%s\n"
+            (Ast_style.to_string target_result) ;
+        Ast_style.compose
+          target_result
+          (Ast_style.for_all
              (function
-               | expr, _loc -> is_expression_safe ctx expr )
-             args_expression_l
+               | expr, _loc -> characterize_expression_t ctx expr )
+             args_expression_l )
   in
-  is_source_safe
+  characterize_source_t
     { last_statement_in_letin_sequence = false; within_conditional = false }
     ast

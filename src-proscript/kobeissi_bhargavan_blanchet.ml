@@ -11,7 +11,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License. *)
-(* Auto-generated using code from <dirsp-exchange>/proscript-messaging/ps2pv/ast2ocaml.ml *)
+(* Auto-generated using code from <dirsp-exchange>/src-proscript/proscript-messaging/ps2pv/ast2ocaml.ml *)
 
 include Kobeissi_bhargavan_blanchet_intf
 
@@ -25,7 +25,20 @@ module Make (ProScript : Dirsp_proscript.S) :
 
   module Type_key = struct
     let construct =
-      (* <unknown expression> at file sp.js, line 11:18 to 11:22 *)
+      (*
+        ----------------
+          AUDIT NOTICE
+        ----------------
+        
+        The line and column of the original text that caused the problem with its programmatic description is:
+          <unknown expression> at file sp.js, line 11:18 to 11:22 
+        
+        The resolution to the problem was:
+          The ps2ocaml translator has automatically inserted a call to a 'shim'
+          function. The shim function will be defined in the accompanying
+          _shims.ml file. Since that function is hand-written, please be sure
+          to review the full definition of that shim function. 
+      *)
       shim_Type_key_construct
 
 
@@ -145,7 +158,20 @@ module Make (ProScript : Dirsp_proscript.S) :
 
   module Type_iv = struct
     let construct =
-      (* <unknown expression> at file sp.js, line 84:18 to 84:22 *)
+      (*
+        ----------------
+          AUDIT NOTICE
+        ----------------
+        
+        The line and column of the original text that caused the problem with its programmatic description is:
+          <unknown expression> at file sp.js, line 84:18 to 84:22 
+        
+        The resolution to the problem was:
+          The ps2ocaml translator has automatically inserted a call to a 'shim'
+          function. The shim function will be defined in the accompanying
+          _shims.ml file. Since that function is hand-written, please be sure
+          to review the full definition of that shim function. 
+      *)
       shim_Type_iv_construct
 
 
@@ -199,33 +225,36 @@ module Make (ProScript : Dirsp_proscript.S) :
 
 
     let xassert a =
-      let _ = a.valid = true |> ignore in
-      let _ = a.ephemeralKey <- Type_key.xassert a.ephemeralKey in
-      let _ = a.initEphemeralKey <- Type_key.xassert a.initEphemeralKey in
-      let _ = a.ciphertext = ProScript.of_string "" |> ignore in
-      let _ = a.iv <- Type_iv.xassert a.iv in
-      let _ = a.tag = ProScript.of_string "" |> ignore in
-      let _ =
-        (*check s+t for overflow and underflow*)
-        let s = a.preKeyId in
-        let t = 1 in
-        if s > 0
-        then
-          if t <= Int.max_int - s
-          then ()
-          else
-            raise
-              (Invalid_argument
-                 (Format.sprintf "(a.preKeyId+1)=(%d+%d) will overflow" s t) )
-        else if s < 0
-        then
-          if t >= Int.min_int - s
-          then ()
-          else
-            raise
-              (Invalid_argument
-                 (Format.sprintf "(a.preKeyId+1)=(%d+%d) will underflow" s t) )
+      let (_ : bool) = (* no-op statement-by-statement equivalence *) a.valid in
+      () ;
+      a.ephemeralKey <- Type_key.xassert a.ephemeralKey ;
+      a.initEphemeralKey <- Type_key.xassert a.initEphemeralKey ;
+      let (_ : t) =
+        (* no-op statement-by-statement equivalence *) a.ciphertext
       in
+      () ;
+      a.iv <- Type_iv.xassert a.iv ;
+      let (_ : t) = (* no-op statement-by-statement equivalence *) a.tag in
+      () ;
+      (*check s+t for overflow and underflow*)
+      let s = a.preKeyId in
+      let t = 1 in
+      if s > 0
+      then
+        if t <= Int.max_int - s
+        then ()
+        else
+          raise
+            (Invalid_argument
+               (Format.sprintf "(a.preKeyId+1)=(%d+%d) will overflow" s t) )
+      else if s < 0
+      then
+        if t >= Int.min_int - s
+        then ()
+        else
+          raise
+            (Invalid_argument
+               (Format.sprintf "(a.preKeyId+1)=(%d+%d) will underflow" s t) ) ;
       a
   end
 
@@ -235,15 +264,15 @@ module Make (ProScript : Dirsp_proscript.S) :
 
 
     let xassert a =
-      let _ = a.priv <- Type_key.xassert a.priv in
-      let _ = a.pub <- Type_key.xassert a.pub in
+      a.priv <- Type_key.xassert a.priv ;
+      a.pub <- Type_key.xassert a.pub ;
       a
 
 
     let clone a =
       let b = construct () in
-      let _ = b.priv <- Type_key.clone a.priv in
-      let _ = b.pub <- Type_key.clone a.pub in
+      b.priv <- Type_key.clone a.priv ;
+      b.pub <- Type_key.clone a.pub ;
       b
   end
 
@@ -267,45 +296,44 @@ module Make (ProScript : Dirsp_proscript.S) :
 
 
     let xassert a =
-      let _ = a.signedPreKey <- Type_key.xassert a.signedPreKey in
-      let _ =
-        a.signedPreKeySignature <-
-          ProScript.concat [ a.signedPreKeySignature; ProScript.of_string "" ]
+      a.signedPreKey <- Type_key.xassert a.signedPreKey ;
+      a.signedPreKeySignature <-
+        ProScript.concat [ a.signedPreKeySignature; ProScript.of_string "" ] ;
+      a.identityKey <- Type_key.xassert a.identityKey ;
+      a.identityDHKey <- Type_key.xassert a.identityDHKey ;
+      a.myEphemeralKeyP0 <- Type_keypair.xassert a.myEphemeralKeyP0 ;
+      a.myEphemeralKeyP1 <- Type_keypair.xassert a.myEphemeralKeyP1 ;
+      a.ephemeralKey <- Type_key.xassert a.ephemeralKey ;
+      a.myPreKey <- Type_keypair.xassert a.myPreKey ;
+      a.preKey <- Type_key.xassert a.preKey ;
+      (*check s+t for overflow and underflow*)
+      let s = a.preKeyId in
+      let t = 1 in
+      if s > 0
+      then
+        if t <= Int.max_int - s
+        then ()
+        else
+          raise
+            (Invalid_argument
+               (Format.sprintf "(a.preKeyId+1)=(%d+%d) will overflow" s t) )
+      else if s < 0
+      then
+        if t >= Int.min_int - s
+        then ()
+        else
+          raise
+            (Invalid_argument
+               (Format.sprintf "(a.preKeyId+1)=(%d+%d) will underflow" s t) ) ;
+      Array.set a.recvKeys 0 (Type_key.xassert a.recvKeys.(0)) ;
+      Array.set a.recvKeys 1 (Type_key.xassert a.recvKeys.(1)) ;
+      Array.set a.sendKeys 0 (Type_key.xassert a.sendKeys.(0)) ;
+      Array.set a.sendKeys 1 (Type_key.xassert a.sendKeys.(1)) ;
+      a.shared <- Type_key.xassert a.shared ;
+      let (_ : bool) =
+        (* no-op statement-by-statement equivalence *) a.established
       in
-      let _ = a.identityKey <- Type_key.xassert a.identityKey in
-      let _ = a.identityDHKey <- Type_key.xassert a.identityDHKey in
-      let _ = a.myEphemeralKeyP0 <- Type_keypair.xassert a.myEphemeralKeyP0 in
-      let _ = a.myEphemeralKeyP1 <- Type_keypair.xassert a.myEphemeralKeyP1 in
-      let _ = a.ephemeralKey <- Type_key.xassert a.ephemeralKey in
-      let _ = a.myPreKey <- Type_keypair.xassert a.myPreKey in
-      let _ = a.preKey <- Type_key.xassert a.preKey in
-      let _ =
-        (*check s+t for overflow and underflow*)
-        let s = a.preKeyId in
-        let t = 1 in
-        if s > 0
-        then
-          if t <= Int.max_int - s
-          then ()
-          else
-            raise
-              (Invalid_argument
-                 (Format.sprintf "(a.preKeyId+1)=(%d+%d) will overflow" s t) )
-        else if s < 0
-        then
-          if t >= Int.min_int - s
-          then ()
-          else
-            raise
-              (Invalid_argument
-                 (Format.sprintf "(a.preKeyId+1)=(%d+%d) will underflow" s t) )
-      in
-      let _ = Array.set a.recvKeys 0 (Type_key.xassert a.recvKeys.(0)) in
-      let _ = Array.set a.recvKeys 1 (Type_key.xassert a.recvKeys.(1)) in
-      let _ = Array.set a.sendKeys 0 (Type_key.xassert a.sendKeys.(0)) in
-      let _ = Array.set a.sendKeys 1 (Type_key.xassert a.sendKeys.(1)) in
-      let _ = a.shared <- Type_key.xassert a.shared in
-      let _ = a.established = true |> ignore in
+      () ;
       a
   end
 
@@ -315,8 +343,8 @@ module Make (ProScript : Dirsp_proscript.S) :
 
 
     let xassert (a : t record_sendoutput) =
-      let _ = a.them <- Type_them.xassert a.them in
-      let _ = a.output <- Type_msg.xassert a.output in
+      a.them <- Type_them.xassert a.them ;
+      a.output <- Type_msg.xassert a.output ;
       a
   end
 
@@ -329,9 +357,12 @@ module Make (ProScript : Dirsp_proscript.S) :
 
 
     let xassert a =
-      let _ = a.them <- Type_them.xassert a.them in
-      let _ = a.output <- Type_msg.xassert a.output in
-      let _ = a.plaintext = ProScript.of_string "" |> ignore in
+      a.them <- Type_them.xassert a.them ;
+      a.output <- Type_msg.xassert a.output ;
+      let (_ : t) =
+        (* no-op statement-by-statement equivalence *) a.plaintext
+      in
+      () ;
       a
   end
 
@@ -418,12 +449,38 @@ module Make (ProScript : Dirsp_proscript.S) :
 
 
     let newKeyPair =
-      (* <unknown expression> at file sp.js, line 301:42 to 301:46 *)
+      (*
+        ----------------
+          AUDIT NOTICE
+        ----------------
+        
+        The line and column of the original text that caused the problem with its programmatic description is:
+          <unknown expression> at file sp.js, line 301:42 to 301:46 
+        
+        The resolution to the problem was:
+          The ps2ocaml translator has automatically inserted a call to a 'shim'
+          function. The shim function will be defined in the accompanying
+          _shims.ml file. Since that function is hand-written, please be sure
+          to review the full definition of that shim function. 
+      *)
       shim_UTIL_newKeyPair
 
 
     let getDHPublicKey =
-      (* <unknown expression> at file sp.js, line 310:42 to 310:46 *)
+      (*
+        ----------------
+          AUDIT NOTICE
+        ----------------
+        
+        The line and column of the original text that caused the problem with its programmatic description is:
+          <unknown expression> at file sp.js, line 310:42 to 310:46 
+        
+        The resolution to the problem was:
+          The ps2ocaml translator has automatically inserted a call to a 'shim'
+          function. The shim function will be defined in the accompanying
+          _shims.ml file. Since that function is hand-written, please be sure
+          to review the full definition of that shim function. 
+      *)
       shim_UTIL_getDHPublicKey
   end
 
@@ -628,11 +685,66 @@ module Make (ProScript : Dirsp_proscript.S) :
 
     let receiving myIdentityKey (them : t record_them) (msg : t record_msg) =
       let them = Type_them.xassert them in
+
+      (*
+        ----------------
+          AUDIT NOTICE
+        ----------------
+        
+        The line and column of the original text that caused the problem with its programmatic description is:
+          The ProScript function could not be automatically translated. The
+          local variable mutations used in this function were too complex for
+          ps2ocaml to handle; ps2ocaml is intentionally kept simple (auditable)
+          and will fail with this error for safety. The ps2ocaml user can 1.
+          Rewrite the offending ProScript code in static single assignment
+          style so the assignment counts = [ dec=2 them=1 ] is either empty or
+          all ones. Offending problem location at file sp.js, line 478:0 to
+          480:3 
+        
+        The resolution to the problem was:
+          The ps2ocaml user has chosen to override the above problem. If you
+          are auditing or reviewing, review the OCaml variable mutation
+          immediately below and compare it to the original ProScript.
+          ProScript/JavaScript mutations change the value of variables, but
+          ps2ocaml will only generate OCaml code that creats a new variable. So
+          if there are _any_ conditional jumps over a mutation statement (ex.
+          a=a+1 within a loop) then the OCaml code will be unsafe and you
+          should fail the review 
+      *)
       let dec =
         RATCHET.tryDecrypt myIdentityKey them.myEphemeralKeyP1 them msg
       in
       if dec.valid
       then
+        (*
+          ----------------
+            AUDIT NOTICE
+          ----------------
+          
+          The line and column of the original text that caused the problem with its programmatic description is:
+            The ProScript 'return' statement could not be automatically
+            translated because ps2ocaml applies conservative rules to detect
+            whether a translation can occur. The rule for 'return' statements
+            is that the enclosing function must be either 'let in' or
+            sequential semicolon safe. To detect 'let in' safety the return
+            value must be a terminal expression. To detect sequential semicolon
+            safety, there can be no local variable mutations in the enclosing
+            function and it must also satisfy the 'let in' conditions. The
+            ps2ocaml user can 1. Switch your ProScript code to have the return
+            statement as the last statement -or- 2. Rewrite the offending
+            ProScript code in static single assignment style so the assignment
+            counts = [ dec=2 them=1 ] is either empty or all ones. Offending
+            problem location at file sp.js, line 482:0 to 509:4 
+          
+          The resolution to the problem was:
+            The ps2ocaml user has chosen to override the above problem. If you
+            are auditing or reviewing, review the OCaml expression immediately
+            below to make sure it RETURNS the expression result from the
+            function. If there is _any_ subsequent expression executed _after_
+            the OCaml expression, then fail the review. Formatting the code
+            with ocp-indent or ocamlformat will help visually separate the
+            expressions 
+        *)
         { them =
             { signedPreKey = them.signedPreKey
             ; signedPreKeySignature = them.signedPreKeySignature
@@ -661,9 +773,64 @@ module Make (ProScript : Dirsp_proscript.S) :
         ; plaintext = dec.plaintext
         }
       else
+        (*
+          ----------------
+            AUDIT NOTICE
+          ----------------
+          
+          The line and column of the original text that caused the problem with its programmatic description is:
+            The ProScript function could not be automatically translated. The
+            local variable mutations used in this function were too complex for
+            ps2ocaml to handle; ps2ocaml is intentionally kept simple
+            (auditable) and will fail with this error for safety. The ps2ocaml
+            user can 1. Rewrite the offending ProScript code in static single
+            assignment style so the assignment counts = [ dec=2 them=1 ] is
+            either empty or all ones. Offending problem location at file sp.js,
+            line 512:3 to 512:6 
+          
+          The resolution to the problem was:
+            The ps2ocaml user has chosen to override the above problem. If you
+            are auditing or reviewing, review the OCaml variable mutation
+            immediately below and compare it to the original ProScript.
+            ProScript/JavaScript mutations change the value of variables, but
+            ps2ocaml will only generate OCaml code that creats a new variable.
+            So if there are _any_ conditional jumps over a mutation statement
+            (ex. a=a+1 within a loop) then the OCaml code will be unsafe and
+            you should fail the review 
+        *)
         let dec =
           RATCHET.tryDecrypt myIdentityKey them.myEphemeralKeyP0 them msg
         in
+
+        (*
+          ----------------
+            AUDIT NOTICE
+          ----------------
+          
+          The line and column of the original text that caused the problem with its programmatic description is:
+            The ProScript 'return' statement could not be automatically
+            translated because ps2ocaml applies conservative rules to detect
+            whether a translation can occur. The rule for 'return' statements
+            is that the enclosing function must be either 'let in' or
+            sequential semicolon safe. To detect 'let in' safety the return
+            value must be a terminal expression. To detect sequential semicolon
+            safety, there can be no local variable mutations in the enclosing
+            function and it must also satisfy the 'let in' conditions. The
+            ps2ocaml user can 1. Switch your ProScript code to have the return
+            statement as the last statement -or- 2. Rewrite the offending
+            ProScript code in static single assignment style so the assignment
+            counts = [ dec=2 them=1 ] is either empty or all ones. Offending
+            problem location at file sp.js, line 515:0 to 542:4 
+          
+          The resolution to the problem was:
+            The ps2ocaml user has chosen to override the above problem. If you
+            are auditing or reviewing, review the OCaml expression immediately
+            below to make sure it RETURNS the expression result from the
+            function. If there is _any_ subsequent expression executed _after_
+            the OCaml expression, then fail the review. Formatting the code
+            with ocp-indent or ocamlformat will help visually separate the
+            expressions 
+        *)
         { them =
             { signedPreKey = them.signedPreKey
             ; signedPreKeySignature = them.signedPreKeySignature
@@ -723,18 +890,131 @@ module Make (ProScript : Dirsp_proscript.S) :
     let send myIdentityKey (them : t record_them) plaintext =
       let myIdentityKey = Type_keypair.xassert myIdentityKey in
       let them = Type_them.xassert them in
+
+      (*
+        ----------------
+          AUDIT NOTICE
+        ----------------
+        
+        The line and column of the original text that caused the problem with its programmatic description is:
+          The ProScript function could not be automatically translated. The
+          local variable mutations used in this function were too complex for
+          ps2ocaml to handle; ps2ocaml is intentionally kept simple (auditable)
+          and will fail with this error for safety. The ps2ocaml user can 1.
+          Rewrite the offending ProScript code in static single assignment
+          style so the assignment counts = [ initEphemeralKey=2 myIdentityKey=1
+          them=1 ] is either empty or all ones. Offending problem location at
+          file sp.js, line 574:0 to 577:3 
+        
+        The resolution to the problem was:
+          The ps2ocaml user has chosen to override the above problem. If you
+          are auditing or reviewing, review the OCaml variable mutation
+          immediately below and compare it to the original ProScript.
+          ProScript/JavaScript mutations change the value of variables, but
+          ps2ocaml will only generate OCaml code that creats a new variable. So
+          if there are _any_ conditional jumps over a mutation statement (ex.
+          a=a+1 within a loop) then the OCaml code will be unsafe and you
+          should fail the review 
+      *)
       let initEphemeralKey =
         { priv = Type_key.construct (); pub = Type_key.construct () }
       in
       if them.established = false
       then
+        (*
+          ----------------
+            AUDIT NOTICE
+          ----------------
+          
+          The line and column of the original text that caused the problem with its programmatic description is:
+            The ProScript function could not be automatically translated. The
+            local variable mutations used in this function were too complex for
+            ps2ocaml to handle; ps2ocaml is intentionally kept simple
+            (auditable) and will fail with this error for safety. The ps2ocaml
+            user can 1. Rewrite the offending ProScript code in static single
+            assignment style so the assignment counts = [ initEphemeralKey=2
+            myIdentityKey=1 them=1 ] is either empty or all ones. Offending
+            problem location at file sp.js, line 579:16 to 579:19 
+          
+          The resolution to the problem was:
+            The ps2ocaml user has chosen to override the above problem. If you
+            are auditing or reviewing, review the OCaml variable mutation
+            immediately below and compare it to the original ProScript.
+            ProScript/JavaScript mutations change the value of variables, but
+            ps2ocaml will only generate OCaml code that creats a new variable.
+            So if there are _any_ conditional jumps over a mutation statement
+            (ex. a=a+1 within a loop) then the OCaml code will be unsafe and
+            you should fail the review 
+        *)
         let initEphemeralKey = UTIL.newKeyPair (ProScript.of_string "a3") in
+
+        (*
+          ----------------
+            AUDIT NOTICE
+          ----------------
+          
+          The line and column of the original text that caused the problem with its programmatic description is:
+            The ProScript 'return' statement could not be automatically
+            translated because ps2ocaml applies conservative rules to detect
+            whether a translation can occur. The rule for 'return' statements
+            is that the enclosing function must be either 'let in' or
+            sequential semicolon safe. To detect 'let in' safety the return
+            value must be a terminal expression. To detect sequential semicolon
+            safety, there can be no local variable mutations in the enclosing
+            function and it must also satisfy the 'let in' conditions. The
+            ps2ocaml user can 1. Switch your ProScript code to have the return
+            statement as the last statement -or- 2. Rewrite the offending
+            ProScript code in static single assignment style so the assignment
+            counts = [ initEphemeralKey=2 myIdentityKey=1 them=1 ] is either
+            empty or all ones. Offending problem location at file sp.js, line
+            580:0 to 585:4 
+          
+          The resolution to the problem was:
+            The ps2ocaml user has chosen to override the above problem. If you
+            are auditing or reviewing, review the OCaml expression immediately
+            below to make sure it RETURNS the expression result from the
+            function. If there is _any_ subsequent expression executed _after_
+            the OCaml expression, then fail the review. Formatting the code
+            with ocp-indent or ocamlformat will help visually separate the
+            expressions 
+        *)
         HANDLE.sending
           myIdentityKey
           (HANDLE.xAKENeeded myIdentityKey initEphemeralKey them)
           initEphemeralKey.pub
           plaintext
-      else HANDLE.sending myIdentityKey them (Type_key.construct ()) plaintext
+      else
+        (*
+          ----------------
+            AUDIT NOTICE
+          ----------------
+          
+          The line and column of the original text that caused the problem with its programmatic description is:
+            The ProScript 'return' statement could not be automatically
+            translated because ps2ocaml applies conservative rules to detect
+            whether a translation can occur. The rule for 'return' statements
+            is that the enclosing function must be either 'let in' or
+            sequential semicolon safe. To detect 'let in' safety the return
+            value must be a terminal expression. To detect sequential semicolon
+            safety, there can be no local variable mutations in the enclosing
+            function and it must also satisfy the 'let in' conditions. The
+            ps2ocaml user can 1. Switch your ProScript code to have the return
+            statement as the last statement -or- 2. Rewrite the offending
+            ProScript code in static single assignment style so the assignment
+            counts = [ initEphemeralKey=2 myIdentityKey=1 them=1 ] is either
+            empty or all ones. Offending problem location at file sp.js, line
+            587:0 to 592:4 
+          
+          The resolution to the problem was:
+            The ps2ocaml user has chosen to override the above problem. If you
+            are auditing or reviewing, review the OCaml expression immediately
+            below to make sure it RETURNS the expression result from the
+            function. If there is _any_ subsequent expression executed _after_
+            the OCaml expression, then fail the review. Formatting the code
+            with ocp-indent or ocamlformat will help visually separate the
+            expressions 
+        *)
+        HANDLE.sending myIdentityKey them (Type_key.construct ()) plaintext
 
 
     let recv

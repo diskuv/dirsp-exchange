@@ -20,6 +20,11 @@ exception UnknownExpressionError of string
 
 exception TooComplexMutationError of string
 
+type wrapped_settings =
+  { types_module : string
+  ; interface_module : string
+  }
+
 type numbered_expression =
   { expr_num : int
   ; expr : Ast.identifier_t
@@ -35,29 +40,63 @@ type parameter_type = string * parameter_replacement
 type translation_options =
   { treat_equality_as_assertion : bool
   ; parameter_types : parameter_type list
+  ; whitelisted_letin_modules : string list
   }
 
-type stack_context =
-  { module_name : string
-  ; constructing_buffer : bool
-  ; parameter_types : parameter_type list
-  ; style_letin : bool
-  ; treat_equality_as_assertion : bool
-  }
+module Stack_context = struct
+  type t =
+    { module_name : string
+    ; constructing_buffer : bool
+    ; parameter_types : parameter_type list
+    ; ast_style : Astpredicates.Ast_style.t
+    ; treat_equality_as_assertion : bool
+    ; whitelisted_letin_modules : string list
+    }
+
+  let create () =
+    { module_name = ""
+    ; constructing_buffer = false
+    ; parameter_types = []
+    ; ast_style =
+        Astpredicates.Ast_style.NotLetIn
+          Astpredicates.VariableAssignmentCounts.empty
+    ; treat_equality_as_assertion = true
+    ; whitelisted_letin_modules = []
+    }
+
+
+  let create_with_args
+      ~parameter_types ~treat_equality_as_assertion ~whitelisted_letin_modules =
+    let sc = create () in
+    { sc with
+      whitelisted_letin_modules
+    ; parameter_types
+    ; treat_equality_as_assertion
+    }
+
+
+  let get_ast_style sc = sc.ast_style
+
+  let get_module_name sc = sc.module_name
+
+  let is_whitelisted_for_letin sc =
+    sc.module_name <> "" && List.mem sc.module_name sc.whitelisted_letin_modules
+
+
+  let with_module_name sc module_name = { sc with module_name }
+
+  let with_constructing_buffer sc = { sc with constructing_buffer = true }
+
+  let with_ast_style sc ast_style = { sc with ast_style }
+end
 
 let recode_utf8 = Globals.recode_utf8
 
 let init_translation_options () =
-  { treat_equality_as_assertion = false; parameter_types = [] }
-
-
-let error_too_complex_mutation loc =
-  TooComplexMutationError
-    (Lexerror.get_error
-       loc
-       "Currently only OCaml 'let in' translations are supported. Complicated \
-        mutations cannot be translated into 'let in'. Switch your ProScript \
-        code to more of a functional form" )
+  { treat_equality_as_assertion = true
+  ; parameter_types = []
+  ; whitelisted_letin_modules = []
+  }
 
 
 let join_with_prespace l =
@@ -105,16 +144,7 @@ let sanitize_ocaml_module s =
 
 let preamble =
   "(* Auto-generated using code from \
-   <dirsp-exchange>/proscript-messaging/ps2pv/ast2ocaml.ml *)\n\n"
-
-
-let create_empty_context () =
-  { module_name = ""
-  ; constructing_buffer = false
-  ; parameter_types = []
-  ; style_letin = false
-  ; treat_equality_as_assertion = false
-  }
+   <dirsp-exchange>/src-proscript/proscript-messaging/ps2pv/ast2ocaml.ml *)\n\n"
 
 
 (* let | `Add ((`Add (f, g), loc), e) when chain_of_string_additions e -> *)
@@ -145,7 +175,124 @@ let standard_letin_check_options : Astpredicates.letin_check_options =
   }
 
 
-let rec eval_function_body d (ctx : stack_context) (program : Ast.t) =
+let describe_counts cnts =
+  "assignment counts = ["
+  ^ Astpredicates.VariableAssignmentCounts.fold
+      (fun k d acc -> acc ^ " " ^ k ^ "=" ^ string_of_int d)
+      cnts
+      ""
+  ^ " ]"
+
+
+let possible_prefix_suffix_requiredsuffix ctx =
+  match Stack_context.get_ast_style ctx with
+  | NotLetIn _ | LetInSemicolonCapable _ -> ("", ";", " in ();")
+  | LetIn _ -> ("let () = ", " in ", " in ")
+
+
+let audit_warning d msg resolution =
+  let buf = Buffer.create 100 in
+  let fmt = Format.formatter_of_buffer buf in
+  Format.(
+    let print_text s =
+      List.iter
+        (fun a ->
+          pp_print_string fmt a ;
+          pp_print_space fmt () )
+        (String.split_on_char ' ' s)
+    in
+    pp_set_margin fmt 80 ;
+    pp_open_vbox fmt (!Globals.pad_len * d) ;
+
+    pp_print_space fmt () ;
+    pp_print_string fmt "(*" ;
+
+    pp_print_break fmt 1 !Globals.pad_len ;
+    pp_print_string fmt "----------------" ;
+
+    pp_print_break fmt 1 !Globals.pad_len ;
+    pp_print_string fmt "  AUDIT NOTICE" ;
+
+    pp_print_break fmt 1 !Globals.pad_len ;
+    pp_print_string fmt "----------------" ;
+
+    pp_print_break fmt 1 !Globals.pad_len ;
+    pp_print_break fmt 1 !Globals.pad_len ;
+    pp_print_string
+      fmt
+      "The line and column of the original text that caused the problem with \
+       its programmatic description is:" ;
+
+    pp_print_break fmt 1 (2 * !Globals.pad_len) ;
+    pp_open_hovbox fmt 0 ;
+    print_text (String.trim msg) ;
+    pp_close_box fmt () ;
+
+    pp_print_break fmt 1 !Globals.pad_len ;
+    pp_print_break fmt 1 !Globals.pad_len ;
+    pp_print_string fmt "The resolution to the problem was:" ;
+
+    pp_print_break fmt 1 (2 * !Globals.pad_len) ;
+    pp_open_hovbox fmt 0 ;
+    print_text (String.trim resolution) ;
+    pp_close_box fmt () ;
+
+    pp_print_space fmt () ;
+    pp_print_string fmt "*)" ;
+
+    pp_close_box fmt () ;
+    pp_print_newline fmt () ;
+    pp_print_newline fmt () ;
+    Bytes.to_string (Buffer.to_bytes buf))
+  ^ pad d
+
+
+let shim_resolution =
+  "The ps2ocaml translator has automatically inserted a call to a 'shim' \
+   function. The shim function will be defined in the accompanying _shims.ml \
+   file. Since that function is hand-written, please be sure to review the \
+   full definition of that shim function."
+
+
+let handle_too_complex_mutation d ctx loc cnts reified_code =
+  let problem =
+    "The ProScript function could not be automatically translated. The local \
+     variable mutations used in this function were too complex for ps2ocaml to \
+     handle; ps2ocaml is intentionally kept simple (auditable) and will fail \
+     with this error for safety. The ps2ocaml user can 1. Rewrite the \
+     offending ProScript code in static single assignment style so the "
+    ^ describe_counts cnts
+    ^ " is either empty or all ones"
+  in
+  if Stack_context.is_whitelisted_for_letin ctx
+  then
+    audit_warning
+      d
+      (Lexerror.get_error loc (problem ^ ". Offending problem location"))
+      "The ps2ocaml user has chosen to override the above problem. If you are \
+       auditing or reviewing, review the OCaml variable mutation immediately \
+       below and compare it to the original ProScript. ProScript/JavaScript \
+       mutations change the value of variables, but ps2ocaml will only \
+       generate OCaml code that creats a new variable. So if there are _any_ \
+       conditional jumps over a mutation statement (ex. a=a+1 within a loop) \
+       then the OCaml code will be unsafe and you should fail the review"
+    ^ reified_code
+  else
+    raise
+      (TooComplexMutationError
+         (Lexerror.get_error
+            loc
+            ( problem
+            ^ " -or- 2. Manually write the full body of the shim function in \
+               the _shims module -or- 3. Carefully review the regenerated \
+               OCaml code and the regenerated \"resolution\" after \
+               whitelisting 'let in' safety with \"ps2ocaml \
+               -whitelist_module_for_letin "
+            ^ Stack_context.get_module_name ctx
+            ^ "\". Offending problem location" ) ) )
+
+
+let rec eval_function_body d ctx (program : Ast.t) =
   let rec eval d (ast : Ast.t) =
     match ast with
     | [] -> ""
@@ -162,46 +309,108 @@ let rec eval_function_body d (ctx : stack_context) (program : Ast.t) =
           end
       *)
       when Astpredicates.is_object_list_composed_only_of_properties l ->
-        let ctx = { ctx with module_name = recode_utf8 i } in
+        let child_ctx = Stack_context.with_module_name ctx (recode_utf8 i) in
         "module "
-        ^ ctx.module_name
+        ^ child_ctx.module_name
         ^ " = struct\n"
-        ^ eval_object_of_lets (d + 1) ctx l
+        ^ eval_object_of_lets (d + 1) child_ctx l
         ^ pad d
         ^ "end\n"
         ^ eval d tl
     | (`Statement s, _loc) :: tl -> eval_statement d ctx s ^ eval d tl
     | (`FunctionDeclaration childf, loc) :: tl ->
         let _id_opt, _args, childast = childf in
-        let letin_available =
-          Astpredicates.is_ast_writable_with_letin_style
+        let ast_style =
+          Astpredicates.characterize_ast_style
             childast
             standard_letin_check_options
         in
-        let ctx = { ctx with style_letin = letin_available } in
+        let ctx = { ctx with ast_style } in
         eval_function d ctx loc childf ^ "\n\n" ^ eval d tl
   in
   eval d program ^ "\n"
 
 
 and eval_statement ?nopad:(np = false) d ctx ((p, loc) : Ast.statement_t) =
+  let ( possible_letin_prefix
+      , possible_letin_suffix
+      , suffix_if_forced_to_use_letin ) =
+    possible_prefix_suffix_requiredsuffix ctx
+  in
+  let reify_const_code l =
+    "let "
+    ^ List.fold_right
+        (fun (i, v) acc ->
+          sanitize_ocaml_variable i
+          ^ ( match v with
+            | None -> ""
+            | Some v -> " = " ^ eval_exp (d + 1) ctx ~commaless:true v )
+          ^ if acc = "" then acc else ",\n" ^ pad (d + 1) ^ acc )
+        l
+        ""
+    ^ " in "
+  in
   let f = function
-    | `Empty | `Debugger -> ""
+    | `Empty -> ""
+    | `Debugger ->
+        failwith
+          (Lexerror.get_error
+             loc
+             "There is a 'debugger' statement in the ProScript code. Remove \
+              it! There is no safe statement-by-statement equivalent for it" )
     | `Return e ->
-        if ctx.style_letin
-        then
+        let letin_logic () =
           match e with
           | None -> "()"
           | Some v -> eval_exp d ctx v
-        else
-          raise
-            (MultiReturnError
-               (Lexerror.get_error
-                  loc
-                  "Currently only OCaml 'let in' translations are supported. \
-                   With 'let in', the return value must be the last \
-                   expression. Switch your ProScript code to have the return \
-                   statement as the last statement" ) )
+        in
+        ( match Stack_context.get_ast_style ctx with
+        | LetIn _ | LetInSemicolonCapable _ -> letin_logic ()
+        | NotLetIn cnts ->
+            let problem =
+              "The ProScript 'return' statement could not be automatically \
+               translated because ps2ocaml applies conservative rules to \
+               detect whether a translation can occur. The rule for 'return' \
+               statements is that the enclosing function must be either 'let \
+               in' or sequential semicolon safe. To detect 'let in' safety the \
+               return value must be a terminal expression. To detect \
+               sequential semicolon safety, there can be no local variable \
+               mutations in the enclosing function and it must also satisfy \
+               the 'let in' conditions. The ps2ocaml user can 1. Switch your \
+               ProScript code to have the return statement as the last \
+               statement -or- 2. Rewrite the offending ProScript code in \
+               static single assignment style so the "
+              ^ describe_counts cnts
+              ^ " is either empty or all ones"
+            in
+            if Stack_context.is_whitelisted_for_letin ctx
+            then
+              audit_warning
+                d
+                (Lexerror.get_error
+                   loc
+                   (problem ^ ". Offending problem location") )
+                "The ps2ocaml user has chosen to override the above problem. \
+                 If you are auditing or reviewing, review the OCaml expression \
+                 immediately below to make sure it RETURNS the expression \
+                 result from the function. If there is _any_ subsequent \
+                 expression executed _after_ the OCaml expression, then fail \
+                 the review. Formatting the code with ocp-indent or \
+                 ocamlformat will help visually separate the expressions"
+              ^ letin_logic ()
+            else
+              raise
+                (MultiReturnError
+                   (Lexerror.get_error
+                      loc
+                      ( problem
+                      ^ " -or- 3. Manually write the full body of the shim \
+                         function in the _shims module -or- 4. Carefully \
+                         review the regenerated OCaml code and the regenerated \
+                         \"resolution\" after whitelisting 'let in' safety \
+                         with \"ps2ocaml -whitelist_module_for_letin "
+                      ^ Stack_context.get_module_name ctx
+                      ^ "\". Offending problem location" ) ) ) )
     | `Throw e -> "raise " ^ eval_exp d ctx e
     | `Break i ->
         "break"
@@ -226,63 +435,86 @@ and eval_statement ?nopad:(np = false) d ctx ((p, loc) : Ast.statement_t) =
            It looks nonsensical, but ProScript seems to use it as a JavaScript-y way of checking that the value can be converted to truth-y.
            We can be explicit with full OCaml types to constrain the type to be boolean or look for the field to be true.
         *)
-        let condition =
-          "(" ^ eval_exp (d + 1) ctx e ^ " = " ^ eval_exp (d + 1) ctx f ^ ")"
-        in
-        (if ctx.style_letin then "let _ = " else "")
-        ^ ( if ctx.treat_equality_as_assertion
-          then
-            (* constrain the type; validate the value *)
-            Format.sprintf
-              "if %s then () else raise (Invalid_argument \"not %s\")"
-              condition
-              (String.escaped condition)
-          else
-            (* constrain the type; ignore the value *)
-            Format.sprintf "%s |> ignore" condition )
-        ^ if ctx.style_letin then " in " else ";"
+        let lhs = eval_exp (d + 1) ctx e in
+        let condition = "(" ^ lhs ^ " = " ^ eval_exp (d + 1) ctx f ^ ")" in
+        if ctx.treat_equality_as_assertion
+        then
+          (* constrain the type; validate the value *)
+          Format.sprintf
+            "%sif %s then () else raise (Invalid_argument \"not %s\")%s"
+            possible_letin_prefix
+            condition
+            (String.escaped condition)
+            possible_letin_suffix
+        else (
+          (* constrain the type; ignore the value *)
+          match f with
+          | `Bool _bvalue, _loc ->
+              Format.sprintf
+                "let (_ : bool) = (* no-op statement-by-statement equivalence \
+                 *) %s%s"
+                lhs
+                suffix_if_forced_to_use_letin
+          | `Byte _bvalue, _loc ->
+              Format.sprintf
+                "let (_ : int) = (* no-op statement-by-statement equivalence \
+                 *) %s%s"
+                lhs
+                suffix_if_forced_to_use_letin
+          | `String _svalue, _loc ->
+              Format.sprintf
+                "let (_ : t) = (* no-op statement-by-statement equivalence *) \
+                 %s%s"
+                lhs
+                suffix_if_forced_to_use_letin
+          | _ ->
+              (* Yucky! *)
+              Format.sprintf
+                "(* statement-by-statement equivalence; ignored at runtime  *) \
+                 %s |> ignore;"
+                condition )
     | `Expression (`Add (e, f), _loc) ->
         (* match: a.preKeyId + 1;
            It looks nonsensical, but ProScript seems to use it as a JavaScript-y way of checking for overflow. We can be explicit with full OCaml types.
         *)
         let s = eval_exp (d + 1) ctx e in
         let t = eval_exp (d + 1) ctx f in
-        (if ctx.style_letin then "let _ = " else "")
-        ^ Format.sprintf
-            "(*check s+t for overflow and underflow*) let s = %s in let t = %s \
-             in (if (s > 0) then (if (t <= Int.max_int - s) then () else raise \
-             (Invalid_argument (Format.sprintf \"(%s+%s)=(%%d+%%d) will \
-             overflow\" s t))) else if (s < 0) then (if (t >= Int.min_int - s) \
-             then () else raise (Invalid_argument (Format.sprintf \
-             \"(%s+%s)=(%%d+%%d) will underflow\" s t))))"
-            s
-            t
-            (String.escaped s)
-            (String.escaped t)
-            (String.escaped s)
-            (String.escaped t)
-        ^ if ctx.style_letin then " in " else ";"
+        Format.sprintf
+          "%s(*check s+t for overflow and underflow*) let s = %s in let t = %s \
+           in (if (s > 0) then (if (t <= Int.max_int - s) then () else raise \
+           (Invalid_argument (Format.sprintf \"(%s+%s)=(%%d+%%d) will \
+           overflow\" s t))) else if (s < 0) then (if (t >= Int.min_int - s) \
+           then () else raise (Invalid_argument (Format.sprintf \
+           \"(%s+%s)=(%%d+%%d) will underflow\" s t))))%s"
+          possible_letin_prefix
+          s
+          t
+          (String.escaped s)
+          (String.escaped t)
+          (String.escaped s)
+          (String.escaped t)
+          possible_letin_suffix
     | `Expression (`Sub (e, f), _loc) ->
         (* match: a.preKeyId - 1; *)
         let s = eval_exp (d + 1) ctx e in
         let t = eval_exp (d + 1) ctx f in
-        (if ctx.style_letin then "let _ = " else "")
-        ^ Format.sprintf
-            "(*check s-t for overflow and underflow*) let s = %s in let t = %s \
-             in (if (s > 0) then (if (t > 0 || -t <= Int.max_int - s) then () \
-             else raise (Invalid_argument (Format.sprintf \"(%s-%s)=(%%d - \
-             %%d) will overflow\" s t))) else if (s < 0) then (if (t < 0 || (t \
-             <> Int.max_int && -t >= Int.min_int - s)) then () else raise \
-             (Invalid_argument (Format.sprintf \"(%s-%s)=(%%d - %%d) will \
-             underflow\" s t))))"
-            s
-            t
-            (String.escaped s)
-            (String.escaped t)
-            (String.escaped s)
-            (String.escaped t)
-        ^ if ctx.style_letin then " in " else ";"
-    | `Expression e -> eval_exp d ctx e ^ if ctx.style_letin then "" else ";"
+        Format.sprintf
+          "%s(*check s-t for overflow and underflow*) let s = %s in let t = %s \
+           in (if (s > 0) then (if (t > 0 || -t <= Int.max_int - s) then () \
+           else raise (Invalid_argument (Format.sprintf \"(%s-%s)=(%%d - %%d) \
+           will overflow\" s t))) else if (s < 0) then (if (t < 0 || (t <> \
+           Int.max_int && -t >= Int.min_int - s)) then () else raise \
+           (Invalid_argument (Format.sprintf \"(%s-%s)=(%%d - %%d) will \
+           underflow\" s t))))%s"
+          possible_letin_prefix
+          s
+          t
+          (String.escaped s)
+          (String.escaped t)
+          (String.escaped s)
+          (String.escaped t)
+          possible_letin_suffix
+    | `Expression e -> eval_exp d ctx e
     | `If (c, t, f) ->
         "if ("
         ^ eval_exp d ctx c
@@ -386,21 +618,23 @@ and eval_statement ?nopad:(np = false) d ctx ((p, loc) : Ast.statement_t) =
         ( match f with
         | Some f -> pad d ^ "finally\n" ^ eval_statement (pl d f) ctx f
         | None -> "" )
-    | `Declaration l | `Const l ->
-        if ctx.style_letin
-        then
-          "let "
-          ^ List.fold_right
-              (fun (i, v) b ->
-                sanitize_ocaml_variable i
-                ^ ( match v with
-                  | None -> ""
-                  | Some v -> " = " ^ eval_exp (d + 1) ctx ~commaless:true v )
-                ^ if b = "" then b else ",\n" ^ pad (d + 1) ^ b )
-              l
-              ""
-          ^ " in"
-        else raise (error_too_complex_mutation loc)
+    | `Const l -> reify_const_code l
+    | `Declaration l ->
+        let reified_code = reify_const_code l in
+        ( match Stack_context.get_ast_style ctx with
+        | LetIn _ | LetInSemicolonCapable _ -> reified_code
+        | NotLetIn cnts ->
+            if List.fold_left
+                 (fun _acc (id, _expr_opt) ->
+                   let cnt_opt =
+                     Astpredicates.VariableAssignmentCounts.find_opt id cnts
+                   in
+                   if Option.is_some cnt_opt then Option.get cnt_opt else 0 )
+                 0
+                 l
+               > 1
+            then handle_too_complex_mutation d ctx loc cnts reified_code
+            else reified_code )
   in
 
   (if np then "" else pad d) ^ f p ^ "\n"
@@ -417,9 +651,13 @@ and eval_statements d ctx l =
   text.expr
 
 
-and eval_exp ?commaless:(cl = false) ?inless:(il = false) d (ctx : stack_context)
-    =
-  let rec ppe d (ctx : stack_context) (input, loc) =
+and eval_exp ?commaless:(cl = false) ?inless:(il = false) d ctx =
+  let ( possible_letin_prefix
+      , possible_letin_suffix
+      , _suffix_if_forced_to_use_letin ) =
+    possible_prefix_suffix_requiredsuffix ctx
+  in
+  let rec ppe d ctx (input, loc) =
     match input with
     | `This -> ("this", 0)
     | `Null -> ("null", 0)
@@ -436,7 +674,7 @@ and eval_exp ?commaless:(cl = false) ?inless:(il = false) d (ctx : stack_context
         in
         let child_ctx =
           if buffer_making_array
-          then { ctx with constructing_buffer = true }
+          then Stack_context.with_constructing_buffer ctx
           else ctx
         in
         if buffer_making_array
@@ -457,12 +695,10 @@ and eval_exp ?commaless:(cl = false) ?inless:(il = false) d (ctx : stack_context
         , 0 )
     | `Function (f : Ast.function_t) ->
         let _id_opt, _args, ast = f in
-        let letin_available =
-          Astpredicates.is_ast_writable_with_letin_style
-            ast
-            standard_letin_check_options
+        let ast_style =
+          Astpredicates.characterize_ast_style ast standard_letin_check_options
         in
-        let ctx = { ctx with style_letin = letin_available } in
+        let ctx = { ctx with ast_style } in
         ("(" ^ eval_function (d + 1) ctx loc f ^ ")", 1)
     | `Dot ((`Dot ((`Dot ((`Identifier f, _loc3), k), _loc2), j), _loc), i)
       when f = "ProScript" ->
@@ -664,56 +900,77 @@ and eval_exp ?commaless:(cl = false) ?inless:(il = false) d (ctx : stack_context
         (pt s1 (p1 > 16) ^ " ? " ^ pt s2 (p2 > 16) ^ " : " ^ pt s3 (p3 > 16), 16)
     | `Assign ((`Dot ((`Identifier id_id, id_loc), dot_id), dot_loc), f) ->
         (*
-          property assignment.
+          property mutation.
           input:
             a.ephemeralKey = Type_key.assert(a.ephemeralKey);
           output if style=letin will use immediate record mutation:
-           let _ = a.ephemeralKey <- (Type_key.assert a.ephemeralKey) in
+           let () = a.ephemeralKey <- (Type_key.assert a.ephemeralKey) in
         *)
         let e = (`Dot ((`Identifier id_id, id_loc), dot_id), dot_loc) in
         let s1, p1 = ppe d ctx e in
         let s2, p2 = ppe d ctx f in
-        if ctx.style_letin
-        then
-          ("let _ = " ^ pt s1 (p1 > 16) ^ " <- " ^ pt s2 (p2 > 17) ^ " in ", 17)
-        else raise (error_too_complex_mutation loc)
+        let letin_reified_code =
+          possible_letin_prefix
+          ^ pt s1 (p1 > 16)
+          ^ " <- "
+          ^ pt s2 (p2 > 17)
+          ^ possible_letin_suffix
+        in
+        ( match Stack_context.get_ast_style ctx with
+        | LetIn _ | LetInSemicolonCapable _ -> (letin_reified_code, 17)
+        | NotLetIn cnts ->
+            (handle_too_complex_mutation d ctx loc cnts letin_reified_code, 17)
+        )
     | `Assign
         ( ( `Property (array_expression, (`Number array_idx, _num_loc))
           , _prop_loc )
         , f ) ->
         (*
-          array assignment.
+          array mutation.
           input:
             a.recvKeys[0] = Type_key.assert(a.recvKeys[0]);
           output if style=letin will use immediate record mutation:
-            let _ = Array.set a.recvKeys 0 (Type_key.xassert a.recvKeys.(0)) in
+            let () = Array.set a.recvKeys 0 (Type_key.xassert a.recvKeys.(0)) in
         *)
         let s1, p1 = ppe d ctx array_expression in
         let s2, p2 = ppe d ctx f in
-        if ctx.style_letin
-        then
-          ( "let _ = Array.set "
-            ^ pt s1 (p1 > 16)
-            ^ " "
-            ^ string_of_int (int_of_float array_idx)
-            ^ " "
-            ^ pt s2 (p2 > 17)
-            ^ " in "
-          , 17 )
-        else raise (error_too_complex_mutation loc)
+        let letin_reified_code =
+          possible_letin_prefix
+          ^ "Array.set "
+          ^ pt s1 (p1 > 16)
+          ^ " "
+          ^ string_of_int (int_of_float array_idx)
+          ^ " "
+          ^ pt s2 (p2 > 17)
+          ^ possible_letin_suffix
+        in
+        ( match Stack_context.get_ast_style ctx with
+        | LetIn _ | LetInSemicolonCapable _ -> (letin_reified_code, 17)
+        | NotLetIn cnts ->
+            (handle_too_complex_mutation d ctx loc cnts letin_reified_code, 17)
+        )
     | `Assign (e, f) ->
         (*
-          bare assignment.
+          bare mutation.
           input:
             dec = RATCHET.tryDecrypt();
           output if style=letin will use local variable shadowing:
             let dec = RATCHET.tryDecrypt () in
+
+          This is local variable shadowing, which is unsafe
+          in semicolon form. The AST should have been prechecked
+          to know that semicolon form is unsafe.
           *)
         let s1, p1 = ppe d ctx e in
         let s2, p2 = ppe d ctx f in
-        if ctx.style_letin
-        then ("let " ^ pt s1 (p1 > 16) ^ " = " ^ pt s2 (p2 > 17) ^ " in ", 17)
-        else raise (error_too_complex_mutation loc)
+        let letin_reified_code =
+          "let " ^ pt s1 (p1 > 16) ^ " = " ^ pt s2 (p2 > 17) ^ " in "
+        in
+        ( match Stack_context.get_ast_style ctx with
+        | LetIn _ -> (letin_reified_code, 17)
+        | NotLetIn cnts | LetInSemicolonCapable cnts ->
+            (handle_too_complex_mutation d ctx loc cnts letin_reified_code, 17)
+        )
     | `Ashassign (e, f) ->
         let s1, p1 = ppe d ctx e in
         let s2, p2 = ppe d ctx f in
@@ -745,16 +1002,14 @@ and eval_callargs d ctx = function
            l )
 
 
-and eval_semicolonlist d (ctx : stack_context) = function
+and eval_semicolonlist d ctx = function
   | [ h ] -> eval_exp d ctx ~commaless:true h
   | h :: t ->
       eval_exp d ctx ~commaless:true h ^ "; " ^ eval_semicolonlist d ctx t
   | [] -> ""
 
 
-and eval_function
-    d ?decl:(h = true) (ctx : stack_context) loc ((n, args, b) : Ast.function_t)
-    =
+and eval_function d ?decl:(h = true) ctx loc ((n, args, b) : Ast.function_t) =
   let name =
     match n with
     | Some i -> sanitize_ocaml_variable i
@@ -777,9 +1032,7 @@ and eval_function
          ProScript changes, the shim name changes. However, there is no good way to
          name anonymous functions! *)
       let l1, _l2 = loc in
-      "(* "
-      ^ String.trim msg
-      ^ " *) "
+      audit_warning d msg shim_resolution
       ^ "shim_"
       ^ (if ctx.module_name = "" then "" else ctx.module_name ^ "_")
       ^ if name = "" then name else "line" ^ string_of_int l1.pos_lnum
@@ -794,12 +1047,12 @@ and eval_object d ctx (obj_prop_l : Ast.object_prop_t list) =
               sanitize_ocaml_id p ^ " = " ^ eval_exp d ctx ~commaless:true v
           | `Getter (p, f) ->
               let _id_opt, _args, ast = f in
-              let letin_available =
-                Astpredicates.is_ast_writable_with_letin_style
+              let ast_style =
+                Astpredicates.characterize_ast_style
                   ast
                   standard_letin_check_options
               in
-              let ctx = { ctx with style_letin = letin_available } in
+              let ctx = { ctx with ast_style } in
               "let get_"
               ^ sanitize_ocaml_variable p
               ^ " = begin\n"
@@ -808,12 +1061,12 @@ and eval_object d ctx (obj_prop_l : Ast.object_prop_t list) =
               ^ "end\n"
           | `Setter (p, f) ->
               let _id_opt, _args, ast = f in
-              let letin_available =
-                Astpredicates.is_ast_writable_with_letin_style
+              let ast_style =
+                Astpredicates.characterize_ast_style
                   ast
                   standard_letin_check_options
               in
-              let ctx = { ctx with style_letin = letin_available } in
+              let ctx = { ctx with ast_style } in
               "let set_"
               ^ sanitize_ocaml_variable p
               ^ " = begin\n"
@@ -834,15 +1087,22 @@ and eval_object_of_lets d ctx = function
   | (`Property (p, (`Function f, _loc_f)), _loc) :: t ->
       let _n, args, b = f in
       let name = sanitize_ocaml_variable p in
-      let qualify_args ctx args =
+      let _id_opt, _args, childast = f in
+      let ast_style =
+        Astpredicates.characterize_ast_style
+          childast
+          standard_letin_check_options
+      in
+      let child_ctx = Stack_context.with_ast_style ctx ast_style in
+      let qualify_args (q_ctx : Stack_context.t) args =
         List.map
           (fun argname ->
-            match List.assoc_opt argname ctx.parameter_types with
+            match List.assoc_opt argname q_ctx.parameter_types with
             | Some
-                { replacement_module_name = Some filter_module_name
+                { replacement_module_name = Some search_for_module_name
                 ; replacement_type
                 } ->
-                if ctx.module_name = filter_module_name
+                if Stack_context.get_module_name q_ctx = search_for_module_name
                 then "(" ^ argname ^ " : " ^ replacement_type ^ ")"
                 else argname
             | Some { replacement_module_name = None; replacement_type } ->
@@ -856,13 +1116,13 @@ and eval_object_of_lets d ctx = function
             ^ name
             ^ ( match args with
               | [] -> " ()"
-              | _ -> join_with_prespace (qualify_args ctx args) )
+              | _ -> join_with_prespace (qualify_args child_ctx args) )
             ^ " = begin\n"
-            ^ eval_function_body (d + 1) ctx b
+            ^ eval_function_body (d + 1) child_ctx b
             ^ pad d
             ^ "end\n"
           in
-          pad d ^ p ^ "\n" ^ eval_object_of_lets d ctx t
+          pad d ^ p ^ "\n" ^ eval_object_of_lets d child_ctx t
         with
       | MultiReturnError msg
        |UnknownExpressionError msg
@@ -872,15 +1132,14 @@ and eval_object_of_lets d ctx = function
           ^ name
           ^ " =\n"
           ^ pad (d + 1)
-          ^ "(* "
-          ^ String.trim msg
-          ^ " *)\n"
-          ^ pad (d + 1)
+          ^ audit_warning (d + 1) msg shim_resolution
           ^ "shim_"
-          ^ (if ctx.module_name = "" then "" else ctx.module_name ^ "_")
+          ^ ( if child_ctx.module_name = ""
+            then ""
+            else child_ctx.module_name ^ "_" )
           ^ name
           ^ "\n"
-          ^ eval_object_of_lets d ctx t )
+          ^ eval_object_of_lets d child_ctx t )
   | _ :: _ ->
       failwith
         "Precondition violation: Only properties of functions are allowed in \
@@ -889,40 +1148,37 @@ and eval_object_of_lets d ctx = function
 
 
 let eval_toplevel_source d (program : Ast.t) (t_ops : translation_options) =
-  let letin_available =
-    Astpredicates.is_ast_writable_with_letin_style
-      program
-      standard_letin_check_options
+  let ast_style =
+    Astpredicates.characterize_ast_style program standard_letin_check_options
   in
-  let ctx = create_empty_context () in
   let ctx =
-    { ctx with
-      parameter_types = t_ops.parameter_types
-    ; treat_equality_as_assertion = t_ops.treat_equality_as_assertion
-    ; style_letin = letin_available
-    }
+    Stack_context.create_with_args
+      ~parameter_types:t_ops.parameter_types
+      ~treat_equality_as_assertion:t_ops.treat_equality_as_assertion
+      ~whitelisted_letin_modules:t_ops.whitelisted_letin_modules
   in
+  let ctx = Stack_context.with_ast_style ctx ast_style in
   eval_function_body d ctx program
 
 
-let translate
-    (program : Ast.t)
-    (types_module : string)
-    (interface_module : string)
-    (t_ops : translation_options) =
-  preamble
-  ^ "include "
-  ^ types_module
-  ^ "\n\n\
-     module Make(ProScript : Dirsp_proscript.S) : (PROTOCOL with type t = \
-     ProScript.t) = struct\n"
-  ^ pad 1
-  ^ "type t = ProScript.t\n"
-  ^ pad 1
-  ^ "type t_aes_decrypted = ProScript.Crypto.aes_decrypted\n"
-  ^ pad 1
-  ^ "include "
-  ^ interface_module
-  ^ ".Make(ProScript)\n"
-  ^ eval_toplevel_source 1 program t_ops
-  ^ "\nend\n"
+let translate ?wrapped ?(t_ops = init_translation_options ()) (program : Ast.t)
+    =
+  match wrapped with
+  | Some { types_module; interface_module } ->
+      preamble
+      ^ "include "
+      ^ types_module
+      ^ "\n\n\
+         module Make(ProScript : Dirsp_proscript.S) : (PROTOCOL with type t = \
+         ProScript.t) = struct\n"
+      ^ pad 1
+      ^ "type t = ProScript.t\n"
+      ^ pad 1
+      ^ "type t_aes_decrypted = ProScript.Crypto.aes_decrypted\n"
+      ^ pad 1
+      ^ "include "
+      ^ interface_module
+      ^ ".Make(ProScript)\n\n"
+      ^ eval_toplevel_source 1 program t_ops
+      ^ "\nend\n"
+  | None -> eval_toplevel_source 0 program t_ops

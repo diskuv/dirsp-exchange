@@ -112,11 +112,11 @@ let opso_test
     let keystroke1 = first_letter_selector random_num in
     let keystroke2 = second_letter_selector random_num in
     let word = (keystroke1 * alphabet_size) + keystroke2 in
-    let () = Hashtbl.add generated_words word 1 in
+    Hashtbl.add generated_words word 1 ;
     let attempts = acc.attempts + 1 in
     ({ attempts }, if attempts = max_attempts then `Stop else `Continue)
   in
-  let _ = Iter.(random_seq |> fold_while trial { attempts = 0 }) in
+  let () = Iter.(random_seq |> fold_while trial { attempts = 0 } |> ignore) in
   let missing_words =
     Iter.(
       0 -- ((alphabet_size * alphabet_size) - 1)

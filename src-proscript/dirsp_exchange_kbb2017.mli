@@ -31,7 +31,7 @@
       module C       = P.Crypto
       module ED25519 = P.Crypto.ED25519
       module E       = P.Encoding
-      module K       = Dirsp_exchange_kbb2017.Make_kbb2017(P)
+      module K       = Dirsp_exchange_kbb2017.Make(P)
       module U       = K.UTIL
       module T       = K.TOPLEVEL
       module KEY     = K.Type_key
@@ -198,7 +198,7 @@
     [dirsp-exchange-kbb2017] is distributed under the
     {{:https://opensource.org/licenses/Apache-2.0} Apache-2.0} license.
 
-    The [proscript-messaging] source files used in [Make_kbb2017] are distributed with the
+    The [proscript-messaging] source files used in [Make] are distributed with the
     {{:https://github.com/Inria-Prosecco/proscript-messaging/blob/ddb66e4934fefbbf10bbd393cabc4ecda5b75546/ps2pv/LICENSE} following license}:
 
     {v
@@ -282,7 +282,7 @@ Hash: 3354e25ec0e92f6e99a1e26591c8c356d0c7b35b652539b624286c83e89a2a47
       module C       = P.Crypto
       module ED25519 = P.Crypto.ED25519
       module E       = P.Encoding
-      module K       = Dirsp_exchange_kbb2017.Make_kbb2017(P)
+      module K       = Dirsp_exchange_kbb2017.Make(P)
       module U       = K.UTIL
       module T       = K.TOPLEVEL
       module KEY     = K.Type_key
@@ -312,7 +312,7 @@ Hash: 3354e25ec0e92f6e99a1e26591c8c356d0c7b35b652539b624286c83e89a2a47
 
     {!Dirsp_exchange_kbb2017} has a more detailed example.
 
-    The functor [Make_kbb2017] creates an implementation of the X3DH and Double Rachet protocols.
+    The functor [Make] creates an implementation of the X3DH and Double Rachet protocols.
     It makes use of a Javascript implementation of the Signal Protocol that was used to prove
     the soundness of a variant of the "Signal Protocol" (aka X3DH + Double Ratchet) in the paper
     by the Prosecco research group
@@ -329,7 +329,7 @@ Hash: 3354e25ec0e92f6e99a1e26591c8c356d0c7b35b652539b624286c83e89a2a47
     We call that paper’s algorithm the Kobeissi, Bhargavan and Blanchet (KBB2017) algorithm to both
     recognize the paper’s authors and to avoid the use of the trademark "Signal".
     Please be aware that the variant used in the Automated Verification paper deviates from the
-    original Open Whisper System publications. [Make_kbb2017] corresponds to the variant
+    original Open Whisper System publications. [Make] corresponds to the variant
     in the Automated Verification paper.
 
     {1 Implementation}
@@ -348,14 +348,14 @@ Hash: 3354e25ec0e92f6e99a1e26591c8c356d0c7b35b652539b624286c83e89a2a47
     translate the X3DH and Double Ratchet implementations
     into a few other languages.
 
-    With [Make_kbb2017]:
+    With [Make]:
     - the ProScript implementations of X3DH and Double Ratchet are used {e without modification}
     - the OCaml parser and OCaml AST are used {e without modification}
-    - there is a hand-written translator from ProScript into OCaml that makes use of the OCaml AST
-    - there is this functor that wraps the X3DH and Double Ratchet auto-translated OCaml
-      into idiomatic OCaml
+    - there is a hand-written translator called [ps2ocaml] from ProScript into OCaml that makes use of the OCaml AST
+    - there is this functor that wraps the X3DH and Double Ratchet machine translated OCaml
+      into statement-by-statement equivalent OCaml
 
-    Please see the documentation generated from [src-proscript/proscript-messaging/TRANSLATING_PROSCRIPT_INTO_OCAML.rst]
+    Please refer to {{:https://diskuv.github.io/dirsp-exchange/src-proscript/proscript-messaging/KBB2017_FILES.html} File Structure for Auditing KBB2017}
     for complete details.
 
     {1 Managing State}
@@ -408,4 +408,4 @@ Hash: 3354e25ec0e92f6e99a1e26591c8c356d0c7b35b652539b624286c83e89a2a47
 
     See {{:https://github.com/ocaml-ppx/ppx_deriving_protobuf} ppx_deriving_protobuf} for details about the protobuf encoding.
 *)
-module Make_kbb2017 : Kobeissi_bhargavan_blanchet_intf.PROTOCOLFUNCTOR
+module Make : Kobeissi_bhargavan_blanchet_intf.PROTOCOLFUNCTOR

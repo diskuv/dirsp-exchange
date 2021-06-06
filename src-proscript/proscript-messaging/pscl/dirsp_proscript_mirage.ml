@@ -131,7 +131,7 @@ module CustomizedMake (Opts : CUSTOM_OPTIONS) : S = struct
   let of_cstruct cs =
     let sz = Cstruct.length cs in
     let buffer = Bytes.create sz in
-    let _ = Cstruct.blit_to_bytes cs 0 buffer 0 sz in
+    Cstruct.blit_to_bytes cs 0 buffer 0 sz ;
     buffer
 
 
@@ -193,13 +193,11 @@ module CustomizedMake (Opts : CUSTOM_OPTIONS) : S = struct
 
 
     let hexStringToByteArray hex sz =
-      let () =
-        if Bytes.length hex >= sz * 2
-        then ()
-        else
-          h_faile
-            ("Not text with at least " ^ string_of_int (sz * 2) ^ " hex digits")
-      in
+      if Bytes.length hex >= sz * 2
+      then ()
+      else
+        h_faile
+          ("Not text with at least " ^ string_of_int (sz * 2) ^ " hex digits") ;
       let bs = Bytes.init sz (h_init_byte_from_hex hex) in
       bs
 
@@ -266,19 +264,19 @@ module CustomizedMake (Opts : CUSTOM_OPTIONS) : S = struct
 
     let xDH25519 scalar base =
       (* preconditions *)
-      let () = h_check_crypto_sz "DH25519 scalar" scalar sz_DH25519_key in
-      let () = h_check_crypto_sz "DH25519 base" base sz_DH25519_key in
+      h_check_crypto_sz "DH25519 scalar" scalar sz_DH25519_key ;
+      h_check_crypto_sz "DH25519 base" base sz_DH25519_key ;
 
       (* secret *)
       let secret_cs = Cstruct.create sz_DH25519_key in
-      let () = Cstruct.blit_from_bytes scalar 0 secret_cs 0 sz_DH25519_key in
+      Cstruct.blit_from_bytes scalar 0 secret_cs 0 sz_DH25519_key ;
       let secret_of_cs_result =
         Mirage_crypto_ec.X25519.secret_of_cs secret_cs
       in
 
       (* base *)
       let base_cs = Cstruct.create sz_DH25519_key in
-      let () = Cstruct.blit_from_bytes base 0 base_cs 0 sz_DH25519_key in
+      Cstruct.blit_from_bytes base 0 base_cs 0 sz_DH25519_key ;
 
       (* action *)
       match secret_of_cs_result with
@@ -308,23 +306,23 @@ module CustomizedMake (Opts : CUSTOM_OPTIONS) : S = struct
       (* key *)
       let key_sz = Bytes.length k in
       let key_cs = Cstruct.create key_sz in
-      let () = Cstruct.blit_from_bytes k 0 key_cs 0 key_sz in
+      Cstruct.blit_from_bytes k 0 key_cs 0 key_sz ;
       let key = AES_GCM.of_secret key_cs in
 
       (* nonce *)
       let nonce_sz = Bytes.length iv in
       let nonce = Cstruct.create nonce_sz in
-      let () = Cstruct.blit_from_bytes iv 0 nonce 0 nonce_sz in
+      Cstruct.blit_from_bytes iv 0 nonce 0 nonce_sz ;
 
       (* adata *)
       let adata_sz = Bytes.length aad in
       let adata = Cstruct.create adata_sz in
-      let () = Cstruct.blit_from_bytes aad 0 adata 0 adata_sz in
+      Cstruct.blit_from_bytes aad 0 adata 0 adata_sz ;
 
       (* msg *)
       let msg_sz = Bytes.length m in
       let msg = Cstruct.create msg_sz in
-      let () = Cstruct.blit_from_bytes m 0 msg 0 msg_sz in
+      Cstruct.blit_from_bytes m 0 msg 0 msg_sz ;
 
       (* action *)
       try
@@ -350,11 +348,9 @@ module CustomizedMake (Opts : CUSTOM_OPTIONS) : S = struct
           let result_len = Cstruct.length encrypt_result_cs in
           let pretag_len = result_len - AES_GCM.tag_size in
           let dst_msg = Cstruct.create pretag_len in
-          let () = Cstruct.blit encrypt_result_cs 0 dst_msg 0 pretag_len in
+          Cstruct.blit encrypt_result_cs 0 dst_msg 0 pretag_len ;
           let dst_tag = Cstruct.create AES_GCM.tag_size in
-          let () =
-            Cstruct.blit encrypt_result_cs pretag_len dst_tag 0 AES_GCM.tag_size
-          in
+          Cstruct.blit encrypt_result_cs pretag_len dst_tag 0 AES_GCM.tag_size ;
           (dst_msg, dst_tag)
         in
         { ciphertext = of_cstruct ciphertext_cs; tag = of_cstruct tag_cs }
@@ -366,18 +362,18 @@ module CustomizedMake (Opts : CUSTOM_OPTIONS) : S = struct
       (* key *)
       let key_sz = Bytes.length k in
       let key_cs = Cstruct.create key_sz in
-      let () = Cstruct.blit_from_bytes k 0 key_cs 0 key_sz in
+      Cstruct.blit_from_bytes k 0 key_cs 0 key_sz ;
       let key = AES_GCM.of_secret key_cs in
 
       (* nonce *)
       let nonce_sz = Bytes.length iv in
       let nonce = Cstruct.create nonce_sz in
-      let () = Cstruct.blit_from_bytes iv 0 nonce 0 nonce_sz in
+      Cstruct.blit_from_bytes iv 0 nonce 0 nonce_sz ;
 
       (* adata *)
       let adata_sz = Bytes.length aad in
       let adata = Cstruct.create adata_sz in
-      let () = Cstruct.blit_from_bytes aad 0 adata 0 adata_sz in
+      Cstruct.blit_from_bytes aad 0 adata 0 adata_sz ;
 
       (* msg = ciphertext || tag *)
       let { ciphertext; tag } = m in
@@ -385,8 +381,8 @@ module CustomizedMake (Opts : CUSTOM_OPTIONS) : S = struct
       let tag_sz = Bytes.length tag in
       let msg_sz = ciphertext_sz + tag_sz in
       let msg = Cstruct.create msg_sz in
-      let () = Cstruct.blit_from_bytes ciphertext 0 msg 0 ciphertext_sz in
-      let () = Cstruct.blit_from_bytes tag 0 msg ciphertext_sz tag_sz in
+      Cstruct.blit_from_bytes ciphertext 0 msg 0 ciphertext_sz ;
+      Cstruct.blit_from_bytes tag 0 msg ciphertext_sz tag_sz ;
 
       (* action *)
       try
@@ -405,7 +401,7 @@ module CustomizedMake (Opts : CUSTOM_OPTIONS) : S = struct
       (* msg *)
       let msg_sz = Bytes.length m in
       let msg_cs = Cstruct.create msg_sz in
-      let () = Cstruct.blit_from_bytes m 0 msg_cs 0 msg_sz in
+      Cstruct.blit_from_bytes m 0 msg_cs 0 msg_sz ;
 
       (* action *)
       let digest = Mirage_crypto.Hash.SHA256.digest msg_cs in
@@ -418,7 +414,7 @@ module CustomizedMake (Opts : CUSTOM_OPTIONS) : S = struct
       (* msg *)
       let msg_sz = Bytes.length m in
       let msg_cs = Cstruct.create msg_sz in
-      let () = Cstruct.blit_from_bytes m 0 msg_cs 0 msg_sz in
+      Cstruct.blit_from_bytes m 0 msg_cs 0 msg_sz ;
 
       (* action *)
       let digest = Mirage_crypto.Hash.SHA512.digest msg_cs in
@@ -433,18 +429,18 @@ module CustomizedMake (Opts : CUSTOM_OPTIONS) : S = struct
         ----------------------
         HMAC can use any size of key. It will left pad if the key is too short, and it will hash if it is too long.
         So do _not_ insert a check like:
-          let () = h_check_crypto_sz "xHMACSHA256 k" k sz_HMACSHA256_digest in
+          h_check_crypto_sz "xHMACSHA256 k" k sz_HMACSHA256_digest ;
       *)
 
       (* key *)
       let key_sz = Bytes.length k in
       let key_cs = Cstruct.create key_sz in
-      let () = Cstruct.blit_from_bytes k 0 key_cs 0 key_sz in
+      Cstruct.blit_from_bytes k 0 key_cs 0 key_sz ;
 
       (* msg *)
       let msg_sz = Bytes.length m in
       let msg_cs = Cstruct.create msg_sz in
-      let () = Cstruct.blit_from_bytes m 0 msg_cs 0 msg_sz in
+      Cstruct.blit_from_bytes m 0 msg_cs 0 msg_sz ;
 
       (* action *)
       let mac = Mirage_crypto.Hash.SHA256.hmac ~key:key_cs msg_cs in
@@ -456,11 +452,11 @@ module CustomizedMake (Opts : CUSTOM_OPTIONS) : S = struct
 
       let publicKey sk =
         (* preconditions *)
-        let () = h_check_crypto_sz "ED25519.publicKey sk" sk sz_EDH25519_key in
+        h_check_crypto_sz "ED25519.publicKey sk" sk sz_EDH25519_key ;
 
         (* secret *)
         let secret_cs = Cstruct.create sz_EDH25519_key in
-        let () = Cstruct.blit_from_bytes sk 0 secret_cs 0 sz_EDH25519_key in
+        Cstruct.blit_from_bytes sk 0 secret_cs 0 sz_EDH25519_key ;
         let priv_of_cstruct_result =
           Mirage_crypto_ec.Ed25519.priv_of_cstruct secret_cs
         in
@@ -481,25 +477,21 @@ module CustomizedMake (Opts : CUSTOM_OPTIONS) : S = struct
 
       let checkValid s m pk =
         (* preconditions *)
-        let () =
-          h_check_crypto_sz "ED25519.checkValid s" s sz_EDH25519_signature
-        in
-        let () = h_check_crypto_sz "ED25519.checkValid pk" pk sz_EDH25519_key in
+        h_check_crypto_sz "ED25519.checkValid s" s sz_EDH25519_signature ;
+        h_check_crypto_sz "ED25519.checkValid pk" pk sz_EDH25519_key ;
 
         (* signature *)
         let signature = Cstruct.create sz_EDH25519_signature in
-        let () =
-          Cstruct.blit_from_bytes s 0 signature 0 sz_EDH25519_signature
-        in
+        Cstruct.blit_from_bytes s 0 signature 0 sz_EDH25519_signature ;
 
         (* msg *)
         let msg_sz = Bytes.length m in
         let msg = Cstruct.create msg_sz in
-        let () = Cstruct.blit_from_bytes m 0 msg 0 msg_sz in
+        Cstruct.blit_from_bytes m 0 msg 0 msg_sz ;
 
         (* public key *)
         let public_cs = Cstruct.create sz_EDH25519_key in
-        let () = Cstruct.blit_from_bytes pk 0 public_cs 0 sz_EDH25519_key in
+        Cstruct.blit_from_bytes pk 0 public_cs 0 sz_EDH25519_key ;
         let pub_of_cstruct_result =
           Mirage_crypto_ec.Ed25519.pub_of_cstruct public_cs
         in
@@ -517,17 +509,17 @@ module CustomizedMake (Opts : CUSTOM_OPTIONS) : S = struct
 
       let signature m sk pk =
         (* preconditions *)
-        let () = h_check_crypto_sz "ED25519.signature sk" sk sz_EDH25519_key in
-        let () = h_check_crypto_sz "ED25519.signature pk" pk sz_EDH25519_key in
+        h_check_crypto_sz "ED25519.signature sk" sk sz_EDH25519_key ;
+        h_check_crypto_sz "ED25519.signature pk" pk sz_EDH25519_key ;
 
         (* msg *)
         let msg_sz = Bytes.length m in
         let msg = Cstruct.create msg_sz in
-        let () = Cstruct.blit_from_bytes m 0 msg 0 msg_sz in
+        Cstruct.blit_from_bytes m 0 msg 0 msg_sz ;
 
         (* secret key *)
         let key_cs = Cstruct.create sz_EDH25519_key in
-        let () = Cstruct.blit_from_bytes sk 0 key_cs 0 sz_EDH25519_key in
+        Cstruct.blit_from_bytes sk 0 key_cs 0 sz_EDH25519_key ;
         let priv_of_cstruct_result =
           Mirage_crypto_ec.Ed25519.priv_of_cstruct key_cs
         in
@@ -549,7 +541,7 @@ module DefaultOptions : CUSTOM_OPTIONS = struct
   let random_bytes sz _id =
     let buffer = Bytes.create sz in
     let rndbytes = Mirage_crypto_rng_unix.getrandom sz in
-    let _ = Cstruct.blit_to_bytes rndbytes 0 buffer 0 sz in
+    Cstruct.blit_to_bytes rndbytes 0 buffer 0 sz ;
     buffer
 end
 

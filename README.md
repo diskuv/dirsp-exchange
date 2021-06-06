@@ -44,12 +44,12 @@ different host platforms (desktop, server, mobile, etc.).
 
 This repository contains:
 
-- `dirsp-ps2ocaml` -A ProScript to OCaml translator.
 - `dirsp-exchange` - No-op as of May 2021.
 - `dirsp-exchange-kbb2017` - The KBB2017 protocol for securing a two-party conversation. Similar to
   Signal Protocol v3 [[1]](https://signal.org/docs/specifications/x3dh) [[2]](https://signal.org/docs/specifications/doubleratchet)
 - `dirsp-proscript` - The ProScript Cryptographic Library (PSCL) API interface.
 - `dirsp-proscript-mirage` - A PSCL implementation based on `mirage-crypto` and related libraries
+- `dirsp-ps2ocaml` - A ProScript to OCaml translator with [documentation available](https://diskuv.github.io/dirsp-exchange/src-proscript/proscript-messaging/PS2OCAML.html).
 
 The online documentation is at:
 
@@ -58,4 +58,4 @@ The online documentation is at:
 
 ## Contributions
 
-We consider and encourage pull requests that have signed off with a [Developer Certificate of Origin](https://developercertificate.org).
+See [Contributions](https://diskuv.github.io/dirsp-exchange/CONTRIBUTIONS.html)

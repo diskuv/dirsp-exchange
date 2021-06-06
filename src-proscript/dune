@@ -262,7 +262,7 @@
   (:gen %{bin:dirsp-ps2ocaml}))
  (mode promote)
  (action
-  ; dirsp-ps2ocaml.exe ps/sp.js -p 'them:t record_them' -p 'msg:t record_msg' -p 'Type_sendoutput.a:t record_sendoutput' -o kobeissi_bhargavan_blanchet.ml
+  ; dirsp-ps2ocaml.exe ps/sp.js -p 'them:t record_them' -p 'msg:t record_msg' -p 'Type_sendoutput.a:t record_sendoutput' -add_apachev2license "2021 Diskuv, Inc." -whitelist_module_for_letin TOPLEVEL -whitelist_module_for_letin HANDLE -disable_strictequals_assertions -o kobeissi_bhargavan_blanchet.ml
   (progn
    (run
     %{gen}
@@ -273,6 +273,13 @@
     "msg:t record_msg"
     -p
     "Type_sendoutput.a:t record_sendoutput"
+    -add_apachev2license
+    "2021 Diskuv, Inc."
+    -whitelist_module_for_letin
+    "TOPLEVEL"
+    -whitelist_module_for_letin
+    "HANDLE"
+    -disable_strictequals_assertions
     -o
     %{target})
    (run ocamlformat --inplace %{target}))))
@@ -314,3 +321,10 @@
    ; (warning 39 [unused-rec-flag]): unused rec flag.
    -w
    -39)))
+
+(tests
+ (names dirsp_exchange_kbb2017_tests)
+ (libraries alcotest dirsp-proscript-mirage dirsp_exchange_kbb2017)
+ (modules dirsp_exchange_kbb2017_tests)
+ (action
+  (run %{test} -e)))
