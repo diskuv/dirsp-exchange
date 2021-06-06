@@ -2,9 +2,10 @@ Contributing
 ============
 
 We consider and encourage pull requests that have signed off with a `Developer Certificate of Origin <https://developercertificate.org>`_.
+You'll need to review the `LICENSE* files in https://github.com/diskuv/dirsp-exchange <https://github.com/diskuv/dirsp-exchange>`_.
 
-If you are fine with that, please checkout the code and read whichever sections of this internal development guide that
-interest you.
+If you are fine with that, please ``git clone https://github.com/diskuv/dirsp-exchange`` and read whichever sections of this
+internal development guide that interest you.
 
 Visual Studio Code
 ------------------
