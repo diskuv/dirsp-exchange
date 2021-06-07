@@ -2,7 +2,39 @@
 
 "dirsp" is a short form for Diskuv Implementations of Research Security Protocols.
 
-The intent of the [dirsp] libraries are to provide software engineers with auditable
+The first protocol we've included is "KBB2017" which is what the authors (security researchers) call a variant of Signal Protocol v3. We love it because it has been formally verified using two complementary proof checking tools. With the programming language OCaml and `dirsp-exchange` you could write secure code like:
+
+```ocaml
+module P       = Dirsp_proscript_mirage.Make()
+module ED25519 = P.Crypto.ED25519
+module K       = Dirsp_exchange_kbb2017.Make(P)
+module U       = K.UTIL
+
+(* Alice sends a message to Bob *)
+let aliceSessionWithBob = T.newSession (* ... supply some keys you create with ED25519 and U ... *) ;;
+let aliceToBobSendOutput = T.send
+  aliceIdentityKey
+  aliceSessionWithBob
+  (P.of_string "Hi Bob!")
+
+(* Now you can send the output "aliceToBobSendOutput" from Alice to Bob.
+   Let's switch to Bob's computer. He gets notified of a new message using a notification library of your choosing, and then does ...  *)
+
+let bobSessionWithAlice = T.newSession (* ... supply some keys ... *);;
+let bobFromAliceReceiveOutput = T.recv
+  bobIdentityKey
+  bobSignedPreKey
+  bobSessionWithAlice
+  theEncryptedMessageBobReceivedFromAlice
+assert (bobFromAliceReceiveOutput.output.valid)
+Format.printf "Bob just received a new message: %s\n"
+  (bobFromAliceReceiveOutput.plaintext |> P.to_bytes |> Bytes.to_string)
+```
+
+Bindings to other languages and implementation of other security algorithms will follow
+later.
+
+The intent of the [dirsp] libraries is to provide software engineers with auditable
 source code that has some level of safety assurance (typically proofs) from security researchers.
 By "auditable" we mean the ability to justify every line of source code when undergoing an audit
 by a competent security engineer. No third-party vetting of the source code has been
@@ -13,13 +45,12 @@ free to publicly shame the [Twitter handle @diskuv](https://twitter.com/diskuv) 
 responsive.
 
 The implementations in this library are licensed permissively to broaden use and scrutiny. Sometimes
-that means / will mean writing an implementation from scratch based only on an academic paper.
-Placing security sensitive libraries under restrictive licenses (ex. GPL and especially AGPL)
+that means writing an implementation from scratch based only on an academic paper.
+In contrast, placing security primitives like KBB2017 under restrictive licenses (ex. GPL and especially AGPL)
 discourages scrutiny because many security engineers work for
-companies which themselves discourage or [prohibit](https://opensource.google/docs/using/agpl-policy/)
-restrictive licenses. Note this lack of scrutiny is
-particular to _security sensitive libraries_ that are restrictively licensed; even the authors (Diskuv) will use GPL
-and other copy-left licenses for applications and non-sensitive libraries.
+companies which discourage or [prohibit](https://opensource.google/docs/using/agpl-policy/)
+restrictive licenses. Note this lessened scrutiny is
+particular to _low level security libraries_ that are restrictively licensed; even the original author of these libraries will use copy-left licenses for other types of libraries and applications.
 
 ## Programming Languages
 
@@ -56,6 +87,6 @@ The online documentation is at:
 - [Sphinx Documentation](https://diskuv.github.io/dirsp-exchange)
 - [OCaml Libraries](https://diskuv.github.io/dirsp-exchange/ocaml)
 
-## Contributions
+## Contributing
 
-See [Contributions](https://diskuv.github.io/dirsp-exchange/CONTRIBUTIONS.html)
+See [Contributing](https://diskuv.github.io/dirsp-exchange/CONTRIBUTING.html)

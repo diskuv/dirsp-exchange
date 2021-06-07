@@ -289,17 +289,17 @@ Hash: 3354e25ec0e92f6e99a1e26591c8c356d0c7b35b652539b624286c83e89a2a47
       module MSG     = K.Type_msg
 
       (* Alice sends a message to Bob *)
-      let aliceSessionWithBob = T.newSession (* ... supply several keys ... *) ;;
+      let aliceSessionWithBob = T.newSession (* ... supply some keys you create with ED25519 and U ... *) ;;
       let aliceToBobSendOutput = T.send
         aliceIdentityKey
         aliceSessionWithBob
         (P.of_string "Hi Bob!")
 
-      (* Now you can send the output from Alice to Bob.
-         Let's switch to Bob's computer. He gets notified of a new mssage (that is your responsibility)
-         and then does ...  *)
+      (* Now you can send the output "aliceToBobSendOutput" from Alice to Bob.
+         Let's switch to Bob's computer. He gets notified using a notification
+         library of your choosing and then does ...  *)
 
-      let bobSessionWithAlice = T.newSession (* ... supply several keys ... *);;
+      let bobSessionWithAlice = T.newSession (* ... supply some keys ... *);;
       let bobFromAliceReceiveOutput = T.recv
         bobIdentityKey
         bobSignedPreKey
