@@ -75,7 +75,6 @@ different host platforms (desktop, server, mobile, etc.).
 
 This repository contains:
 
-- `dirsp-exchange` - No-op as of May 2021.
 - `dirsp-exchange-kbb2017` - The KBB2017 protocol for securing a two-party conversation. Similar to
   Signal Protocol v3 [[1]](https://signal.org/docs/specifications/x3dh) [[2]](https://signal.org/docs/specifications/doubleratchet)
 - `dirsp-proscript` - The ProScript Cryptographic Library (PSCL) API interface.

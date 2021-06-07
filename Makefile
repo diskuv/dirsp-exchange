@@ -36,6 +36,7 @@ reinstall: uninstall install
 clean:
 	dune clean
 
+# We do not publish dirsp-exchange since it is empty.
 publish-docs:
 	if test -n "$$(git status --porcelain)"; then echo "FATAL: The working directory must be clean! All changes have to be commited to git or removed."; exit 1; fi
 	$(MAKE) clean
@@ -44,7 +45,10 @@ publish-docs:
 	install -d _build/
 	echo "(lang dune 2.8)"                                    > _build/.publishdocs-dune-workspace
 	echo "(context (opam (switch $(PUBLISHDOCS_OCAMLVER))))" >> _build/.publishdocs-dune-workspace
-	dune build @doc --release                       --workspace _build/.publishdocs-dune-workspace
+	dune build @doc \
+		--release \
+		--only-packages dirsp-exchange-kbb2017,dirsp-proscript,dirsp-proscript-mirage,dirsp-ps2ocaml \
+	    --workspace _build/.publishdocs-dune-workspace
 
 	echo Building Sphinx html twice so that Sphinx cross-references work ...
 	$(MAKE) html

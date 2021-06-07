@@ -1,11 +1,6 @@
 OCaml Library Documentation
 ===========================
 
-``dirsp-exchange``
-------------------
-
-- `OCaml Library: dirsp-exchange <ocaml/dirsp-exchange>`_ - No-op as of May 2021.
-
 ``dirsp-exchange-kbb2017``
 --------------------------
 
