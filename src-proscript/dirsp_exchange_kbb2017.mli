@@ -26,7 +26,7 @@
     {{:https://github.com/Inria-Prosecco/proscript-messaging/blob/ddb66e4934fefbbf10bbd393cabc4ecda5b75546/tl/secrecy-1-ab-twoway.pv} formal ProVerif secrecy-1-ab-twoway.pv proof test of secrecy}):
 
     {[
-      (*  FIRST: Make some module shortcuts *)
+      (*  FIRST: Make some module shortcuts and initialize modules that need it *)
       module P       = Dirsp_proscript_mirage.Make()
       module C       = P.Crypto
       module ED25519 = P.Crypto.ED25519
@@ -36,6 +36,8 @@
       module T       = K.TOPLEVEL
       module KEY     = K.Type_key
       module MSG     = K.Type_msg
+      (* Initialize the random number generator; Mirage_crypto_rng_lwt works only on *nix *)
+      let ()         = Mirage_crypto_rng_lwt.initialize ()
       ;;
 
       (*  SECOND: Let Alice and Bob create their own long-term key pairs.

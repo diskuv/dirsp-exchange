@@ -17,9 +17,6 @@ module type CUSTOM_OPTIONS = sig
   val random_bytes : int -> string -> Bytes.t
 end
 
-(* Initialize the random number generator *)
-let () = Mirage_crypto_rng_lwt.initialize ()
-
 module AES_GCM = Mirage_crypto.Cipher_block.AES.GCM
 
 let sz_DH25519_key = 32

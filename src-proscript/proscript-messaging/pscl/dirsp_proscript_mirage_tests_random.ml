@@ -36,6 +36,10 @@ open Dirsp_proscript_mirage_test_helpers
   test takes 32 bits at a time from the test file and uses a designated set of ten consecutive bits.
   It then restarts the file for the next designated 10 bits, and so on.
   *)
+
+(* Initialize the random number generator *)
+let () = Mirage_crypto_rng_lwt.initialize ()
+
 type opso_acc_t = { attempts : int }
 
 (* Obviously we'll need 4 overlapping 10-bit ranges to cover a full 32-bit number *)

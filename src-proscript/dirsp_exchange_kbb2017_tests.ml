@@ -1,10 +1,10 @@
-(** Tests **verbatim** from .mli documentation *)
+(** Tests **verbatim** (perhaps formatted) from .mli documentation *)
 
 (* ------------------------------------------------------------------- *)
 (*                            BEGIN VERBATIM                           *)
 (* ------------------------------------------------------------------- *)
 
-(*  FIRST: Make some module shortcuts *)
+(*  FIRST: Make some module shortcuts and initialize modules that need it *)
 module P = Dirsp_proscript_mirage.Make ()
 
 module C = P.Crypto
@@ -15,6 +15,8 @@ module U = K.UTIL
 module T = K.TOPLEVEL
 module KEY = K.Type_key
 module MSG = K.Type_msg
+(* Initialize the random number generator *)
+let () = Mirage_crypto_rng_lwt.initialize ()
 
 (* SECOND: Let Alice and Bob create their own long-term key pairs.
 
