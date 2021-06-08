@@ -18,7 +18,7 @@ module type CUSTOM_OPTIONS = sig
 end
 
 (* Initialize the random number generator *)
-let () = Mirage_crypto_rng_unix.initialize ()
+let () = Mirage_crypto_rng_lwt.initialize ()
 
 module AES_GCM = Mirage_crypto.Cipher_block.AES.GCM
 
@@ -540,7 +540,7 @@ end
 module DefaultOptions : CUSTOM_OPTIONS = struct
   let random_bytes sz _id =
     let buffer = Bytes.create sz in
-    let rndbytes = Mirage_crypto_rng_unix.getrandom sz in
+    let rndbytes = Mirage_crypto_rng.generate sz in
     Cstruct.blit_to_bytes rndbytes 0 buffer 0 sz ;
     buffer
 end

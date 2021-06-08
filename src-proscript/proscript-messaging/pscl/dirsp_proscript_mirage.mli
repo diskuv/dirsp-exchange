@@ -28,7 +28,8 @@ module DefaultOptions : CUSTOM_OPTIONS
 (** Make a Proscript runtime that uses the mirage-crypto libraries *)
 module Make () : Dirsp_proscript.S
 
-(** Make a customized Proscript runtime that uses the mirage-crypto libraries.
+(** Make a customized Proscript runtime that uses the mirage-crypto,
+    mirage-crypto-ec and mirage-crypto-rng.lwt libraries.
 
     You should use {!Make} unless you are unit testing or troubleshooting.
 

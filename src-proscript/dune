@@ -222,7 +222,7 @@
  (name dirsp_proscript_mirage)
  (public_name dirsp-proscript-mirage)
  (modules dirsp_proscript_mirage)
- (libraries dirsp-proscript mirage-crypto-rng.unix mirage-crypto-ec)
+ (libraries dirsp-proscript mirage-crypto-rng.lwt mirage-crypto-ec)
  (preprocess
   (pps ppx_deriving_protobuf)))
 
