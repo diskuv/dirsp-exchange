@@ -121,7 +121,7 @@
         bobPreKeyId
       ;;
 
-      (*  SEVENTH: Alice sends a message to Bob. *)
+      (*  SEVENTH: Alice sends a message to Bob and updates her session. *)
       let aliceToBobMsg1        = P.of_string "Hi Bob!"
       let aliceToBobSendOutput1 = T.send
         aliceIdentityKey
@@ -130,6 +130,8 @@
       ;;
       Format.printf "Did Alice send successfully? %b\n" aliceToBobSendOutput1.output.valid
       ;;
+      (* Alice updates her session or she loses forward secrecy! *)
+      let updatedAliceSessionWithBob = aliceToBobSendOutput1.them
 
       (*  EIGHTH: Bob establishes his own session with Alice. *)
       let bobSessionWithAlice = T.newSession
@@ -143,7 +145,7 @@
         alicePreKeyId
       ;;
 
-      (*  NINTH: Bob receives the message from Alice. *)
+      (*  NINTH: Bob receives the message from Alice and updates his session *)
       let bobFromAliceMsg2           = aliceToBobSendOutput1.output
       let bobFromAliceReceiveOutput2 = T.recv
         bobIdentityKey
@@ -156,6 +158,8 @@
       ;;
       Format.printf "Bob just received a new message: %s\n"
         (bobFromAliceReceiveOutput2.plaintext |> P.to_bytes |> Bytes.to_string)
+      (* Bob updates his session or he loses forward secrecy! *)
+      let updatedBobSessionWithAlice = bobFromAliceReceiveOutput2.them
     ]}
 
     The intent of the library is to provide software engineers with auditable
@@ -314,6 +318,10 @@ Hash: 3354e25ec0e92f6e99a1e26591c8c356d0c7b35b652539b624286c83e89a2a47
 
     {!Dirsp_exchange_kbb2017} has a more detailed example.
 
+    {b You must not re-use the sessions!}. If you do, Alice and
+    Bob's conversation will lose forward secrecy. Look at {!ManagingState}
+    to see how to update the sessions.
+
     The functor [Make] creates an implementation of the X3DH and Double Rachet protocols.
     It makes use of a Javascript implementation of the Signal Protocol that was used to prove
     the soundness of a variant of the "Signal Protocol" (aka X3DH + Double Ratchet) in the paper
@@ -360,11 +368,11 @@ Hash: 3354e25ec0e92f6e99a1e26591c8c356d0c7b35b652539b624286c83e89a2a47
     Please refer to {{:https://diskuv.github.io/dirsp-exchange/src-proscript/proscript-messaging/KBB2017_FILES.html} File Structure for Auditing KBB2017}
     for complete details.
 
-    {1 Managing State}
+    {1:ManagingState Managing State}
 
     The second parameter named [them] in {!Dirsp_exchange_kbb2017__.Kobeissi_bhargavan_blanchet_intf.PROTOCOL.TOPLEVEL.send} and
     {!Dirsp_exchange_kbb2017__.Kobeissi_bhargavan_blanchet_intf.PROTOCOL.TOPLEVEL.recv} requires special handling.
-    You must set [them] to the last [record_them] used in a conversation.
+    You must set [them] to the last [record_them] used in a conversation {b or you lose forward secrecy!}.
 
     We suggest that you use the next section "Serialization and Deserialization" so you can save the last [record_them] into secure storage,
     and have it available when you need to [send] or [recv].

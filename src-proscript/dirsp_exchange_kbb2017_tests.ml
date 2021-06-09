@@ -15,6 +15,7 @@ module U = K.UTIL
 module T = K.TOPLEVEL
 module KEY = K.Type_key
 module MSG = K.Type_msg
+
 (* Initialize the random number generator *)
 let () = Mirage_crypto_rng_lwt.initialize ()
 
@@ -121,7 +122,7 @@ let aliceSessionWithBob =
     bobPreKeyId
 
 
-(*  SEVENTH: Alice sends a message to Bob. *)
+(*  SEVENTH: Alice sends a message to Bob and updates her session *)
 let aliceToBobMsg1 = P.of_string "Hi Bob!"
 
 let aliceToBobSendOutput1 =
@@ -132,6 +133,9 @@ let aliceToBobSendOutput1 =
 Format.printf
   "Did Alice send successfully? %b\n"
   aliceToBobSendOutput1.output.valid
+
+(* Alice updates her session or she loses forward secrecy! *)
+let updatedAliceSessionWithBob = aliceToBobSendOutput1.them
 
 (*  EIGHTH: Bob establishes his own session with Alice. *)
 let bobSessionWithAlice =
@@ -146,7 +150,7 @@ let bobSessionWithAlice =
     alicePreKeyId
 
 
-(*  NINTH: Bob receives the message from Alice. *)
+(*  NINTH: Bob receives the message from Alice and updates his session *)
 let bobFromAliceMsg2 = aliceToBobSendOutput1.output
 
 let bobFromAliceReceiveOutput2 =
@@ -163,11 +167,79 @@ Format.printf
   "Bob just received a new message: %s\n"
   (bobFromAliceReceiveOutput2.plaintext |> P.to_bytes |> Bytes.to_string)
 
+(* Bob updates his session or he loses forward secrecy! *)
+let updatedBobSessionWithAlice = bobFromAliceReceiveOutput2.them
+
 (* ------------------------------------------------------------------- *)
 (*                             END VERBATIM                            *)
 (* ------------------------------------------------------------------- *)
 
 let hexbuffer_equals = Alcotest.testable P.hexdump_pp P.equal
+
+let test_when__bob_update_his_session_and_send_a_response_and_alice_reuse_session_and_receives_response__then_forward_secrecy_fail
+    _ =
+  let bobSessionWithAlice2 = bobFromAliceReceiveOutput2.them in
+  let bobToAliceResponse3 = P.of_string "Hi Alice! Thanks for saying hi" in
+  let bobToAliceSendOutput3 =
+    T.send bobIdentityKey bobSessionWithAlice2 bobToAliceResponse3
+  in
+  let aliceFromBobMsg4 = bobToAliceSendOutput3.output in
+  Alcotest.(check_raises)
+    "session not valid"
+    (Dirsp_proscript.Crypto_failure "DH25519 key_exchange Low_order")
+    (fun _ ->
+      T.recv
+        aliceIdentityKey
+        aliceSignedPreKey
+        (* re-use original session *)
+        aliceSessionWithBob
+        aliceFromBobMsg4
+      |> ignore )
+
+
+let test_when__bob_update_his_session_and_send_a_response_and_alice_update_session_and_receives_response__then_ok
+    _ =
+  (* updated session *)
+  let bobSessionWithAlicePost2 = bobFromAliceReceiveOutput2.them in
+  let bobToAliceResponse3 = P.of_string "Hi Alice! Thanks for saying hi" in
+  let bobToAliceSendOutput3 =
+    T.send bobIdentityKey bobSessionWithAlicePost2 bobToAliceResponse3
+  in
+  let aliceSessionWithBobPost1 = aliceToBobSendOutput1.them in
+  let aliceFromBobMsg4 = bobToAliceSendOutput3.output in
+  let aliceFromBobReceiveOutput4 =
+    T.recv
+      aliceIdentityKey
+      aliceSignedPreKey
+      (* updated session *)
+      aliceSessionWithBobPost1
+      aliceFromBobMsg4
+  in
+  Alcotest.(check bool) "valid" true aliceFromBobReceiveOutput4.output.valid
+
+
+(** This test is an ugly reminder that if we do not carry forward 'them' / update the session, we think
+      we have safety but we actually lost forward secrecy.
+    *)
+let test_when__bob_not_update_his_session_and_send_a_response_and_alice_not_update_session_and_receives_response__then_looks_ok_but_isnt
+    _ =
+  let bobToAliceResponse3 = P.of_string "Hi Alice! Thanks for saying hi" in
+  let bobToAliceSendOutput3 =
+    T.send
+      bobIdentityKey
+      (* re-use session *) bobSessionWithAlice
+      bobToAliceResponse3
+  in
+  let aliceFromBobMsg4 = bobToAliceSendOutput3.output in
+  let aliceFromBobReceiveOutput4 =
+    T.recv
+      aliceIdentityKey
+      aliceSignedPreKey
+      (* re-use session *) aliceSessionWithBob
+      aliceFromBobMsg4
+  in
+  Alcotest.(check bool) "valid" true aliceFromBobReceiveOutput4.output.valid
+
 
 let () =
   let open Alcotest in
@@ -188,5 +260,19 @@ let () =
                 ( bobFromAliceReceiveOutput2.plaintext
                 |> P.to_bytes
                 |> Bytes.to_string ) )
+        ] )
+    ; ( "Bob_replies_to_Alice_and_Alice_reads"
+      , [ test_case
+            "Fail by Alice re-use"
+            `Quick
+            test_when__bob_update_his_session_and_send_a_response_and_alice_reuse_session_and_receives_response__then_forward_secrecy_fail
+        ; test_case
+            "Ok when both update session"
+            `Quick
+            test_when__bob_update_his_session_and_send_a_response_and_alice_update_session_and_receives_response__then_ok
+        ; test_case
+            "Looks ok but isn't when both Alice and Bob re-use session"
+            `Quick
+            test_when__bob_not_update_his_session_and_send_a_response_and_alice_not_update_session_and_receives_response__then_looks_ok_but_isnt
         ] )
     ]
