@@ -31,7 +31,7 @@ module Make (ProScript : Dirsp_proscript.S) :
         ----------------
         
         The line and column of the original text that caused the problem with its programmatic description is:
-          <unknown expression> at file sp.js, line 11:18 to 11:22 
+          sp.js:11.18-11.22: <unknown expression> 
         
         The resolution to the problem was:
           The ps2ocaml translator has automatically inserted a call to a 'shim'
@@ -164,7 +164,7 @@ module Make (ProScript : Dirsp_proscript.S) :
         ----------------
         
         The line and column of the original text that caused the problem with its programmatic description is:
-          <unknown expression> at file sp.js, line 84:18 to 84:22 
+          sp.js:84.18-84.22: <unknown expression> 
         
         The resolution to the problem was:
           The ps2ocaml translator has automatically inserted a call to a 'shim'
@@ -455,7 +455,7 @@ module Make (ProScript : Dirsp_proscript.S) :
         ----------------
         
         The line and column of the original text that caused the problem with its programmatic description is:
-          <unknown expression> at file sp.js, line 301:42 to 301:46 
+          sp.js:301.42-301.46: <unknown expression> 
         
         The resolution to the problem was:
           The ps2ocaml translator has automatically inserted a call to a 'shim'
@@ -473,7 +473,7 @@ module Make (ProScript : Dirsp_proscript.S) :
         ----------------
         
         The line and column of the original text that caused the problem with its programmatic description is:
-          <unknown expression> at file sp.js, line 310:42 to 310:46 
+          sp.js:310.42-310.46: <unknown expression> 
         
         The resolution to the problem was:
           The ps2ocaml translator has automatically inserted a call to a 'shim'
@@ -692,14 +692,13 @@ module Make (ProScript : Dirsp_proscript.S) :
         ----------------
         
         The line and column of the original text that caused the problem with its programmatic description is:
-          The ProScript function could not be automatically translated. The
-          local variable mutations used in this function were too complex for
-          ps2ocaml to handle; ps2ocaml is intentionally kept simple (auditable)
-          and will fail with this error for safety. The ps2ocaml user can 1.
-          Rewrite the offending ProScript code in static single assignment
-          style so the assignment counts = [ dec=2 them=1 ] is either empty or
-          all ones. Offending problem location at file sp.js, line 478:0 to
-          480:3 
+          sp.js:478.0-480.3: The ProScript function could not be automatically
+          translated. The local variable mutations used in this function were
+          too complex for ps2ocaml to handle; ps2ocaml is intentionally kept
+          simple (auditable) and will fail with this error for safety. The
+          ps2ocaml user can 1. Rewrite the offending ProScript code in static
+          single assignment style so the assignment counts = [ dec=2 them=1 ]
+          is either empty or all ones. Offending problem location 
         
         The resolution to the problem was:
           The ps2ocaml user has chosen to override the above problem. If you
@@ -722,19 +721,19 @@ module Make (ProScript : Dirsp_proscript.S) :
           ----------------
           
           The line and column of the original text that caused the problem with its programmatic description is:
-            The ProScript 'return' statement could not be automatically
-            translated because ps2ocaml applies conservative rules to detect
-            whether a translation can occur. The rule for 'return' statements
-            is that the enclosing function must be either 'let in' or
-            sequential semicolon safe. To detect 'let in' safety the return
-            value must be a terminal expression. To detect sequential semicolon
-            safety, there can be no local variable mutations in the enclosing
-            function and it must also satisfy the 'let in' conditions. The
-            ps2ocaml user can 1. Switch your ProScript code to have the return
-            statement as the last statement -or- 2. Rewrite the offending
-            ProScript code in static single assignment style so the assignment
-            counts = [ dec=2 them=1 ] is either empty or all ones. Offending
-            problem location at file sp.js, line 482:0 to 509:4 
+            sp.js:482.0-509.4: The ProScript 'return' statement could not be
+            automatically translated because ps2ocaml applies conservative
+            rules to detect whether a translation can occur. The rule for
+            'return' statements is that the enclosing function must be either
+            'let in' or sequential semicolon safe. To detect 'let in' safety
+            the return value must be a terminal expression. To detect
+            sequential semicolon safety, there can be no local variable
+            mutations in the enclosing function and it must also satisfy the
+            'let in' conditions. The ps2ocaml user can 1. Switch your ProScript
+            code to have the return statement as the last statement -or- 2.
+            Rewrite the offending ProScript code in static single assignment
+            style so the assignment counts = [ dec=2 them=1 ] is either empty
+            or all ones. Offending problem location 
           
           The resolution to the problem was:
             The ps2ocaml user has chosen to override the above problem. If you
@@ -779,14 +778,14 @@ module Make (ProScript : Dirsp_proscript.S) :
           ----------------
           
           The line and column of the original text that caused the problem with its programmatic description is:
-            The ProScript function could not be automatically translated. The
-            local variable mutations used in this function were too complex for
-            ps2ocaml to handle; ps2ocaml is intentionally kept simple
-            (auditable) and will fail with this error for safety. The ps2ocaml
-            user can 1. Rewrite the offending ProScript code in static single
-            assignment style so the assignment counts = [ dec=2 them=1 ] is
-            either empty or all ones. Offending problem location at file sp.js,
-            line 512:3 to 512:6 
+            sp.js:512.3-512.6: The ProScript function could not be
+            automatically translated. The local variable mutations used in this
+            function were too complex for ps2ocaml to handle; ps2ocaml is
+            intentionally kept simple (auditable) and will fail with this error
+            for safety. The ps2ocaml user can 1. Rewrite the offending
+            ProScript code in static single assignment style so the assignment
+            counts = [ dec=2 them=1 ] is either empty or all ones. Offending
+            problem location 
           
           The resolution to the problem was:
             The ps2ocaml user has chosen to override the above problem. If you
@@ -808,19 +807,19 @@ module Make (ProScript : Dirsp_proscript.S) :
           ----------------
           
           The line and column of the original text that caused the problem with its programmatic description is:
-            The ProScript 'return' statement could not be automatically
-            translated because ps2ocaml applies conservative rules to detect
-            whether a translation can occur. The rule for 'return' statements
-            is that the enclosing function must be either 'let in' or
-            sequential semicolon safe. To detect 'let in' safety the return
-            value must be a terminal expression. To detect sequential semicolon
-            safety, there can be no local variable mutations in the enclosing
-            function and it must also satisfy the 'let in' conditions. The
-            ps2ocaml user can 1. Switch your ProScript code to have the return
-            statement as the last statement -or- 2. Rewrite the offending
-            ProScript code in static single assignment style so the assignment
-            counts = [ dec=2 them=1 ] is either empty or all ones. Offending
-            problem location at file sp.js, line 515:0 to 542:4 
+            sp.js:515.0-542.4: The ProScript 'return' statement could not be
+            automatically translated because ps2ocaml applies conservative
+            rules to detect whether a translation can occur. The rule for
+            'return' statements is that the enclosing function must be either
+            'let in' or sequential semicolon safe. To detect 'let in' safety
+            the return value must be a terminal expression. To detect
+            sequential semicolon safety, there can be no local variable
+            mutations in the enclosing function and it must also satisfy the
+            'let in' conditions. The ps2ocaml user can 1. Switch your ProScript
+            code to have the return statement as the last statement -or- 2.
+            Rewrite the offending ProScript code in static single assignment
+            style so the assignment counts = [ dec=2 them=1 ] is either empty
+            or all ones. Offending problem location 
           
           The resolution to the problem was:
             The ps2ocaml user has chosen to override the above problem. If you
@@ -897,14 +896,14 @@ module Make (ProScript : Dirsp_proscript.S) :
         ----------------
         
         The line and column of the original text that caused the problem with its programmatic description is:
-          The ProScript function could not be automatically translated. The
-          local variable mutations used in this function were too complex for
-          ps2ocaml to handle; ps2ocaml is intentionally kept simple (auditable)
-          and will fail with this error for safety. The ps2ocaml user can 1.
-          Rewrite the offending ProScript code in static single assignment
-          style so the assignment counts = [ initEphemeralKey=2 myIdentityKey=1
-          them=1 ] is either empty or all ones. Offending problem location at
-          file sp.js, line 574:0 to 577:3 
+          sp.js:574.0-577.3: The ProScript function could not be automatically
+          translated. The local variable mutations used in this function were
+          too complex for ps2ocaml to handle; ps2ocaml is intentionally kept
+          simple (auditable) and will fail with this error for safety. The
+          ps2ocaml user can 1. Rewrite the offending ProScript code in static
+          single assignment style so the assignment counts = [
+          initEphemeralKey=2 myIdentityKey=1 them=1 ] is either empty or all
+          ones. Offending problem location 
         
         The resolution to the problem was:
           The ps2ocaml user has chosen to override the above problem. If you
@@ -927,14 +926,14 @@ module Make (ProScript : Dirsp_proscript.S) :
           ----------------
           
           The line and column of the original text that caused the problem with its programmatic description is:
-            The ProScript function could not be automatically translated. The
-            local variable mutations used in this function were too complex for
-            ps2ocaml to handle; ps2ocaml is intentionally kept simple
-            (auditable) and will fail with this error for safety. The ps2ocaml
-            user can 1. Rewrite the offending ProScript code in static single
-            assignment style so the assignment counts = [ initEphemeralKey=2
-            myIdentityKey=1 them=1 ] is either empty or all ones. Offending
-            problem location at file sp.js, line 579:16 to 579:19 
+            sp.js:579.16-579.19: The ProScript function could not be
+            automatically translated. The local variable mutations used in this
+            function were too complex for ps2ocaml to handle; ps2ocaml is
+            intentionally kept simple (auditable) and will fail with this error
+            for safety. The ps2ocaml user can 1. Rewrite the offending
+            ProScript code in static single assignment style so the assignment
+            counts = [ initEphemeralKey=2 myIdentityKey=1 them=1 ] is either
+            empty or all ones. Offending problem location 
           
           The resolution to the problem was:
             The ps2ocaml user has chosen to override the above problem. If you
@@ -954,20 +953,20 @@ module Make (ProScript : Dirsp_proscript.S) :
           ----------------
           
           The line and column of the original text that caused the problem with its programmatic description is:
-            The ProScript 'return' statement could not be automatically
-            translated because ps2ocaml applies conservative rules to detect
-            whether a translation can occur. The rule for 'return' statements
-            is that the enclosing function must be either 'let in' or
-            sequential semicolon safe. To detect 'let in' safety the return
-            value must be a terminal expression. To detect sequential semicolon
-            safety, there can be no local variable mutations in the enclosing
-            function and it must also satisfy the 'let in' conditions. The
-            ps2ocaml user can 1. Switch your ProScript code to have the return
-            statement as the last statement -or- 2. Rewrite the offending
-            ProScript code in static single assignment style so the assignment
-            counts = [ initEphemeralKey=2 myIdentityKey=1 them=1 ] is either
-            empty or all ones. Offending problem location at file sp.js, line
-            580:0 to 585:4 
+            sp.js:580.0-585.4: The ProScript 'return' statement could not be
+            automatically translated because ps2ocaml applies conservative
+            rules to detect whether a translation can occur. The rule for
+            'return' statements is that the enclosing function must be either
+            'let in' or sequential semicolon safe. To detect 'let in' safety
+            the return value must be a terminal expression. To detect
+            sequential semicolon safety, there can be no local variable
+            mutations in the enclosing function and it must also satisfy the
+            'let in' conditions. The ps2ocaml user can 1. Switch your ProScript
+            code to have the return statement as the last statement -or- 2.
+            Rewrite the offending ProScript code in static single assignment
+            style so the assignment counts = [ initEphemeralKey=2
+            myIdentityKey=1 them=1 ] is either empty or all ones. Offending
+            problem location 
           
           The resolution to the problem was:
             The ps2ocaml user has chosen to override the above problem. If you
@@ -990,20 +989,20 @@ module Make (ProScript : Dirsp_proscript.S) :
           ----------------
           
           The line and column of the original text that caused the problem with its programmatic description is:
-            The ProScript 'return' statement could not be automatically
-            translated because ps2ocaml applies conservative rules to detect
-            whether a translation can occur. The rule for 'return' statements
-            is that the enclosing function must be either 'let in' or
-            sequential semicolon safe. To detect 'let in' safety the return
-            value must be a terminal expression. To detect sequential semicolon
-            safety, there can be no local variable mutations in the enclosing
-            function and it must also satisfy the 'let in' conditions. The
-            ps2ocaml user can 1. Switch your ProScript code to have the return
-            statement as the last statement -or- 2. Rewrite the offending
-            ProScript code in static single assignment style so the assignment
-            counts = [ initEphemeralKey=2 myIdentityKey=1 them=1 ] is either
-            empty or all ones. Offending problem location at file sp.js, line
-            587:0 to 592:4 
+            sp.js:587.0-592.4: The ProScript 'return' statement could not be
+            automatically translated because ps2ocaml applies conservative
+            rules to detect whether a translation can occur. The rule for
+            'return' statements is that the enclosing function must be either
+            'let in' or sequential semicolon safe. To detect 'let in' safety
+            the return value must be a terminal expression. To detect
+            sequential semicolon safety, there can be no local variable
+            mutations in the enclosing function and it must also satisfy the
+            'let in' conditions. The ps2ocaml user can 1. Switch your ProScript
+            code to have the return statement as the last statement -or- 2.
+            Rewrite the offending ProScript code in static single assignment
+            style so the assignment counts = [ initEphemeralKey=2
+            myIdentityKey=1 them=1 ] is either empty or all ones. Offending
+            problem location 
           
           The resolution to the problem was:
             The ps2ocaml user has chosen to override the above problem. If you

@@ -15,15 +15,30 @@
 open Lexing
 open Printf
 
+(*
+
+Follow standards https://www.gnu.org/prep/standards/html_node/Errors.html#Errors so
+editors and IDEs can detect the link.
+
+A position is:
+
+  sourcefile:lineno:column: message
+
+A range is:
+
+  sourcefile:line1.column1-line2.column2: message
+
+*)
+
 let format_position = function
   | { pos_fname = fn; pos_lnum = line; pos_bol = 0; pos_cnum = pos } ->
-      sprintf "File \"%s\", line %d, character %d" fn line pos
+      sprintf "%s:%d:%d" fn line pos
   | _ -> "<unknown position>"
 
 
 let format_loc (l1, l2) =
   sprintf
-    "file %s, line %d:%d to %d:%d"
+    "%s:%d.%d-%d.%d"
     l1.pos_fname
     l1.pos_lnum
     l1.pos_cnum
@@ -31,4 +46,4 @@ let format_loc (l1, l2) =
     l2.pos_cnum
 
 
-let get_error loc msg = sprintf "%s at %s\n%!" msg (format_loc loc)
+let get_error loc msg = sprintf "%s: %s" (format_loc loc) msg
