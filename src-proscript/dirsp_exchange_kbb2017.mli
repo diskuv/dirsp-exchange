@@ -171,6 +171,9 @@
     Contact {{:mailto:security@diskuv.com} security\@diskuv.com} to report any security issues, and feel
     free to shame publicly on {{:https://twitter.com/diskuv} Twitter \@diskuv} if Diskuv is not being responsive.
 
+    You may be interested in
+    {{:https://github.com/diskuv/dirsp-exchange#comparison_to_other_libraries}Comparison to Other Libraries}.
+
     See {!section:SourceCodeVerification} for help authenticating the source code history.
 
     {1 Institutions}
@@ -198,6 +201,9 @@
 
     X3DH uses {{:https://www.signal.org/docs/specifications/doubleratchet/} The Double Ratchet Algorithm}
     as a building block.
+
+    {{:https://gitlab.matrix.org/matrix-org/olm/-/blob/master/docs/olm.md} Olm: A Cryptographic Ratchet}
+    is a similar algorithm.
 
     {1:Licenses Licenses}
 
