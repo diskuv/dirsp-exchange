@@ -33,6 +33,10 @@ uninstall:
 
 reinstall: uninstall install
 
+lint:
+	opam lint --switch 4.08.0
+	opam-dune-lint
+
 clean:
 	dune clean
 

@@ -34,6 +34,7 @@ The full build for ocaml 4.08.0 and 4.12.0 is:
     opam install cstruct                            # dirsp-proscript dependencies
     opam install mirage-crypto-rng mirage-crypto-ec # dirsp-proscript-mirage dependencies
     opam install iter                               # dirsp-proscript-mirage test dependencies
+    opam install opam-dune-lint
     eval $(opam env)
     make
 
@@ -142,3 +143,12 @@ Then within your ``dune utop`` session you can explore the ProScript AST:
 
     (* 4. Retest it *)
     characterize_ast_style sample_ast_t { skip_nested_functions=true };;
+
+Publishing
+----------
+
+If you have publish permissions:
+
+.. code-block:: bash
+
+   opam publish

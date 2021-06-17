@@ -179,6 +179,7 @@
  ; We make a test with pure Dune dependencies (no camlp4 source code) simply so we can run tests defined
  ; in external files.
  (names ast2ocaml_tests)
+ (package dirsp-ps2ocaml)
  (libraries alcotest dirsp_ps2ocamlcore pcre menhirLib str)
  (modules ast2ocaml_tests)
  (modes
@@ -234,6 +235,7 @@
   dirsp_proscript_mirage_tests_encoding
   dirsp_proscript_mirage_tests_hash
   dirsp_proscript_mirage_tests_aes)
+ (package dirsp-proscript-mirage)
  (libraries alcotest dirsp-proscript-mirage iter str)
  (modules
   dirsp_proscript_mirage_tests_random
@@ -324,7 +326,8 @@
 
 (tests
  (names dirsp_exchange_kbb2017_tests)
- (libraries alcotest dirsp-proscript-mirage dirsp_exchange_kbb2017)
+ (package dirsp-exchange-kbb2017)
+ (libraries alcotest dirsp-proscript-mirage dirsp-exchange-kbb2017)
  (modules dirsp_exchange_kbb2017_tests)
  (action
   (run %{test} -e)))
