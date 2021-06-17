@@ -40,43 +40,51 @@ open Dirsp_proscript_mirage_test_helpers
 (* Initialize the random number generator *)
 let () = Mirage_crypto_rng_lwt.initialize ()
 
-type opso_acc_t = { attempts : int }
+type opso_acc_t = { attempts : int32 }
 
 (* Obviously we'll need 4 overlapping 10-bit ranges to cover a full 32-bit number *)
 
-let ten_bits_1 (num : int) = num land 0b1111111111
+let ten_bits_1 (num : int32) = Int32.logand num 0b1111111111l
 
-let ten_bits_2 (num : int) = (num land 0b11111111110000000000) lsr 10
+let ten_bits_2 (num : int32) =
+  Int32.shift_right_logical (Int32.logand num 0b11111111110000000000l) 10
 
-let ten_bits_3 (num : int) = (num land 0b111111111100000000000000000000) lsr 20
 
-let ten_bits_4 (num : int) =
-  (num land 0b11111111110000000000000000000000) lsr 22
+let ten_bits_3 (num : int32) =
+  Int32.shift_right_logical
+    (Int32.logand num 0b111111111100000000000000000000l)
+    20
+
+
+let ten_bits_4 (num : int32) =
+  Int32.shift_right_logical
+    (Int32.logand num 0b11111111110000000000000000000000l)
+    22
 
 
 let test_first_ten_bits () =
-  Alcotest.(check int)
+  Alcotest.(check int32)
     "same bits"
-    (ten_bits_1 0b10_1001001010_0100101001_0010100100)
-                0b00_0000000000_0000000000_0010100100 [@@ocamlformat "disable"]
+    (ten_bits_1 0b10_1001001010_0100101001_0010100100l)
+                0b00_0000000000_0000000000_0010100100l [@@ocamlformat "disable"]
 
 let test_second_ten_bits () =
-  Alcotest.(check int)
+  Alcotest.(check int32)
     "same bits"
-    (ten_bits_2 0b10_1001001010_0100101001_0010100100)
-                0b00_0000000000_0000000000_0100101001 [@@ocamlformat "disable"]
+    (ten_bits_2 0b10_1001001010_0100101001_0010100100l)
+                0b00_0000000000_0000000000_0100101001l [@@ocamlformat "disable"]
 
 let test_third_ten_bits () =
-  Alcotest.(check int)
+  Alcotest.(check int32)
     "same bits"
-    (ten_bits_3 0b10_1001001010_0100101001_0010100100)
-                0b00_0000000000_0000000000_1001001010 [@@ocamlformat "disable"]
+    (ten_bits_3 0b10_1001001010_0100101001_0010100100l)
+                0b00_0000000000_0000000000_1001001010l [@@ocamlformat "disable"]
 
 let test_last_ten_bits () =
-  Alcotest.(check int)
+  Alcotest.(check int32)
     "same bits"
-    (ten_bits_4 0b1010010010_1001001010_0100101001_00)
-                0b00_0000000000_0000000000_1010010010 [@@ocamlformat "disable"]
+    (ten_bits_4 0b1010010010_1001001010_0100101001_00l)
+                0b00_0000000000_0000000000_1010010010l [@@ocamlformat "disable"]
 
 (** [opso_test random_seq first_letter_selector second_letter_selector] takes an infinite sequence [random_seq] of 4 bytes
     and two 10-bit selectors ([first_letter_selector] and [second_letter_selector]) and runs the OPSO test of Diehard
@@ -94,47 +102,55 @@ let test_last_ten_bits () =
 let opso_test
     (name : string)
     (random_seq : (char * char * char * char) Iter.t)
-    (first_letter_selector : int -> int)
-    (second_letter_selector : int -> int) =
-  let max_attempts = int_of_float (2. ** 21.) + 1 in
-  let alphabet_size = int_of_float (2. ** 10.) in
-  let expected_mean = 141909 in
-  let sigma = 290 in
-  let delta = 4 * sigma in
+    (first_letter_selector : int32 -> int32)
+    (second_letter_selector : int32 -> int32) =
+  let max_attempts = Int32.succ (Int32.of_float (2. ** 21.)) in
+  let alphabet_size = Int32.of_float (2. ** 10.) in
+  let expected_mean = 141909l in
+  let sigma = 290l in
+  let delta = Int32.mul 4l sigma in
   let min_missing, max_missing =
-    (expected_mean - delta, expected_mean + delta)
+    (Int32.sub expected_mean delta, Int32.add expected_mean delta)
   in
-  let generated_words = Hashtbl.create ~random:false (max_attempts / 10) in
-  let bytes_to_int ((b1, b2, b3, b4) : char * char * char * char) =
-    (Char.code b4 * 256 * 256 * 256)
-    + (Char.code b3 * 256 * 256)
-    + (Char.code b2 * 256)
-    + Char.code b1
+  let generated_words =
+    Hashtbl.create
+      ~random:false
+      (* divide by 8 *)
+      (Int32.to_int (Int32.shift_right_logical max_attempts 3))
+  in
+  let bytes_to_int32 ((b1, b2, b3, b4) : char * char * char * char) =
+    let code c = Int32.of_int (Char.code c) in
+    let ( + ) = Int32.add in
+    let ( * ) = Int32.mul in
+    (code b4 * 256l * 256l * 256l)
+    + (code b3 * 256l * 256l)
+    + (code b2 * 256l)
+    + code b1
   in
   let trial (acc : opso_acc_t) (random_4_bytes : char * char * char * char) =
-    let random_num = bytes_to_int random_4_bytes in
+    let random_num = bytes_to_int32 random_4_bytes in
     let keystroke1 = first_letter_selector random_num in
     let keystroke2 = second_letter_selector random_num in
-    let word = (keystroke1 * alphabet_size) + keystroke2 in
-    Hashtbl.add generated_words word 1 ;
-    let attempts = acc.attempts + 1 in
+    let word = Int32.add (Int32.mul keystroke1 alphabet_size) keystroke2 in
+    Hashtbl.add generated_words word 1l ;
+    let attempts = Int32.succ acc.attempts in
     ({ attempts }, if attempts = max_attempts then `Stop else `Continue)
   in
-  let () = Iter.(random_seq |> fold_while trial { attempts = 0 } |> ignore) in
+  let () = Iter.(random_seq |> fold_while trial { attempts = 0l } |> ignore) in
   let missing_words =
     Iter.(
-      0 -- ((alphabet_size * alphabet_size) - 1)
-      |> map (fun word -> if Hashtbl.mem generated_words word then 0 else 1)
-      |> fold ( + ) 0)
+      (* 0 -- n^2-1 *)
+      (0 -- Int32.(to_int (pred (mul alphabet_size alphabet_size))))
+      |> map (fun word ->
+             if Hashtbl.mem generated_words (Int32.of_int word) then 0l else 1l )
+      |> fold Int32.add 0l)
   in
-  print_string name ;
-  print_string ": missing_words=" ;
-  print_int missing_words ;
-  print_string " | min_missing=" ;
-  print_int min_missing ;
-  print_string " | max_missing=" ;
-  print_int max_missing ;
-  print_newline () ;
+  Fmt.pr
+    "%s: missing_words=%ld | min_missing=%ld | max_missing=%ld@\n"
+    name
+    missing_words
+    min_missing
+    max_missing ;
   missing_words >= min_missing && missing_words <= max_missing
 
 
