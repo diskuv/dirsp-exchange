@@ -88,10 +88,37 @@ This repository contains:
 - [dirsp-proscript-mirage](https://diskuv.github.io/dirsp-exchange/ocaml/dirsp-proscript-mirage/) - A PSCL implementation based on `mirage-crypto` and related libraries
 - [dirsp-ps2ocaml](https://diskuv.github.io/dirsp-exchange/ocaml/dirsp-ps2ocaml/) - A ProScript to OCaml translator with [documentation available](https://diskuv.github.io/dirsp-exchange/src-proscript/proscript-messaging/PS2OCAML.html).
 
+`dirsp-exchange-kbb2017` has a build process that generates its own OCaml code
+using `dirsp-ps2ocaml` on formally verified ProScript source code.
+
 The online documentation is at:
 
 - [Sphinx Documentation](https://diskuv.github.io/dirsp-exchange)
 - [OCaml Libraries](https://diskuv.github.io/dirsp-exchange/ocaml)
+
+## Installation
+
+Make sure you have `opam` installed. If you don't have OCaml and `opam`, it is probably
+best to follow the [Real World OCaml Installation Instructions](https://dev.realworldocaml.org/install.html).
+
+You'll install the executables (currently only `dirsp-ps2ocaml`) as follows:
+
+```bash
+opam update
+opam install dirsp-ps2ocaml
+eval $(opam env)
+
+dirsp-ps2ocaml --help
+```
+
+The libraries are also available on Opam:
+
+```bash
+opam update
+opam install dirsp-exchange-kbb2017 dirsp-proscript-mirage
+```
+
+Note: Installing with [esy](https://esy.sh/) likely works as well, but hasn't been tested.
 
 ## Comparison to Other Libraries
 
