@@ -20,6 +20,7 @@ let hexbuffer_equals = Alcotest.testable M.hexdump_pp M.equal
 let hexbuffer_notequals =
   Alcotest.testable M.hexdump_pp (fun a b -> not (M.equal a b))
 
+
 let strip_internal_whitespace = Str.global_replace (Str.regexp "[ \t\r\n]+") ""
 
 (** [buffer_of_hex s] will ignore whitespace and convert a hexadecimal representation of bytes into a buffer. *)
@@ -32,9 +33,11 @@ let buffer_of_hex s =
            let c1 = String.sub s (2 * octet) 1 in
            let c2 = String.sub s ((2 * octet) + 1) 1 in
            Scanf.sscanf (c1 ^ c2) "%02x" (fun x -> x)
-           |> char_of_int |> M.elem_of_char)
+           |> char_of_int
+           |> M.elem_of_char )
     |> to_list)
   |> M.of_elem_list
+
 
 let buffer_of_stripped_string s = M.of_string (strip_internal_whitespace s)
 

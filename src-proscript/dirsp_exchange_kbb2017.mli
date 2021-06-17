@@ -172,7 +172,7 @@
     free to shame publicly on {{:https://twitter.com/diskuv} Twitter \@diskuv} if Diskuv is not being responsive.
 
     You may be interested in
-    {{:https://github.com/diskuv/dirsp-exchange#comparison_to_other_libraries}Comparison to Other Libraries}.
+    {{:https://github.com/diskuv/dirsp-exchange#comparison-to-other-libraries}Comparison to Other Libraries}.
 
     See {!section:SourceCodeVerification} for help authenticating the source code history.
 

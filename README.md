@@ -37,7 +37,7 @@ Format.printf "Bob just received a new message: %s\n"
 Bindings to other languages and implementations of other security algorithms may follow
 later.
 
-> Looking for other implementations? Skip down to [Comparison to Other Libraries](#comparison_to_other_libraries)
+> Looking for other implementations? Skip down to [Comparison to Other Libraries](#comparison-to-other-libraries)
 
 The intent of the **[dirsp]** libraries is to provide software engineers with auditable
 source code that has some level of safety assurance (typically proofs) from security researchers.
@@ -108,11 +108,26 @@ Our recommendation for secure 1-on-1 messaging?
 - Don't use **[libsignal-client]** because its owners actively discourage you from using it today. But since
   we suspect their stance is based on a lack of engineering resources rather than their [donation-based mission of developing open source privacy technology](https://www.signal.org/donate/), you may want to directly ask them.
 
-## Contributing
+## Next Steps
 
-Engineers: We are actively looking for a) bindings to other languages and b) implementations of other security algorithms and c) multiple pairs of eyes vetting the code base. Please contribute if any of those interest you,
+### Getting/Staying in Touch
+
+- Announcements will be on [Twitter: @diskuv](https://twitter.com/diskuv). Q&A is fine!
+- Use GitHub to "Watch" this repository (the top right corner of your browser)
+- Disclose security vulnerabilities at security@diskuv.com
+- Report bugs at [dirsp-exchange Issues](https://github.com/diskuv/dirsp-exchange/issues)
+
+### Contributing
+
+**Engineers**: We are actively looking for a) bindings to other languages and b) implementations of other security algorithms and c) multiple pairs of eyes vetting the code base. Please contribute if any of those interest you,
 or if you have other ideas!
 
-Researchers: Looking for a test subject for an upcoming paper? If you use **[dirsp]** you have a reasonable opportunity for your research to impact production systems and apps.
+**Researchers**: Looking for a test subject for an upcoming paper? If you use **[dirsp]** you have a reasonable opportunity for your research to impact production systems and apps.
 
-See [Contributing](https://diskuv.github.io/dirsp-exchange/CONTRIBUTING.html)
+See [Contributing](https://diskuv.github.io/dirsp-exchange/CONTRIBUTING.html).
+
+---
+
+Thanks for your interest!
+
+Jonah Beckford. Maintainer and Diskuv, Inc. Founder
