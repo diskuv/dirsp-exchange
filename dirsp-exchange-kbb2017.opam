@@ -1,5 +1,5 @@
 opam-version: "2.0"
-version: "0.1.0"
+version: "0.1.1"
 synopsis:
   "The formally verified KBB2017 protocol for 1-on-1 secure conversations similar to the Signal Protocol"
 description: """\

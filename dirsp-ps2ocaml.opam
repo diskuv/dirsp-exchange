@@ -1,5 +1,5 @@
 opam-version: "2.0"
-version: "0.1.0"
+version: "0.1.1"
 synopsis: "ProScript to OCaml translator"
 description: """\
 Dirsp is a short form for Diskuv Implementations of Research Security Protocols.
