@@ -209,6 +209,7 @@
 (rule
  (target kobeissi_bhargavan_blanchet.ml)
  (deps
+  ../.ocamlformat
   (:proscript_input proscript-messaging/ps/sp.js)
   (:gen %{bin:dirsp-ps2ocaml}))
  (mode promote)

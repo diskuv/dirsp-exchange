@@ -18,7 +18,7 @@ depends: [
   "ocaml" {>= "4.08.0"}
   "dune" {>= "2.6.0"}
   "dirsp-proscript" {= version}
-  "ppx_deriving_protobuf" {>= "3.0.0"}
+  "ppx_deriving_protobuf" {>= "2.7"}
   "alcotest" {>= "1.4.0" & with-test}
   "dirsp-proscript-mirage" {= version & with-test}
 ]

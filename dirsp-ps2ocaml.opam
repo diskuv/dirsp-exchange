@@ -17,7 +17,7 @@ depends: [
   "menhir" {>= "20210419"}
   "menhirLib" {>= "20210419"}
   "pcre" {>= "7.4.6"}
-  "ppx_deriving_protobuf" {>= "3.0.0"}
+  "ppx_deriving_protobuf" {>= "2.7"}
   "ulex" {>= "1.2"}
   "alcotest" {>= "1.4.0" & with-test}
 ]
