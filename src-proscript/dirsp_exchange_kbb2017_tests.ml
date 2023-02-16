@@ -30,7 +30,7 @@ module KEY = K.Type_key
 module MSG = K.Type_msg
 
 (* Initialize the random number generator *)
-let () = Mirage_crypto_rng_lwt.initialize ()
+let () = Mirage_crypto_rng_lwt.initialize (module Mirage_crypto_rng.Fortuna)
 
 (* SECOND: Let Alice and Bob create their own long-term key pairs.
 
