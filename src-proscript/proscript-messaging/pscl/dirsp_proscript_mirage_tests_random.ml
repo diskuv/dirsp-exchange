@@ -38,7 +38,7 @@ open Dirsp_proscript_mirage_test_helpers
   *)
 
 (* Initialize the random number generator *)
-let () = Mirage_crypto_rng_lwt.initialize ()
+let () = Mirage_crypto_rng_lwt.initialize (module Mirage_crypto_rng.Fortuna)
 
 type opso_acc_t = { attempts : int32 }
 
